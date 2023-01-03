@@ -107,9 +107,6 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.usulanDetail = data.message[0]
-        /// dihapus ini
-        this.isVisibleButton = true
-        /// end dihapus ini
         if (role === 1) {
           this.isVisibleButton = true
         } else if ((role === 2 || role === 3) && (item.usulanKriteria === "Data Pasangan" || item.usulanKriteria === "Data Anak")) {
