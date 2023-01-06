@@ -3,32 +3,22 @@
     <div v-if="getWindowWidth <= 780" class="menu-mobile">
       <div class="menu-mobile-drawer" :class="menuMobileDrawer ? 'active' : ''">
         <div class="menu-mobile-drawer-item" :class="menuActive === menu.id ? 'active' : ''" v-for="menu in mainMenu.filter(item => item.nama !== 'Logout' && item.nama !== 'Pegawai' && item.nama !== 'Usulan')" :key="menu.id" @click="onActiveMenu(menu)" :style="menuActive === menu.id ? 'border-bottom: 2px solid white;' : ''">
-            <span style="position: relative;"><i style="font-size: 24px;" :class="menu.icon"></i></span>
-            <div style="font-size: 12px; font-weight: 600;">
-              {{ menu.nama }}
-            </div>
-        </div>
-        <div class="menu-mobile-drawer-item" :class="menuActive === menu.id ? 'active' : ''" v-for="menu in mainMenu.filter(item => item.nama === 'Logout')" :key="menu.id" @click="logout()">
-            <span style="position: relative;"><i style="font-size: 24px;" :class="menu.icon"></i></span>
-            <div style="font-size: 12px; font-weight: 600;">
+            <span style="position: relative;"><i style="font-size: 18px; max-width: 14px; max-height: 14px;" :class="menu.icon"></i></span>
+            <div style="font-size: 10px; font-weight: 600;">
               {{ menu.nama }}
             </div>
         </div>
       </div>
-      <div class="menu-mobile-item text-center" :class="menuActive === menu.id ? 'active' : ''" v-for="menu in mainMenu.filter(item => item.nama === 'Pegawai')" :key="menu.id" @click="onActiveMenu(menu)">
-        <span style="position: relative;"><i style="font-size: 24px;" :class="menu.icon"></i></span>
-        <div style="font-size: 12px; font-weight: 600;">
+      <div class="menu-mobile-item text-center" :class="menuActive === menu.id ? 'active' : ''" v-for="menu in mainMenu.filter(item => item.nama === 'Pegawai' || item.nama === 'Usulan' || item.nama === 'Logout')" :key="menu.id" @click="onActiveMenu(menu)">
+        <span style="position: relative;"><i style="font-size: 16px;" :class="menu.icon"></i></span>
+        <div style="font-size: 10px; font-weight: 600;">
           {{ menu.nama }}
         </div>
       </div>
-      <div class="app-icon" style="cursor: pointer;" @click="onMenuMobileDrawer()">
-        <AppIcon style="max-width: 26px; max-height: 26px;" />
-      </div>
-      <div class="menu-mobile-item text-center" :class="menuActive === menu.id ? 'active' : ''" v-for="menu in mainMenu.filter(item => item.nama === 'Usulan')" :key="menu.id" @click="onActiveMenu(menu)">
-          <span style="position: relative;"><i style="font-size: 24px;" :class="menu.icon"></i></span>
-          <div style="font-size: 12px; font-weight: 600;">
-            {{ menu.nama }}
-          </div>
+      <div class="menu-mobile-bar text-center" @click="onMenuMobileDrawer()" v-if="mainMenu.length > 0 && (mainMenu.filter(item => item.nama !== 'Pegawai' && item.nama !== 'Usulan' && item.nama !== 'Logout' && item.nama !== 'Dashboard')).length > 0">
+        <span>
+          <i style="font-size: 24px;" class="fa-solid fa-bars"></i>
+        </span>
       </div>
     </div>
     <div v-else class="menu-web">
@@ -132,9 +122,13 @@ export default {
       this.menuMobileDrawer = false
       this.menuActive = menu.id
       let menuText = menu.nama.toLowerCase()
-      this.$router.push({
-        name: menuText,
-      })
+      if (menuText === "logout") {
+        this.logout()
+      } else {
+        this.$router.push({
+          name: menuText,
+        })
+      }
     },
     isMenuActive() {
       let menu = this.mainMenu.filter((e) => e.nama.toLowerCase() === this.$route.name)
@@ -164,17 +158,18 @@ export default {
   position: absolute;
   top: 100%;
   z-index: 1;
-  width: 100%;
+  width: 94%;
   display: flex;
-  justify-content: flex-end;
-  height: 170px;
-  background-color: rgba(11,10,15,0);
+  justify-content: space-around;
+  height: 50px;
   box-sizing: border-box;
-  padding: 10px 40px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 6px 10px;
   transition: all 0.4s;
   &.active {
-    top: -90px;
-    background-color: rgba(11,10,15,0.6);
+    top: -50px;
+    background-color: #3e6e6d;
     .menu-mobile-drawer-item {
       transition: all 0.4s;
       transition-delay: 0.4s;
@@ -216,6 +211,21 @@ export default {
     max-width: 100vw;
     overflow-y: visible;
     .menu-mobile {
+      .menu-mobile-bar {
+        position: relative;
+        box-sizing: border-box;
+        padding: 6px 20px;
+        cursor: pointer;
+        color: white;
+        background-color: #477B79;
+        span {
+          position: absolute;
+          width: 100%;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%);
+        }
+      }
       .menu-mobile-item {
         position: relative;
         box-sizing: border-box;
@@ -224,15 +234,37 @@ export default {
         color: white;
         background-color: #477B79;
         transition: all 0.4s;
-        border-radius: 100% 100% 0px 0px;
+        // border-radius: 100% 100% 0px 0px;
         top: 0px;
         &.active {
-          padding: 12px 20px;
-          top: -12px;
+          padding: 4px 20px;
+          &::after {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 100%;
+            background-color: white;
+            outline: thick solid rgba(255, 255, 255, 0.5);
+            bottom: -14px;
+          }
         }
         &:hover {
-          padding: 12px 20px;
-          top: -12px;
+          padding: 4px 20px;
+          &::after {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 100%;
+            background-color: white;
+            outline: thick solid rgba(255, 255, 255, 0.5);
+            bottom: -14px;
+          }
         }
       }
     }

@@ -88,4 +88,10 @@ export default {
     box-sizing: border-box;
   }
 }
+@media screen and (max-width: 460px) {
+  #list-pegawai-item-wrapper {
+    min-width: 160px;
+    max-width: 160px;
+  }
+}
 </style>

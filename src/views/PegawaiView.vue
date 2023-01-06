@@ -28,6 +28,11 @@
     }
   }
 }
+@media screen and (max-width: 540px) {
+  .pegawai-wrapper {
+    padding: 20px 10px;
+  }
+}
 </style>
 
 <script>

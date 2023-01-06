@@ -15,13 +15,13 @@
           type="text"
           v-model="searchValue"
           class="form-control search"
-          placeholder="Cari berdasarkan NIP"
+          placeholder="Cari berdasarkan NIP/Nama"
         />
       </div>
     </div>
     <div id="list-pegawai-wrapper" v-on:scroll="scrollEvent()">
       <div id="list-pegawai">
-        <div @click="$emit('selectPegawai', item.id)" v-for="item in filterPegawai" :key="item.id" style="margin: 10px;">
+        <div @click="$emit('selectPegawai', item.id)" v-for="item in pegawai" :key="item.id" style="margin: 10px;" v-show="searchValue.length < 5 ? true : (item.nama.toLowerCase().includes(searchValue.toLowerCase()) || item.nip.toLowerCase().includes(searchValue.toLowerCase()))">
           <ListPegawaiItem :pegawai="item" />
         </div>
       </div>
@@ -47,12 +47,6 @@ export default {
       searchValue: ""
     }
   },
-  computed: {
-    filterPegawai() {
-      if(this.searchValue === "") return this.pegawai
-      return this.fullPegawai.filter(el => el.nip === this.searchValue)
-    }
-  },
   methods: {
     getDataPegawai() {
       axios({
@@ -64,12 +58,28 @@ export default {
       }).then(res => {
         let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 1) {
-          this.pegawai = []
-          this.tempPegawai = []
-          this.tempPegawai = data.message
-          this.fullPegawai = data.message
-          this.pushDataPegawai()
+        // if(data.status === 1) {
+        //   this.pegawai = []
+        //   this.tempPegawai = []
+        //   this.tempPegawai = data.message
+        //   this.fullPegawai = data.message
+        //   this.pushDataPegawai()
+        // }
+        let pegawai = data.message
+        if (pegawai.length > 80) {
+          let tempPegawai = []
+          for(let i=0; i<pegawai.length; i++) {
+            tempPegawai.push(pegawai.splice(0,80))
+          }
+          for(let i=0; i<tempPegawai.length; i++) {
+            setTimeout(() => {
+              for(let j=0; j<tempPegawai[i].length; j++) {
+                this.pegawai.push(tempPegawai[i][j])
+              }
+            }, 100)
+          }
+        } else {
+          this.pegawai = pegawai
         }
         // else {
         //   localStorage.clear()
@@ -160,7 +170,7 @@ export default {
     letter-spacing: 1px;
     &-wrapper {
       position: relative;
-      max-width: 240px;
+      max-width: 300px;
       margin-top: 20px;
       .search-icon {
         position: absolute;
