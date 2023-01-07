@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import AppIcon from "../icons/AppIcon.vue"
 import AppLogo from "../icons/AppLogo.vue"
 import MainMenuItem from "./MainMenuItem.vue"
 import IllustrationToDoList from "../icons/IllustrationToDoList.vue"
@@ -70,8 +69,7 @@ export default {
   components: {
     MainMenuItem,
     AppLogo,
-    IllustrationToDoList,
-    AppIcon
+    IllustrationToDoList
   },
   computed: {
     getWindowWidth() {
@@ -217,7 +215,6 @@ export default {
         padding: 6px 20px;
         cursor: pointer;
         color: white;
-        background-color: #477B79;
         span {
           position: absolute;
           width: 100%;
@@ -232,9 +229,7 @@ export default {
         padding: 6px 20px;
         cursor: pointer;
         color: white;
-        background-color: #477B79;
         transition: all 0.4s;
-        // border-radius: 100% 100% 0px 0px;
         top: 0px;
         &.active {
           padding: 4px 20px;
@@ -249,6 +244,10 @@ export default {
             background-color: white;
             outline: thick solid rgba(255, 255, 255, 0.5);
             bottom: -14px;
+            animation-name: fadeInOut;
+            animation-duration: 0.8s;
+            animation-direction: alternate;
+            animation-iteration-count: infinite;
           }
         }
         &:hover {
@@ -316,5 +315,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+@keyframes fadeInOut {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>
