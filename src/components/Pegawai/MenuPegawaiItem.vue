@@ -166,7 +166,7 @@ export default {
   border-radius: 8px;
   box-shadow: 0px 10px 20px -2px rgba(71, 123, 121, 0.1);
   margin-bottom: 40px;
-  margin: 0px 40px 40px 0px;
+  margin: 0px 20px 40px 20px;
   overflow: hidden;
   transition: all 0.4s;
   &.clicked {
@@ -238,6 +238,20 @@ export default {
   }
   .fa-arrow-right {
     margin-left: 6px;
+  }
+}
+@media only screen and (max-width: 560px) {
+  .menu-pegawai-item-wrapper {
+    margin: 0px 10px 40px 10px;
+  }
+  .menu-pegawai-item-wrapper {
+    max-width: 160px;
+    max-height: 200px;
+  }
+  .text-wrapper {
+    p {
+      font-size: 12px !important;
+    }
   }
 }
 </style>
