@@ -233,6 +233,21 @@ export default {
         top: 0px;
         &.active {
           padding: 4px 20px;
+          &::before {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 100%;
+            outline: thick solid rgba(255, 255, 255, 0.5);
+            bottom: -14px;
+            animation-name: fadeInOut;
+            animation-duration: 1s;
+            animation-direction: alternate;
+            animation-iteration-count: infinite;
+          }
           &::after {
             content: "";
             position: absolute;
@@ -242,12 +257,7 @@ export default {
             transform: translateX(-50%);
             border-radius: 100%;
             background-color: white;
-            outline: thick solid rgba(255, 255, 255, 0.5);
             bottom: -14px;
-            animation-name: fadeInOut;
-            animation-duration: 0.8s;
-            animation-direction: alternate;
-            animation-iteration-count: infinite;
           }
         }
         &:hover {
@@ -261,7 +271,6 @@ export default {
             transform: translateX(-50%);
             border-radius: 100%;
             background-color: white;
-            outline: thick solid rgba(255, 255, 255, 0.5);
             bottom: -14px;
           }
         }
@@ -318,9 +327,13 @@ export default {
 }
 @keyframes fadeInOut {
   from {
+    width: 0px;
+    height: 0px;
     opacity: 0.25;
   }
   to {
+    width: 12px;
+    height: 12px;
     opacity: 1;
   }
 }
