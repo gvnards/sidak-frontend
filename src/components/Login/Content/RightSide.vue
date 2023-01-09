@@ -163,7 +163,7 @@ export default {
         }
       }).then(res => {
         this.isLoading = false
-        $("#modal").modal("toggle")
+        $("#modal-login").click()
         this.$store.commit("onModalMethod", "FORGETPASSWORD")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusLogin")
