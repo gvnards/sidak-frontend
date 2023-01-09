@@ -56,6 +56,12 @@
         <p class="back-to-login" style="cursor: pointer;" @click="$emit('changeMode')"><i class="fa-solid fa-arrow-left"></i> Kembali ke halaman login.</p>
       </div>
     </div>
+    <div
+      data-toggle="modal"
+      data-target="#modal"
+      data-backdrop="static"
+      data-keyboard="false"
+      hidden id="modal-login"></div>
   </div>
 </template>
 
@@ -134,7 +140,7 @@ export default {
             appRoleUser: getData.appRoleUser
           }), "sidak.bkpsdmsitubondokab"))
         }
-        $("#modal").modal("toggle")
+        $("#modal-login").click()
         this.$store.commit("onModalMethod", "LOGIN")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusLogin")
