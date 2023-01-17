@@ -227,6 +227,7 @@ export default {
     onSelectedUnitOrganisasi(idx, event) {
       let tempSelectedUnitOrganisasi = [...this.selectedUnitOrganisasi]
       this.selectedUnitOrganisasi[idx] = JSON.parse(event.target.value)
+      let isDifferent = false
       for (let i = 0; i < tempSelectedUnitOrganisasi.length; i++) {
         if(tempSelectedUnitOrganisasi[i].id !== this.selectedUnitOrganisasi[i].id) {
           this.unitOrganisasi = this.unitOrganisasi.slice(0, i+1)
@@ -234,12 +235,15 @@ export default {
           this.isSubOrganisasi = this.isSubOrganisasi.slice(0, i+1)
           this.isSubOrganisasi.pop()
           this.getJabatan(this.selectedUnitOrganisasi[i].kodeKomponen)
+          isDifferent = true
           break
         }
       }
       this.dataJabatanUnitKerja.idJabatan = 0
       this.hasSubOrganisasi(idx, JSON.parse(event.target.value))
-      this.getJabatan(JSON.parse(event.target.value).kodeKomponen)
+      if (!isDifferent) {
+        this.getJabatan(JSON.parse(event.target.value).kodeKomponen)
+      }
     },
     getUnitOrganisasi(kodeKomponen) {
       let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
