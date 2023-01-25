@@ -16,6 +16,7 @@ import DataJabatanContent from "@/components/Modal/Jabatan/DataJabatanContent.vu
 import StatusCallbackContent from "@/components/Modal/StatusCallback/StatusCallbackContent.vue"
 import UsulanContent from "@/components/Modal/Usulan/UsulanContent.vue"
 import UsulanCallbackContent from "@/components/Modal/Usulan/UsulanCallbackContent.vue"
+import StatusChangePasswordContent from "@/components/Modal/StatusCallback/StatusChangePasswordContent.vue"
 
 Vue.component("ModalWrapper", ModalWrapper)
 Vue.component("ModalHeaderFooter", ModalHeaderFooter)
@@ -33,3 +34,4 @@ Vue.component("DataJabatanContent", DataJabatanContent)
 Vue.component("StatusCallbackContent", StatusCallbackContent)
 Vue.component("UsulanContent", UsulanContent)
 Vue.component("UsulanCallbackContent", UsulanCallbackContent)
+Vue.component("StatusChangePasswordContent", StatusChangePasswordContent)

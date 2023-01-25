@@ -1,17 +1,18 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import ViewLogin from "../views/LoginView.vue";
-import ViewSidak from "../views/SidakView.vue";
-import ViewDashboard from "../views/DashboardView.vue";
-import ViewPegawai from "../views/PegawaiView.vue";
-import ViewUsulan from "../views/UsulanView.vue";
-import ViewJabatan from "../views/JabatanView.vue";
-import ViewUnitOrganisasi from "../views/UnitOrganisasiView.vue";
+import Vue from "vue"
+import VueRouter from "vue-router"
+import ViewLogin from "../views/LoginView.vue"
+import ViewSidak from "../views/SidakView.vue"
+import ViewDashboard from "../views/DashboardView.vue"
+import ViewPegawai from "../views/PegawaiView.vue"
+import ViewUsulan from "../views/UsulanView.vue"
+import ViewJabatan from "../views/JabatanView.vue"
+import ViewUnitOrganisasi from "../views/UnitOrganisasiView.vue"
+import ViewUbahPassword from "../views/UbahPasswordView.vue"
 import axios from "axios"
 import store from "./../store/index"
 const env = import.meta.env
 
-Vue.use(VueRouter);
+Vue.use(VueRouter)
 
 const router = new VueRouter({
   mode: "history",
@@ -89,6 +90,11 @@ const router = new VueRouter({
           name: "unit organisasi",
           component: ViewUnitOrganisasi,
         },
+        {
+          path: "ubahpassword",
+          name: "ubah password",
+          component: ViewUbahPassword
+        }
       ],
     },
     // {
@@ -100,6 +106,6 @@ const router = new VueRouter({
       // component: () => import("../views/AboutView.vue"),
     // },
   ],
-});
+})
 
-export default router;
+export default router
