@@ -9,8 +9,8 @@
             <p class="usulan-item-header" :style="getUsulanData.idUsulanHasil === 1 ? 'color: #477b79;' : 'color: #EC392F;'">
               Alasan Usulan {{ getUsulanData.idUsulanHasil === 1 ? 'Diterima' : 'Ditolak' }}
             </p>
-            <p class="usulan-item-fill" :style="getUsulanData.idUsulanHasil === 1 ? 'border: 1px solid #477b79; color: #477b79;' : 'border: 1px solid #EC392F; color: #EC392F;'">
-              {{ 'asd' }}
+            <p class="usulan-item-fill" style="white-space: pre;" :style="getUsulanData.idUsulanHasil === 1 ? 'border: 1px solid #477b79; color: #477b79;' : 'border: 1px solid #EC392F; color: #EC392F;'">
+              {{ usulanDetail.keteranganUsulan }}
             </p>
           </div>
         </div>
