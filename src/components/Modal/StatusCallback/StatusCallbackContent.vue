@@ -1,10 +1,10 @@
 <template>
   <div class="modal-content" style="max-width: 500px; left: 50%; transform: translateX(-50%);">
     <div class="modal-body text-center">
-      <IllustrationSuccess style="max-height: 200px;" v-if="$store.getters.getModalStatusCallback === 'Success'" />
+      <IllustrationSuccess style="max-height: 200px;" v-if="$store.getters.getModalStatusCallback.status === 'Success'" />
       <IllustrationFailed style="max-height: 200px;" v-else />
-      <h5 :class="$store.getters.getModalStatusCallback === 'Success' ? 'text-primary' : 'text-red'">{{ $store.getters.getModalStatusCallback === 'Success' ? 'Selamat !' : 'Gagal !'}}</h5>
-      <p>{{ $store.getters.getModalStatusCallback === 'Success' ? `Data berhasil ${modalMethod}.` : `Data gagal ${modalMethod}.`}}</p>
+      <h5 :class="$store.getters.getModalStatusCallback.status === 'Success' ? 'text-primary' : 'text-red'">{{ $store.getters.getModalStatusCallback.status === 'Success' ? 'Selamat !' : 'Gagal !'}}</h5>
+      <p>{{ $store.getters.getModalStatusCallback.message }}</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-lg btn-block my-btn-primary" data-dismiss="modal">Mengerti dan Tutup</button>
@@ -23,7 +23,7 @@ export default {
   computed: {
     modalMethod() {
       let modalMethod = this.$store.getters.getModalMethod
-      if (modalMethod.toLowerCase() === "create") return "diusulkan"
+      if (modalMethod.toLowerCase() === "create") return "ditambahkan"
       else if (modalMethod.toLowerCase() === "update") return "diperbaharui"
       return "dihapus"
     }

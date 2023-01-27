@@ -317,15 +317,21 @@ export default {
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.$store.commit("onModalMethod", "UPDATE")
+        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
-        this.$store.commit("onModalStatusCallback", data.status === 1 || data.status === true ? "Success" : "Failed")
+        this.$store.commit("onModalStatusCallback", {
+          status: data.status === 1 || data.status === true ? "Success" : "Failed",
+          message: data.message
+        })
       }).catch(() => {
-        this.$store.commit("onModalMethod", "UPDATE")
+        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
-        this.$store.commit("onModalStatusCallback", "Failed")
+        this.$store.commit("onModalStatusCallback", {
+          status: "Failed",
+          message: "Terjadi kesalahan server. Silahkan menghubungi penyedia layanan Sidak."
+        })
       })
     },
     getDataJenisPendidikan() {

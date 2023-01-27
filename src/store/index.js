@@ -27,7 +27,7 @@ const store = new Vuex.Store({
       modalFolder: '',
       modalContent: '',
       modalMethod: '', // CREATE, UPDATE, DELETE
-      modalStatusCallback: '', // dipakai ketika akan memunculkan popup status, seperti GAGAL/BERHASIL
+      modalStatusCallback: {}, // dipakai ketika akan memunculkan popup status, seperti GAGAL/BERHASIL
       idPegawai: 0,
       usulanData: {},
       isUsulanMobile: false,
@@ -53,7 +53,7 @@ const store = new Vuex.Store({
       state.modalData = {}
       state.modalMethod = ""
       state.modalFolder = ""
-      state.modalStatusCallback = ""
+      state.modalStatusCallback = {}
     },
     onModalData(state, val) {
       state.modalData = val
