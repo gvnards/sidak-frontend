@@ -75,6 +75,7 @@ export default {
   },
   methods: {
     getShortBrief() {
+      console.log(this.$store.getters.getIdPegawai)
       axios({
         url: `${env.VITE_BACKEND_URL}/data-short-brief/${this.$store.getters.getIdPegawai}`,
         method: "GET",
@@ -146,6 +147,7 @@ export default {
   .profile-picture-wrapper {
     // filter: blur(4px);
     backdrop-filter: blur(8px);
+    overflow: hidden;
     margin: auto;
     border-radius: 100%;
     border: 4px solid #477b79;
