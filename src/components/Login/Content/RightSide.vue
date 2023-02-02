@@ -136,7 +136,7 @@ export default {
             id: getData.id,
             username: getData.username,
             password: getData.password,
-            idAppRoleUser: getData.idAppRoleUser,
+            idAppRoleUser: parseInt(getData.idAppRoleUser),
             appRoleUser: getData.appRoleUser
           }), "sidak.bkpsdmsitubondokab"))
         }
