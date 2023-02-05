@@ -11,6 +11,7 @@ import IllustrationDataDiklatKursus from "@/components/icons/IllustrationDataDik
 import IllustrationDataHukumanDisiplin from "@/components/icons/IllustrationDataHukumanDisiplin.vue"
 import IllustrationDataUnitOrganisasi from "@/components/icons/IllustrationDataUnitOrganisasi.vue"
 import IllustrationDataJabatan from "@/components/icons/IllustrationDataJabatan.vue"
+import IllustrationDataStatusKepegawaian from "@/components/icons/IllustrationDataStatusKepegawaian.vue"
 
 Vue.component("IllustrationDataPribadi", IllustrationDataPribadi)
 Vue.component("IllustrationDataKeluarga", IllustrationDataKeluarga)
@@ -23,3 +24,4 @@ Vue.component("IllustrationDataDiklatKursus", IllustrationDataDiklatKursus)
 Vue.component("IllustrationDataHukumanDisiplin", IllustrationDataHukumanDisiplin)
 Vue.component("IllustrationDataUnitOrganisasi", IllustrationDataUnitOrganisasi)
 Vue.component("IllustrationDataJabatan", IllustrationDataJabatan)
+Vue.component("IllustrationDataStatusKepegawaian", IllustrationDataStatusKepegawaian)

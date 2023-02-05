@@ -25,7 +25,7 @@
           <select class="custom-select" :class="inputError.jabatan.status ? 'form-error' : ''" :disabled="(daftarJabatan.length === 0)" id="fieldDaftarJabatan" v-model="dataJabatanUnitKerja.idJabatan">
             <option value="0" :selected="(dataJabatanUnitKerja.idJabatan === 0)" disabled>{{ daftarJabatan.length === 0 ? 'Tidak Ada Jabatan' : 'Pilih Jabatan' }}</option>
             <option :selected="(dataJabatanUnitKerja.idJabatan === item.id)" v-for="item in daftarJabatan" :key="item.id" :value="item.id">
-              {{ item.jabatan }}
+              {{ `${item.jabatan} | terisi: ${item.jabatanTerisi} | kebutuhan: ${item.kebutuhan}` }}
             </option>
           </select>
           <small class="text-red"><b>*Jika jabatan tidak ada, silahkan ubah unit organisasi sesuai hirarki</b></small>

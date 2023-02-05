@@ -207,7 +207,8 @@ export default {
       pendidikan: [],
       pendidikanSelectedText: "-- Pilih Tingkat Pendidikan Dahulu --",
       searchValue: "",
-      isShowDaftarPendidikan: false
+      isShowDaftarPendidikan: false,
+      afterCreated: true
     }
   },
   watch: {
@@ -375,7 +376,9 @@ export default {
       })
     },
     getDaftarPendidikan() {
-      this.dataPendidikan.idDaftarPendidikan = 0
+      if(!this.afterCreated) {
+        this.dataPendidikan.idDaftarPendidikan = 0
+      }
       this.isShowDaftarPendidikan = false
       if (this.dataPendidikan.idTingkatPendidikan !== 0) {
         this.pendidikan = []
@@ -390,6 +393,12 @@ export default {
         }).then(res => {
           let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
           let pendidikan = data.message
+          if(this.$store.getters.getModalMethod === "UPDATE" && this.afterCreated) {
+            let getPendidikan = pendidikan.find(el => parseInt(el.id) == parseInt(this.dataPendidikan.idDaftarPendidikan))
+            this.pendidikanSelectedText = getPendidikan.nama
+          } else {
+            this.pendidikanSelectedText = "Pilih Pendidikan"
+          }
           if (pendidikan.length > 500) {
             let tempPendidikan = []
             for(let i=0; i<pendidikan.length; i++) {
@@ -405,7 +414,7 @@ export default {
           } else {
             this.pendidikan = pendidikan
           }
-          this.pendidikanSelectedText = "Pilih Pendidikan"
+          this.afterCreated = false
         })
       }
     },
@@ -442,12 +451,12 @@ export default {
     },
   },
   created() {
-    this.getMaxFileSize()
-    this.getDataJenisPendidikan()
-    this.getDataTingkatPendidikan()
     if(this.$store.getters.getModalMethod === "UPDATE") {
       this.getDataPendidikan()
     }
+    this.getMaxFileSize()
+    this.getDataJenisPendidikan()
+    this.getDataTingkatPendidikan()
     this.getDaftarPendidikan()
   },
   destroyed() {
