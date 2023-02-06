@@ -47,6 +47,15 @@
         <span>Simpan Data Status Kepegawaian</span>
       </div>
     </div>
+    <button
+      type="button"
+      hidden
+      id="showModal"
+      data-toggle="modal"
+      data-target="#modal"
+      data-backdrop="static"
+      data-keyboard="false"
+    ></button>
   </div>
 </template>
 
@@ -160,7 +169,14 @@ export default {
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        console.log(data)
+        this.$store.commit("onModalMethod", "UPDATE")
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusCallback")
+        this.$store.commit("onModalStatusCallback", {
+          status: data.status === 1 || data.status === true ? "Success" : "Failed",
+          message: `Atasan berhasil disetting & ${data.message}`
+        })
+        $("#showModal").trigger("click")
       })
     },
     updateDataAtasan() {
@@ -176,7 +192,16 @@ export default {
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        console.log(data)
+        if(!this.isAdmin) {
+          this.$store.commit("onModalMethod", "UPDATE")
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: data.status === 1 || data.status === true ? "Success" : "Failed",
+            message: data.message
+          })
+          $("#showModal").trigger("click")
+        }
       })
     },
     updateData() {
