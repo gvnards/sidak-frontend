@@ -369,6 +369,7 @@ export default {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataSkp.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-skp" : `/data-skp/${this.dataSkp.id}`
+      this.dataSkp.date = Date.now()
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         method: "POST",

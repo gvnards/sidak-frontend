@@ -3,13 +3,13 @@
     <i class="fa-solid fa-envelope-open-text bg-icon"></i>
     <UsulanHeader :mainText="getUsulanData.usulanKriteria" style="position: relative; z-index: 2;" />
     <div id="usulan-open-item">
-      <div class="usulan-open-item-wrapper usulan-status" v-if="(getUsulanData.idUsulanStatus !== undefined && getUsulanData.idUsulanStatus === 3 && usulanDetail.id !== undefined)">
+      <div class="usulan-open-item-wrapper usulan-status" v-if="(getUsulanData.idUsulanStatus !== undefined && getUsulanData.idUsulanStatus == 3 && usulanDetail.id !== undefined)">
         <div class="row row-form">
           <div class="col-12">
-            <p class="usulan-item-header" :style="getUsulanData.idUsulanHasil === 1 ? 'color: #477b79;' : 'color: #EC392F;'">
-              Alasan Usulan {{ getUsulanData.idUsulanHasil === 1 ? 'Diterima' : 'Ditolak' }}
+            <p class="usulan-item-header" :style="getUsulanData.idUsulanHasil == 1 ? 'color: #477b79;' : 'color: #EC392F;'">
+              Alasan Usulan {{ getUsulanData.idUsulanHasil == 1 ? 'Diterima' : 'Ditolak' }}
             </p>
-            <p class="usulan-item-fill" style="white-space: pre;" :style="getUsulanData.idUsulanHasil === 1 ? 'border: 1px solid #477b79; color: #477b79;' : 'border: 1px solid #EC392F; color: #EC392F;'">
+            <p class="usulan-item-fill" style="white-space: pre;" :style="getUsulanData.idUsulanHasil == 1 ? 'border: 1px solid #477b79; color: #477b79;' : 'border: 1px solid #EC392F; color: #EC392F;'">
               {{ usulanDetail.keteranganUsulan }}
             </p>
           </div>
@@ -107,10 +107,13 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.usulanDetail = data.message[0]
-        if (role === 1) {
-          this.isVisibleButton = true
-        } else if ((role === 2 || role === 3) && (item.usulanKriteria === "Data Pasangan" || item.usulanKriteria === "Data Anak")) {
-          this.isVisibleButton = true
+        console.log(this.usulanDetail)
+        if(this.usulanDetail.idUsulanHasil == 3) {
+          if (role === 1) {
+            this.isVisibleButton = true
+          } else if ((role === 2 || role === 3) && (item.usulanKriteria === "Data Pasangan" || item.usulanKriteria === "Data Anak")) {
+            this.isVisibleButton = true
+          }
         }
       })
     },
