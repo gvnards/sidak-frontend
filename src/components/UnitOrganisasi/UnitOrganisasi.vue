@@ -141,10 +141,8 @@ export default {
         },
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        console.log(data)
         this.getDataUnitOrganisasi()
       })
-      console.log(item)
     },
     updateDataUnitKerja(item) {
       this.$store.commit("onModalMethod", "UPDATE")

@@ -75,7 +75,6 @@ export default {
       this.isLoading = true
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let url = `/data-skp/${this.$store.getters.getIdPegawai}`
-      console.log(url)
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         headers: {

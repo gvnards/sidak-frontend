@@ -12,6 +12,7 @@ import IllustrationDataHukumanDisiplin from "@/components/icons/IllustrationData
 import IllustrationDataUnitOrganisasi from "@/components/icons/IllustrationDataUnitOrganisasi.vue"
 import IllustrationDataJabatan from "@/components/icons/IllustrationDataJabatan.vue"
 import IllustrationDataStatusKepegawaian from "@/components/icons/IllustrationDataStatusKepegawaian.vue"
+import IllustrationComingSoon from "@/components/icons/IllustrationComingSoon.vue"
 
 Vue.component("IllustrationDataPribadi", IllustrationDataPribadi)
 Vue.component("IllustrationDataKeluarga", IllustrationDataKeluarga)
@@ -25,3 +26,4 @@ Vue.component("IllustrationDataHukumanDisiplin", IllustrationDataHukumanDisiplin
 Vue.component("IllustrationDataUnitOrganisasi", IllustrationDataUnitOrganisasi)
 Vue.component("IllustrationDataJabatan", IllustrationDataJabatan)
 Vue.component("IllustrationDataStatusKepegawaian", IllustrationDataStatusKepegawaian)
+Vue.component("IllustrationComingSoon", IllustrationComingSoon)

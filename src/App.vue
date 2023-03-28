@@ -23,6 +23,9 @@ body {
 .text-primary {
   color: #477b79 !important;
 }
+.text-secondary {
+  color: #5f9a98 !important;
+}
 .btn {
   border-radius: 8px;
   box-sizing: border-box;

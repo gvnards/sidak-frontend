@@ -195,62 +195,22 @@ export default {
   },
   methods: {
     whereError() {
-      if (this.dataPasangan.nama === "") {
-        this.inputError.nama.status = true
-        this.inputError.nama.description = "Nama harus diisi"
-      } else {
-        this.inputError.nama.status = false
-        this.inputError.nama.description = ""
-      }
-      if (this.dataPasangan.tempatLahir === "") {
-        this.inputError.tempatLahir.status = true
-        this.inputError.tempatLahir.description = "Tempat lahir harus diisi"
-      } else {
-        this.inputError.tempatLahir.status = false
-        this.inputError.tempatLahir.description = ""
-      }
-      if (this.dataPasangan.tanggalLahir === "") {
-        this.inputError.tanggalLahir.status = true
-        this.inputError.tanggalLahir.description = "Tanggal lahir harus diisi"
-      } else {
-        this.inputError.tanggalLahir.status = false
-        this.inputError.tanggalLahir.description = ""
-      }
-      if (this.dataPasangan.idStatusPerkawinan === 0) {
-        this.inputError.statusPerkawinan.status = true
-        this.inputError.statusPerkawinan.description = "Status perkawinan harus dipilih"
-      } else {
-        this.inputError.statusPerkawinan.status = false
-        this.inputError.statusPerkawinan.description = ""
-      }
-      if (this.dataPasangan.tanggalStatusPerkawinan === "") {
-        this.inputError.tanggalStatusPerkawinan.status = true
-        this.inputError.tanggalStatusPerkawinan.description = "Tanggal status perkawinan harus diisi"
-      } else {
-        this.inputError.tanggalStatusPerkawinan.status = false
-        this.inputError.tanggalStatusPerkawinan.description = ""
-      }
-      if (this.dataPasangan.nomorDokumen === "") {
-        this.inputError.nomorDokumenAkta.status = true
-        this.inputError.nomorDokumenAkta.description = "Nomor dokumen harus diisi"
-      } else {
-        this.inputError.nomorDokumenAkta.status = false
-        this.inputError.nomorDokumenAkta.description = ""
-      }
-      if (this.dataPasangan.tanggalDokumen === "") {
-        this.inputError.tanggalDokumenAkta.status = true
-        this.inputError.tanggalDokumenAkta.description = "Tanggal dokumen harus diisi"
-      } else {
-        this.inputError.tanggalDokumenAkta.status = false
-        this.inputError.tanggalDokumenAkta.description = ""
-      }
-      if (this.dataPasangan.dokumen === "") {
-        this.inputError.dokumenAkta.status = true
-        this.inputError.dokumenAkta.description = "Dokumen akta nikah/cerai/meninggal harus diisi"
-      } else {
-        this.inputError.dokumenAkta.status = false
-        this.inputError.dokumenAkta.description = ""
-      }
+      this.inputError.nama.status = this.dataPasangan.nama === ""
+      this.inputError.nama.description = this.dataPasangan.nama === "" ? "Nama harus diisi" : ""
+      this.inputError.tempatLahir.status = this.dataPasangan.tempatLahir === ""
+      this.inputError.tempatLahir.description = this.dataPasangan.tempatLahir === "" ? "Tempat lahir harus diisi" : ""
+      this.inputError.tanggalLahir.status = this.dataPasangan.tanggalLahir === ""
+      this.inputError.tanggalLahir.description = this.dataPasangan.tanggalLahir === "" ? "Tanggal lahir harus diisi" : ""
+      this.inputError.statusPerkawinan.status = this.dataPasangan.idStatusPerkawinan === 0
+      this.inputError.statusPerkawinan.description = this.dataPasangan.idStatusPerkawinan === 0 ? "Status perkawinan harus dipilih" : ""
+      this.inputError.tanggalStatusPerkawinan.status = this.dataPasangan.tanggalStatusPerkawinan === ""
+      this.inputError.tanggalStatusPerkawinan.description = this.dataPasangan.tanggalStatusPerkawinan === "" ? "Tanggal status perkawinan harus diisi" : ""
+      this.inputError.nomorDokumenAkta.status = this.dataPasangan.nomorDokumen === ""
+      this.inputError.nomorDokumenAkta.description = this.dataPasangan.nomorDokumen === "" ? "Nomor dokumen harus diisi" : ""
+      this.inputError.tanggalDokumenAkta.status = this.dataPasangan.tanggalDokumen === ""
+      this.inputError.tanggalDokumenAkta.description = this.dataPasangan.tanggalDokumen === "" ? "Tanggal dokumen harus diisi" : ""
+      this.inputError.dokumenAkta.status = this.dataPasangan.dokumen === ""
+      this.inputError.dokumenAkta.description = this.dataPasangan.dokumen === "" ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
     },
     onUsulkan() {
       if (!this.isFulfilled) return this.whereError()

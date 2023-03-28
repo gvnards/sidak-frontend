@@ -156,62 +156,22 @@ export default {
   },
   methods: {
     whereError() {
-      if (this.dataDiklatKursus.idJenisDiklat === 0) {
-        this.inputError.jenisDiklatKursus.status = true
-        this.inputError.jenisDiklatKursus.description = "Jenis diklat/kursus harus dipilih"
-      } else {
-        this.inputError.jenisDiklatKursus.status = false
-        this.inputError.jenisDiklatKursus.description = ""
-      }
-      if (this.dataDiklatKursus.idDaftarDiklat === 0) {
-        this.inputError.daftarDiklatKursus.status = true
-        this.inputError.daftarDiklatKursus.description = "Daftar diklat/kursus harus dipilih"
-      } else {
-        this.inputError.daftarDiklatKursus.status = false
-        this.inputError.daftarDiklatKursus.description = ""
-      }
-      if (this.dataDiklatKursus.namaDiklat === "") {
-        this.inputError.namaDiklatKursus.status = true
-        this.inputError.namaDiklatKursus.description = "Nama diklat/kursus harus diisi"
-      } else {
-        this.inputError.namaDiklatKursus.status = false
-        this.inputError.namaDiklatKursus.description = ""
-      }
-      if (this.dataDiklatKursus.lamaDiklat === 0) {
-        this.inputError.lamaJamDiklatKursus.status = true
-        this.inputError.lamaJamDiklatKursus.description = "Lama diklat/kursus harus diisi"
-      } else {
-        this.inputError.lamaJamDiklatKursus.status = false
-        this.inputError.lamaJamDiklatKursus.description = ""
-      }
-      if (this.dataDiklatKursus.tanggalDiklat === "") {
-        this.inputError.tanggalDiklatKursus.status = true
-        this.inputError.tanggalDiklatKursus.description = "Tanggal diklat/kursus harus diisi"
-      } else {
-        this.inputError.tanggalDiklatKursus.status = false
-        this.inputError.tanggalDiklatKursus.description = ""
-      }
-      if (this.dataDiklatKursus.idDaftarInstansiDiklat === 0) {
-        this.inputError.instansi.status = true
-        this.inputError.instansi.description = "Instansi harus dipilih"
-      } else {
-        this.inputError.instansi.status = false
-        this.inputError.instansi.description = ""
-      }
-      if (this.dataDiklatKursus.institusiPenyelenggara === "") {
-        this.inputError.institusiPenyelenggara.status = true
-        this.inputError.institusiPenyelenggara.description = "Institusi penyelenggara harus diisi"
-      } else {
-        this.inputError.institusiPenyelenggara.status = false
-        this.inputError.institusiPenyelenggara.description = ""
-      }
-      if (this.dataDiklatKursus.dokumen === "") {
-        this.inputError.dokumenDiklat.status = true
-        this.inputError.dokumenDiklat.description = "Dokumen diklat harus diunggah"
-      } else {
-        this.inputError.dokumenDiklat.status = false
-        this.inputError.dokumenDiklat.description = ""
-      }
+      this.inputError.jenisDiklatKursus.status = this.dataDiklatKursus.idJenisDiklat === 0
+      this.inputError.jenisDiklatKursus.description = this.dataDiklatKursus.idJenisDiklat === 0 ?"Jenis diklat/kursus harus dipilih" : ""
+      this.inputError.daftarDiklatKursus.status = this.dataDiklatKursus.idDaftarDiklat === 0
+      this.inputError.daftarDiklatKursus.description = this.dataDiklatKursus.idDaftarDiklat === 0 ? "Daftar diklat/kursus harus dipilih" : ""
+      this.inputError.namaDiklatKursus.status = this.dataDiklatKursus.namaDiklat === ""
+      this.inputError.namaDiklatKursus.description = this.dataDiklatKursus.namaDiklat === "" ? "Nama diklat/kursus harus diisi" : ""
+      this.inputError.lamaJamDiklatKursus.status = this.dataDiklatKursus.lamaDiklat === 0
+      this.inputError.lamaJamDiklatKursus.description = this.dataDiklatKursus.lamaDiklat === 0 ? "Lama diklat/kursus harus diisi" : ""
+      this.inputError.tanggalDiklatKursus.status = this.dataDiklatKursus.tanggalDiklat === ""
+      this.inputError.tanggalDiklatKursus.description = this.dataDiklatKursus.tanggalDiklat === "" ? "Tanggal diklat/kursus harus diisi" : ""
+      this.inputError.instansi.status = this.dataDiklatKursus.idDaftarInstansiDiklat === 0
+      this.inputError.instansi.description = this.dataDiklatKursus.idDaftarInstansiDiklat === 0 ? "Instansi harus dipilih" : ""
+      this.inputError.institusiPenyelenggara.status = this.dataDiklatKursus.institusiPenyelenggara === ""
+      this.inputError.institusiPenyelenggara.description = this.dataDiklatKursus.institusiPenyelenggara === "" ? "Institusi penyelenggara harus diisi" : ""
+      this.inputError.dokumenDiklat.status = this.dataDiklatKursus.dokumen === ""
+      this.inputError.dokumenDiklat.description = this.dataDiklatKursus.dokumen === "" ? "Dokumen diklat harus diunggah" : ""
     },
     onUsulkan() {
       if (!this.isFulfilled) return this.whereError()

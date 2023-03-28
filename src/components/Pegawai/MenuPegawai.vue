@@ -57,7 +57,6 @@ export default {
           })
         }
       }).catch(() => {
-        console.log("error")
       })
     },
     menuPegawaiItemClick(id) {

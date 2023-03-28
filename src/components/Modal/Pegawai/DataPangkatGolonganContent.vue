@@ -188,62 +188,22 @@ export default {
   },
   methods: {
     whereError() {
-      if (this.dataPangkatGolongan.idJenisPangkat === 0) {
-        this.inputError.jenisKepangkatan.status = true
-        this.inputError.jenisKepangkatan.description = "Jenis kepangkatan harus dipilih"
-      } else {
-        this.inputError.jenisKepangkatan.status = false
-        this.inputError.jenisKepangkatan.description = ""
-      }
-      if (this.dataPangkatGolongan.idDaftarPangkat === 0) {
-        this.inputError.daftarGolongan.status = true
-        this.inputError.daftarGolongan.description = "Golongan harus dipilih"
-      } else {
-        this.inputError.daftarGolongan.status = false
-        this.inputError.daftarGolongan.description = ""
-      }
-      if (this.dataPangkatGolongan.nomorDokumen === "") {
-        this.inputError.nomorSk.status = true
-        this.inputError.nomorSk.description = "Nomor SK harus diisi"
-      } else {
-        this.inputError.nomorSk.status = false
-        this.inputError.nomorSk.description = ""
-      }
-      if (this.dataPangkatGolongan.tanggalDokumen === "") {
-        this.inputError.tanggalSk.status = true
-        this.inputError.tanggalSk.description = "Tanggal SK harus diisi"
-      } else {
-        this.inputError.tanggalSk.status = false
-        this.inputError.tanggalSk.description = ""
-      }
-      if (this.dataPangkatGolongan.tmt === "") {
-        this.inputError.tmtGolongan.status = true
-        this.inputError.tmtGolongan.description = "TMT golongan harus diisi"
-      } else {
-        this.inputError.tmtGolongan.status = false
-        this.inputError.tmtGolongan.description = ""
-      }
-      if (this.dataPangkatGolongan.nomorBkn === "") {
-        this.inputError.nomorBkn.status = true
-        this.inputError.nomorBkn.description = "Nomor BKN harus diisi"
-      } else {
-        this.inputError.nomorBkn.status = false
-        this.inputError.nomorBkn.description = ""
-      }
-      if (this.dataPangkatGolongan.tanggalBkn === "") {
-        this.inputError.tanggalBkn.status = true
-        this.inputError.tanggalBkn.description = "Tanggal BKN harus diisi"
-      } else {
-        this.inputError.tanggalBkn.status = false
-        this.inputError.tanggalBkn.description = ""
-      }
-      if (this.dataPangkatGolongan.dokumen === "") {
-        this.inputError.dokumenSk.status = true
-        this.inputError.dokumenSk.description = "Dokumen SK harus diisi"
-      } else {
-        this.inputError.dokumenSk.status = false
-        this.inputError.dokumenSk.description = ""
-      }
+      this.inputError.jenisKepangkatan.status = this.dataPangkatGolongan.idJenisPangkat === 0
+      this.inputError.jenisKepangkatan.description = this.dataPangkatGolongan.idJenisPangkat === 0 ? "Jenis kepangkatan harus dipilih" : ""
+      this.inputError.daftarGolongan.status = this.dataPangkatGolongan.idDaftarPangkat === 0
+      this.inputError.daftarGolongan.description = this.dataPangkatGolongan.idDaftarPangkat === 0 ? "Golongan harus dipilih" : ""
+      this.inputError.nomorSk.status = this.dataPangkatGolongan.nomorDokumen === ""
+      this.inputError.nomorSk.description = this.dataPangkatGolongan.nomorDokumen === "" ? "Nomor SK harus diisi" : ""
+      this.inputError.tanggalSk.status = this.dataPangkatGolongan.tanggalDokumen === ""
+      this.inputError.tanggalSk.description = this.dataPangkatGolongan.tanggalDokumen === "" ? "Tanggal SK harus diisi" : ""
+      this.inputError.tmtGolongan.status = this.dataPangkatGolongan.tmt === ""
+      this.inputError.tmtGolongan.description = this.dataPangkatGolongan.tmt === "" ? "TMT golongan harus diisi" : ""
+      this.inputError.nomorBkn.status = this.dataPangkatGolongan.nomorBkn === ""
+      this.inputError.nomorBkn.description = this.dataPangkatGolongan.nomorBkn === "" ? "Nomor BKN harus diisi" : ""
+      this.inputError.tanggalBkn.status = this.dataPangkatGolongan.tanggalBkn === ""
+      this.inputError.tanggalBkn.description = this.dataPangkatGolongan.tanggalBkn === "" ? "Tanggal BKN harus diisi" : ""
+      this.inputError.dokumenSk.status = this.dataPangkatGolongan.dokumen === ""
+      this.inputError.dokumenSk.description = this.dataPangkatGolongan.dokumen === "" ? "Dokumen SK harus diisi" : ""
     },
     getMaxFileSize() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username

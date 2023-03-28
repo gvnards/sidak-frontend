@@ -71,7 +71,6 @@ export default {
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        console.log(data)
       })
     },
     getDataUnitOrganisasi() {

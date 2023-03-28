@@ -233,69 +233,24 @@ export default {
   },
   methods: {
     whereError() {
-      if (this.dataPendidikan.idJenisPendidikan === 0) {
-        this.inputError.jenisPendidikan.status = true
-        this.inputError.jenisPendidikan.description = "Jenis pendidikan harus dipilih"
-      } else {
-        this.inputError.jenisPendidikan.status = false
-        this.inputError.jenisPendidikan.description = ""
-      }
-      if (this.dataPendidikan.idTingkatPendidikan === 0) {
-        this.inputError.tingkatPendidikan.status = true
-        this.inputError.tingkatPendidikan.description = "Tingkat pendidikan harus dipilih"
-      } else {
-        this.inputError.tingkatPendidikan.status = false
-        this.inputError.tingkatPendidikan.description = ""
-      }
-      if (this.dataPendidikan.idDaftarPendidikan === 0) {
-        this.inputError.pendidikan.status = true
-        this.inputError.pendidikan.description = "Pendidikan harus dipilih"
-      } else {
-        this.inputError.pendidikan.status = false
-        this.inputError.pendidikan.description = ""
-      }
-      if (this.dataPendidikan.namaSekolah === "") {
-        this.inputError.namaSekolah.status = true
-        this.inputError.namaSekolah.description = "Nama sekolah harus diisi"
-      } else {
-        this.inputError.namaSekolah.status = false
-        this.inputError.namaSekolah.description = ""
-      }
-      if (this.dataPendidikan.tanggalLulus === "") {
-        this.inputError.tanggalLulus.status = true
-        this.inputError.tanggalLulus.description = "Tanggal lulus harus diisi"
-      } else {
-        this.inputError.tanggalLulus.status = false
-        this.inputError.tanggalLulus.description = ""
-      }
-      if (this.dataPendidikan.tahunLulus === "") {
-        this.inputError.tahunLulus.status = true
-        this.inputError.tahunLulus.description = "Tahun lulus harus diisi"
-      } else {
-        this.inputError.tahunLulus.status = false
-        this.inputError.tahunLulus.description = ""
-      }
-      if (this.dataPendidikan.nomorDokumen === "") {
-        this.inputError.nomorDokumenIjazah.status = true
-        this.inputError.nomorDokumenIjazah.description = "Nomor dokumen harus diisi"
-      } else {
-        this.inputError.nomorDokumenIjazah.status = false
-        this.inputError.nomorDokumenIjazah.description = ""
-      }
-      if (this.dataPendidikan.tanggalDokumen === "") {
-        this.inputError.tanggalDokumenIjazah.status = true
-        this.inputError.tanggalDokumenIjazah.description = "Tanggal dokumen harus diisi"
-      } else {
-        this.inputError.tanggalDokumenIjazah.status = false
-        this.inputError.tanggalDokumenIjazah.description = ""
-      }
-      if (this.dataPendidikan.dokumen === "") {
-        this.inputError.dokumen.status = true
-        this.inputError.dokumen.description = "Dokumen harus diisi"
-      } else {
-        this.inputError.dokumen.status = false
-        this.inputError.dokumen.description = ""
-      }
+      this.inputError.jenisPendidikan.status = this.dataPendidikan.idJenisPendidikan === 0
+      this.inputError.jenisPendidikan.description = this.dataPendidikan.idJenisPendidikan === 0 ? "Jenis pendidikan harus dipilih" : ""
+      this.inputError.tingkatPendidikan.status = this.dataPendidikan.idTingkatPendidikan === 0
+      this.inputError.tingkatPendidikan.description = this.dataPendidikan.idTingkatPendidikan === 0 ? "Tingkat pendidikan harus dipilih" : ""
+      this.inputError.pendidikan.status = this.dataPendidikan.idDaftarPendidikan === 0
+      this.inputError.pendidikan.description = this.dataPendidikan.idDaftarPendidikan === 0 ? "Pendidikan harus dipilih" : ""
+      this.inputError.namaSekolah.status = this.dataPendidikan.namaSekolah === ""
+      this.inputError.namaSekolah.description = this.dataPendidikan.namaSekolah === "" ? "Nama sekolah harus diisi" : ""
+      this.inputError.tanggalLulus.status = this.dataPendidikan.tanggalLulus === ""
+      this.inputError.tanggalLulus.description = this.dataPendidikan.tanggalLulus === "" ? "Tanggal lulus harus diisi" : ""
+      this.inputError.tahunLulus.status = this.dataPendidikan.tahunLulus === ""
+      this.inputError.tahunLulus.description = this.dataPendidikan.tahunLulus === "" ? "Tahun lulus harus diisi" : ""
+      this.inputError.nomorDokumenIjazah.status = this.dataPendidikan.nomorDokumen === ""
+      this.inputError.nomorDokumenIjazah.description = this.dataPendidikan.nomorDokumen === "" ? "Nomor dokumen harus diisi" : ""
+      this.inputError.tanggalDokumenIjazah.status = this.dataPendidikan.tanggalDokumen === ""
+      this.inputError.tanggalDokumenIjazah.description = this.dataPendidikan.tanggalDokumen === "" ? "Tanggal dokumen harus diisi" : ""
+      this.inputError.dokumen.status = this.dataPendidikan.dokumen === ""
+      this.inputError.dokumen.description = this.dataPendidikan.dokumen === "" ? "Dokumen harus diisi" : ""
     },
     onPendidikanSelected(item) {
       this.pendidikanSelectedText = item.nama

@@ -75,7 +75,6 @@ export default {
   },
   methods: {
     getShortBrief() {
-      console.log(this.$store.getters.getIdPegawai)
       axios({
         url: `${env.VITE_BACKEND_URL}/data-short-brief/${this.$store.getters.getIdPegawai}`,
         method: "GET",
@@ -94,7 +93,6 @@ export default {
           })
         }
       }).catch(() => {
-        console.log("error")
       })
     }
   },

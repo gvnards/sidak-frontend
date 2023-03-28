@@ -70,7 +70,6 @@ export default {
         this.isLoading = false
         if (data.status === 1) {
           this.dataJabatan = data.message
-          console.log(data.message)
         } else {
           localStorage.clear()
           this.$router.push({

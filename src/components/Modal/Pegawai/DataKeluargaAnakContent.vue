@@ -194,62 +194,22 @@ export default {
   },
   methods: {
     whereError() {
-      if (this.dataAnak.nama === "") {
-        this.inputError.nama.status = true
-        this.inputError.nama.description = "Nama harus diisi"
-      } else {
-        this.inputError.nama.status = false
-        this.inputError.nama.description = ""
-      }
-      if (this.dataAnak.tempatLahir === "") {
-        this.inputError.tempatLahir.status = true
-        this.inputError.tempatLahir.description = "Tempat lahir harus diisi"
-      } else {
-        this.inputError.tempatLahir.status = false
-        this.inputError.tempatLahir.description = ""
-      }
-      if (this.dataAnak.tanggalLahir === "") {
-        this.inputError.tanggalLahir.status = true
-        this.inputError.tanggalLahir.description = "Tanggal lahir harus diisi"
-      } else {
-        this.inputError.tanggalLahir.status = false
-        this.inputError.tanggalLahir.description = ""
-      }
-      if (this.dataAnak.idOrangTua === 0) {
-        this.inputError.dataOrangTua.status = true
-        this.inputError.dataOrangTua.description = "Orang tua harus diisi"
-      } else {
-        this.inputError.dataOrangTua.status = false
-        this.inputError.dataOrangTua.description = ""
-      }
-      if (this.dataAnak.idStatusAnak === 0) {
-        this.inputError.statusAnak.status = true
-        this.inputError.statusAnak.description = "Status anak harus diisi"
-      } else {
-        this.inputError.statusAnak.status = false
-        this.inputError.statusAnak.description = ""
-      }
-      if (this.dataAnak.nomorDokumen === "") {
-        this.inputError.nomorDokumenAkta.status = true
-        this.inputError.nomorDokumenAkta.description = "Nomor dokumen akta kelahiran harus diisi"
-      } else {
-        this.inputError.nomorDokumenAkta.status = false
-        this.inputError.nomorDokumenAkta.description = ""
-      }
-      if (this.dataAnak.tanggalDokumen === "") {
-        this.inputError.tanggalDokumenAkta.status = true
-        this.inputError.tanggalDokumenAkta.description = "Tanggal dokumen akta kelahiran harus diisi"
-      } else {
-        this.inputError.tanggalDokumenAkta.status = false
-        this.inputError.tanggalDokumenAkta.description = ""
-      }
-      if (this.dataAnak.dokumen === "") {
-        this.inputError.dokumenAkta.status = true
-        this.inputError.dokumenAkta.description = "Dokumen akta kelahiran harus diisi"
-      } else {
-        this.inputError.dokumenAkta.status = false
-        this.inputError.dokumenAkta.description = ""
-      }
+      this.inputError.nama.status = this.dataAnak.nama === ""
+      this.inputError.nama.description = this.dataAnak.nama === "" ? "Nama harus diisi" : ""
+      this.inputError.tempatLahir.status = this.dataAnak.tempatLahir === ""
+      this.inputError.tempatLahir.description = this.dataAnak.tempatLahir === "" ? "Tempat lahir harus diisi" : ""
+      this.inputError.tanggalLahir.status = this.dataAnak.tanggalLahir === ""
+      this.inputError.tanggalLahir.description = this.dataAnak.tanggalLahir === "" ? "Tanggal lahir harus diisi" : ""
+      this.inputError.dataOrangTua.status = this.dataAnak.idOrangTua === 0
+      this.inputError.dataOrangTua.description = this.dataAnak.idOrangTua === 0 ? "Orang tua harus diisi" : ""
+      this.inputError.statusAnak.status = this.dataAnak.idStatusAnak === 0
+      this.inputError.statusAnak.description = this.dataAnak.idStatusAnak === 0 ? "Status anak harus diisi" : ""
+      this.inputError.nomorDokumenAkta.status = this.dataAnak.nomorDokumen === ""
+      this.inputError.nomorDokumenAkta.description = this.dataAnak.nomorDokumen === "" ? "Nomor dokumen akta kelahiran harus diisi" : ""
+      this.inputError.tanggalDokumenAkta.status = this.dataAnak.tanggalDokumen === ""
+      this.inputError.tanggalDokumenAkta.description = this.dataAnak.tanggalDokumen === "" ? "Tanggal dokumen akta kelahiran harus diisi" : ""
+      this.inputError.dokumenAkta.status = this.dataAnak.dokumen === ""
+      this.inputError.dokumenAkta.description = this.dataAnak.dokumen === "" ? "Dokumen akta kelahiran harus diisi" : ""
     },
     onUsulkan() {
       if (!this.isFulfilled) return this.whereError()

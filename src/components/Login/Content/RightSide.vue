@@ -146,7 +146,6 @@ export default {
         this.$store.commit("onModalContent", "StatusLogin")
         this.$store.commit("onModalData", getData)
       }).catch(e => {
-        console.log(e)
       })
     },
     forgetPassword() {

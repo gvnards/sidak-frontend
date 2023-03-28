@@ -34,7 +34,7 @@
         <div class="col-6">
           <div class="form-group text-left">
             <label for="fieldTanggalSpmt">Tanggal SPMT</label>
-            <input type="date" id="fieldTanggalSpmt" class="form-control" v-model="dataCpnsPns.tglSkCpns">
+            <input type="date" id="fieldTanggalSpmt" class="form-control" v-model="dataCpnsPns.tglSpmt">
           </div>
         </div>
       </div>
@@ -200,7 +200,6 @@ export default {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         if (data.status === 1) {
           this.dataCpnsPns = data.message[0]
-          console.log(this.dataCpnsPns)
         } else {
           localStorage.clear()
           this.$router.push({

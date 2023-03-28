@@ -107,7 +107,6 @@ export default {
           })
         }
       }).catch(() => {
-        console.log("error")
       })
     },
     logout() {

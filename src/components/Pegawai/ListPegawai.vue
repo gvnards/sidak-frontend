@@ -5,9 +5,15 @@
         Pegawai pada {{ namaUnitOrganisasi }}
       </h5>
       <h6 class="text-black">
-        Total Pegawai: {{ totalPegawai }} Pegawai
+        Total Pegawai: {{ totalPegawai }} Pegawai {{ `${totalPegawaiLoaded} (pegawai terproses)` }}
       </h6>
-      <div class="form-group search-wrapper">
+      <div v-if="getIdAppRoleUser == 1" class="btn my-btn-primary"
+            data-toggle="modal"
+            data-target="#modal"
+            data-backdrop="static"
+            data-keyboard="false"
+            @click="addDataPegawai()"><i class="fa-solid fa-plus icon-plus" style="margin-right: 4px;"></i> Tambah Pegawai</div>
+      <div class="form-group search-wrapper" style="margin-top: 8px;">
         <i
           class="fa-solid fa-magnifying-glass search-icon text-primary"
         ></i>
@@ -44,10 +50,21 @@ export default {
       fullPegawai: [],
       totalPegawai: 0,
       namaUnitOrganisasi: "",
-      searchValue: ""
+      searchValue: "",
+      totalPegawaiLoaded: 0,
+    }
+  },
+  computed: {
+    getIdAppRoleUser() {
+      return this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").idAppRoleUser
     }
   },
   methods: {
+    addDataPegawai() {
+      this.$store.commit("onModalMethod", "CREATE")
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "DataPegawai")
+    },
     getDataPegawai() {
       axios({
         url: `${env.VITE_BACKEND_URL}/list-pegawai`,
@@ -58,39 +75,24 @@ export default {
       }).then(res => {
         let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        // if(data.status === 1) {
-        //   this.pegawai = []
-        //   this.tempPegawai = []
-        //   this.tempPegawai = data.message
-        //   this.fullPegawai = data.message
-        //   this.pushDataPegawai()
-        // }
         let pegawai = data.message
-        if (pegawai.length > 80) {
+        if (pegawai.length > 100) {
           let tempPegawai = []
           for(let i=0; i<pegawai.length; i++) {
-            tempPegawai.push(pegawai.splice(0,80))
+            tempPegawai.push(pegawai.splice(0,100))
           }
           for(let i=0; i<tempPegawai.length; i++) {
             setTimeout(() => {
               for(let j=0; j<tempPegawai[i].length; j++) {
                 this.pegawai.push(tempPegawai[i][j])
               }
-            }, 100)
+              this.totalPegawaiLoaded += tempPegawai[i].length
+            }, 200)
           }
         } else {
           this.pegawai = pegawai
         }
-        // else {
-        //   localStorage.clear()
-        //   this.$router.push({
-        //     name: "login"
-        //   })
-        // }
       })
-      // .catch(() => {
-      //   console.log("error")
-      // })
     },
     getTotalPegawai() {
       axios({
@@ -105,16 +107,7 @@ export default {
         if(data.status === 1) {
           this.totalPegawai = data.message
         }
-        // else {
-        //   localStorage.clear()
-        //   this.$router.push({
-        //     name: "login"
-        //   })
-        // }
       })
-      // .catch(() => {
-      //   console.log("error")
-      // })
     },
     getNamaUnitOrganisasi() {
       axios({
@@ -147,8 +140,8 @@ export default {
     }
   },
   created() {
-    this.getDataPegawai()
     this.getTotalPegawai()
+    this.getDataPegawai()
     this.getNamaUnitOrganisasi()
   }
 }

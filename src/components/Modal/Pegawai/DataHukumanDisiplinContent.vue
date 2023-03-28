@@ -202,83 +202,28 @@ export default {
   },
   methods: {
     whereError() {
-      if (this.dataHukumanDisiplin.idJenisHukumanDisiplin === 0) {
-        this.inputError.jenisHukumanDisiplin.status = true
-        this.inputError.jenisHukumanDisiplin.description = "Jenis hukuman disiplin harus dipilih"
-      } else {
-        this.inputError.jenisHukumanDisiplin.status = false
-        this.inputError.jenisHukumanDisiplin.description = ""
-      }
-      if (this.dataHukumanDisiplin.idDaftarHukumanDisiplin === 0) {
-        this.inputError.hukumanDisiplin.status = true
-        this.inputError.hukumanDisiplin.description = "Hukuman disiplin harus dipilih"
-      } else {
-        this.inputError.hukumanDisiplin.status = false
-        this.inputError.hukumanDisiplin.description = ""
-      }
-      if (this.dataHukumanDisiplin.nomorDokumen === "") {
-        this.inputError.nomorSk.status = true
-        this.inputError.nomorSk.description = "Nomor SK harus diisi"
-      } else {
-        this.inputError.nomorSk.status = false
-        this.inputError.nomorSk.description = ""
-      }
-      if (this.dataHukumanDisiplin.tanggalDokumen === "") {
-        this.inputError.tanggalSk.status = true
-        this.inputError.tanggalSk.description = "Tanggal SK harus diisi"
-      } else {
-        this.inputError.tanggalSk.status = false
-        this.inputError.tanggalSk.description = ""
-      }
-      if (this.dataHukumanDisiplin.tmtAwal === "") {
-        this.inputError.tmt.status = true
-        this.inputError.tmt.description = "TMT harus diisi"
-      } else {
-        this.inputError.tmt.status = false
-        this.inputError.tmt.description = ""
-      }
-      if (this.dataHukumanDisiplin.masaHukuman === 0) {
-        this.inputError.masaHukuman.status = true
-        this.inputError.masaHukuman.description = "Masa hukuman harus diisi"
-      } else {
-        this.inputError.masaHukuman.status = false
-        this.inputError.masaHukuman.description = ""
-      }
-      if (this.dataHukumanDisiplin.tmtAkhir === "") {
-        this.inputError.akhirHukuman.status = true
-        this.inputError.akhirHukuman.description = "Akhir hukuman harus diisi"
-      } else {
-        this.inputError.akhirHukuman.status = false
-        this.inputError.akhirHukuman.description = ""
-      }
-      if (this.dataHukumanDisiplin.idDaftarDasarHukumHukdis === 0) {
-        this.inputError.dasarHukum.status = true
-        this.inputError.dasarHukum.description = "Dasar hukum harus dipilih"
-      } else {
-        this.inputError.dasarHukum.status = false
-        this.inputError.dasarHukum.description = ""
-      }
-      if (this.dataHukumanDisiplin.idDaftarAlasanHukdis === 0) {
-        this.inputError.alasanHukuman.status = true
-        this.inputError.alasanHukuman.description = "Alasan hukuman harus dipilih"
-      } else {
-        this.inputError.alasanHukuman.status = false
-        this.inputError.alasanHukuman.description = ""
-      }
-      if (this.dataHukumanDisiplin.keteranganAlasanHukdis === "") {
-        this.inputError.keteranganAlasanHukuman.status = true
-        this.inputError.keteranganAlasanHukuman.description = "Keterangan alasan hukuman harus diisi"
-      } else {
-        this.inputError.keteranganAlasanHukuman.status = false
-        this.inputError.keteranganAlasanHukuman.description = ""
-      }
-      if (this.dataHukumanDisiplin.dokumen === "") {
-        this.inputError.dokumenHukumanDisiplin.status = true
-        this.inputError.dokumenHukumanDisiplin.description = "Dokumen hukuman disiplin harus diunggah"
-      } else {
-        this.inputError.dokumenHukumanDisiplin.status = false
-        this.inputError.dokumenHukumanDisiplin.description = ""
-      }
+      this.inputError.jenisHukumanDisiplin.status = this.dataHukumanDisiplin.idJenisHukumanDisiplin === 0
+      this.inputError.jenisHukumanDisiplin.description = this.dataHukumanDisiplin.idJenisHukumanDisiplin === 0 ? "Jenis hukuman disiplin harus dipilih" : ""
+      this.inputError.hukumanDisiplin.status = this.dataHukumanDisiplin.idDaftarHukumanDisiplin === 0
+      this.inputError.hukumanDisiplin.description = this.dataHukumanDisiplin.idDaftarHukumanDisiplin === 0 ? "Hukuman disiplin harus dipilih" : ""
+      this.inputError.nomorSk.status = this.dataHukumanDisiplin.nomorDokumen === ""
+      this.inputError.nomorSk.description = this.dataHukumanDisiplin.nomorDokumen === "" ? "Nomor SK harus diisi" : ""
+      this.inputError.tanggalSk.status = this.dataHukumanDisiplin.tanggalDokumen === ""
+      this.inputError.tanggalSk.description = this.dataHukumanDisiplin.tanggalDokumen === "" ? "Tanggal SK harus diisi" : ""
+      this.inputError.tmt.status = this.dataHukumanDisiplin.tmtAwal === ""
+      this.inputError.tmt.description = this.dataHukumanDisiplin.tmtAwal === "" ? "TMT harus diisi" : ""
+      this.inputError.masaHukuman.status = this.dataHukumanDisiplin.masaHukuman === 0
+      this.inputError.masaHukuman.description = this.dataHukumanDisiplin.masaHukuman === 0 ? "Masa hukuman harus diisi" : ""
+      this.inputError.akhirHukuman.status = this.dataHukumanDisiplin.tmtAkhir === ""
+      this.inputError.akhirHukuman.description = this.dataHukumanDisiplin.tmtAkhir === "" ? "Akhir hukuman harus diisi" : ""
+      this.inputError.dasarHukum.status = this.dataHukumanDisiplin.idDaftarDasarHukumHukdis === 0
+      this.inputError.dasarHukum.description = this.dataHukumanDisiplin.idDaftarDasarHukumHukdis === 0 ? "Dasar hukum harus dipilih" : ""
+      this.inputError.alasanHukuman.status = this.dataHukumanDisiplin.idDaftarAlasanHukdis === 0
+      this.inputError.alasanHukuman.description = this.dataHukumanDisiplin.idDaftarAlasanHukdis === 0 ? "Alasan hukuman harus dipilih" : ""
+      this.inputError.keteranganAlasanHukuman.status = this.dataHukumanDisiplin.keteranganAlasanHukdis === ""
+      this.inputError.keteranganAlasanHukuman.description = this.dataHukumanDisiplin.keteranganAlasanHukdis === "" ? "Keterangan alasan hukuman harus diisi" : ""
+      this.inputError.dokumenHukumanDisiplin.status = this.dataHukumanDisiplin.dokumen === ""
+      this.inputError.dokumenHukumanDisiplin.description = this.dataHukumanDisiplin.dokumen === "" ? "Dokumen hukuman disiplin harus diunggah" : ""
     },
     getDataHukumanDisiplin() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username

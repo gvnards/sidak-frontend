@@ -154,55 +154,25 @@ export default {
   },
   methods: {
     whereError() {
-      if (this.dataJabatanUnitKerja.idJabatan === 0) {
-        this.inputError.jabatan.status = true
-        this.inputError.jabatan.description = "Jabatan harus pilih"
-      } else {
-        this.inputError.jabatan.status = false
-        this.inputError.jabatan.description = ""
-      }
-      if (this.dataJabatanUnitKerja.tmt === "") {
-        this.inputError.tmt.status = true
-        this.inputError.tmt.description = "TMT harus diisi"
-      } else {
-        this.inputError.tmt.status = false
-        this.inputError.tmt.description = ""
-      }
-      if (this.dataJabatanUnitKerja.spmt === "") {
-        this.inputError.spmt.status = true
-        this.inputError.spmt.description = "SPMT harus diisi"
-      } else {
-        this.inputError.spmt.status = false
-        this.inputError.spmt.description = ""
-      }
-      if (this.dataJabatanUnitKerja.nomorDokumen === "") {
-        this.inputError.nomorDokumen.status = true
-        this.inputError.nomorDokumen.description = "Nomor SK harus diisi"
-      } else {
-        this.inputError.nomorDokumen.status = false
-        this.inputError.nomorDokumen.description = ""
-      }
-      if (this.dataJabatanUnitKerja.tanggalDokumen === "") {
-        this.inputError.tanggalDokumen.status = true
-        this.inputError.tanggalDokumen.description = "Tanggal SK harus diisi"
-      } else {
-        this.inputError.tanggalDokumen.status = false
-        this.inputError.tanggalDokumen.description = ""
-      }
-      if (this.dataJabatanUnitKerja.dokumen === "") {
-        this.inputError.dokumenSk.status = true
-        this.inputError.dokumenSk.description = "Dokumen harus diisi"
-      } else {
-        this.inputError.dokumenSk.status = false
-        this.inputError.dokumenSk.description = ""
-      }
+      this.inputError.jabatan.status = this.dataJabatanUnitKerja.idJabatan === 0
+      this.inputError.jabatan.description = this.dataJabatanUnitKerja.idJabatan === 0 ? "Jabatan harus pilih" : ""
+      this.inputError.tmt.status = this.dataJabatanUnitKerja.tmt === ""
+      this.inputError.tmt.description = this.dataJabatanUnitKerja.tmt === "" ? "TMT harus diisi" : ""
+      this.inputError.spmt.status = this.dataJabatanUnitKerja.spmt === ""
+      this.inputError.spmt.description = this.dataJabatanUnitKerja.spmt === "" ? "SPMT harus diisi" : ""
+      this.inputError.nomorDokumen.status = this.dataJabatanUnitKerja.nomorDokumen === ""
+      this.inputError.nomorDokumen.description = this.dataJabatanUnitKerja.nomorDokumen === "" ? "Nomor SK harus diisi" : ""
+      this.inputError.tanggalDokumen.status = this.dataJabatanUnitKerja.tanggalDokumen === ""
+      this.inputError.tanggalDokumen.description = this.dataJabatanUnitKerja.tanggalDokumen === "" ? "Tanggal SK harus diisi" : ""
+      this.inputError.dokumenSk.status = this.dataJabatanUnitKerja.dokumen === ""
+      this.inputError.dokumenSk.description = this.dataJabatanUnitKerja.dokumen === "" ? "Dokumen harus diisi" : ""
     },
     onUsulkan() {
       if (!this.isFullfilled) return this.whereError()
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataJabatanUnitKerja.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-jabatan" : `/data-jabatan/${this.dataJabatanUnitKerja.id}`
-      this.dataPangkatGolongan.date = Date.now()
+      this.dataJabatanUnitKerja.date = Date.now()
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         method: "POST",
@@ -349,6 +319,7 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.dataJabatanUnitKerja = data.message[0]
+        this.dataJabatanUnitKerja.isPltPlh = this.dataJabatanUnitKerja.isPltPlh == 1
         let kodeKomponen = this.dataJabatanUnitKerja.kodeKomponen.split(".")
         let selectedUnitOrganisasi = []
         for(let i=0; i<kodeKomponen.length-1; i++) {

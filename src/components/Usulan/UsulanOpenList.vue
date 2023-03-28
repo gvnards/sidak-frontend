@@ -107,7 +107,6 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.usulanDetail = data.message[0]
-        console.log(this.usulanDetail)
         if(this.usulanDetail.idUsulanHasil == 3) {
           if (role === 1) {
             this.isVisibleButton = true
