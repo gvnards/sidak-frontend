@@ -154,6 +154,50 @@ body {
 .row-form {
   margin-bottom: 8px;
 }
+ul.pagination-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  li.pagination-item {
+    list-style-type: none;
+    border: 1px solid #9dd8d6;
+    // border-left: 0px;
+    box-sizing: border-box;
+    padding: 4px 10px;
+    cursor: pointer;
+    color: #477b79;
+    &:hover {
+      background-color: #9dd8d6;
+    }
+    &:active {
+      background-color: #477b79;
+      color: white;
+    }
+    &.disabled {
+      &:hover {
+        background-color: rgb(228, 228, 228) !important;
+      }
+      &:active {
+        background-color: rgb(228, 228, 228) !important;
+      }
+      background-color: rgb(228, 228, 228);
+      cursor: not-allowed;
+      color: #477b79;
+    }
+    &.active {
+      background-color: #477b79;
+      color: white;
+      cursor: default;
+    }
+    &:last-child {
+      border-radius: 0px 4px 4px 0px;
+    }
+    &:first-child {
+      border-radius: 4px 0px 0px 4px;
+      // border-left: 1px solid #72b0ae;
+    }
+  }
+}
 
 // modal
 .modal-title {

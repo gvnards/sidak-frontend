@@ -8,6 +8,7 @@ import ViewUsulan from "../views/UsulanView.vue"
 import ViewJabatan from "../views/JabatanView.vue"
 import ViewUnitOrganisasi from "../views/UnitOrganisasiView.vue"
 import ViewUbahPassword from "../views/UbahPasswordView.vue"
+import ViewAkunPengguna from "../views/AkunPenggunaView.vue"
 import axios from "axios"
 import store from "./../store/index"
 const env = import.meta.env
@@ -94,6 +95,11 @@ const router = new VueRouter({
           path: "ubahpassword",
           name: "ubah password",
           component: ViewUbahPassword
+        },
+        {
+          path: "akunpengguna",
+          name: "akun pengguna",
+          component: ViewAkunPengguna
         }
       ],
     },

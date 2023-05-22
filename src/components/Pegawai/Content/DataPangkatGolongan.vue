@@ -132,6 +132,7 @@ export default {
         color: #477b79;
         border-color: #477b79;
         border-bottom-color: white;
+        border-bottom-width: 2px;
         &:hover {
           color: #477b79 !important;
           border-color: #477b79 !important;

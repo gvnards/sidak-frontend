@@ -1,21 +1,24 @@
 <template>
   <div id="unit-organisasi-wrapper">
-    <UnitOrganisasiHeader />
+    <AkunPenggunaHeader />
     <div id="unit-organisasi" class="text-left">
       <div class="btn-wrapper">
-        <div class="btn-unor text-center active">
-          <span>Unit Organisasi</span>
+        <div class="btn-unor text-center" :class="btnActive == 'asn' ? 'active' : ''" @click="btnActive='asn'">
+          <span>Akun ASN</span>
+        </div>
+        <div class="btn-unor text-center" :class="btnActive == 'admin' ? 'active' : ''" @click="btnActive='admin'">
+          <span>Akun Admin</span>
         </div>
       </div>
-      <IllustrationDataUnitOrganisasi class="illustration-bg" />
+      <IllustrationDataJabatan class="illustration-bg" />
       <div class="unit-organisasi-content">
         <LoadingAnimation class="loading" v-if="isLoading" />
         <div v-if="!isLoading" style="height: 100%; max-height: 100%;">
           <div
             class="data-not-found-wrapper text-center"
-            v-if="!isLoading && dataUnitOrganisasi.length == 0"
+            v-if="!isLoading && dataAkun.length == 0"
           >
-            <DataEmpty @addData="addDataUnitOrganisasi" />
+            <DataEmpty @addData="addDataJabatan" />
           </div>
           <div v-else style="height: 100%; max-height: 100%;">
             <div class="form-group search-wrapper">
@@ -29,26 +32,32 @@
                 placeholder="Cari data... (isikan minimal 5 karakter)"
               />
             </div>
-            <div class="unor-item-wrapper">
-              <UnitOrganisasiItem
-                @onDelete="deleteDataUnitKerja(item)"
-                @onUpdate="updateDataUnitKerja(item)"
-                v-for="item in (findDataUnitOrganisasi.length === 0 ? dataUnitOrganisasi : findDataUnitOrganisasi)"
+            <div class="unor-item-wrapper" :style="btnActive !== 'asn' ? 'max-height: calc(100% - 120px);' : 'max-height: calc(100% - 60px);'">
+              <AkunPenggunaItem
+                @onReset="resetPassword(item)"
+                v-for="item in dataAkun"
+                v-show="searchValue.length > 4 ? item.username.toLowerCase().includes(searchValue.toLowerCase()) : true"
                 :key="item.id"
-                :orderUnitKerja="orderUnitOrganisasi(item.kodeKomponen)"
-                :namaUnitKerja="`${item.nama}`"
+                :username="`${item.username}`"
               />
             </div>
             <div
+              v-if="btnActive !== 'asn'"
               class="btn btn-block my-btn-primary tambah-unor"
               data-toggle="modal"
               data-target="#modal"
               data-backdrop="static"
               data-keyboard="false"
-              @click="addDataUnitOrganisasi()"
+              @click="addAkunAdmin()"
             >
-              Tambah Data Unit Organisasi
+              Tambah Akun Admin
             </div>
+            <div
+              data-toggle="modal"
+              data-target="#modal"
+              data-backdrop="static"
+              data-keyboard="false"
+              hidden id="modal-reset-password"></div>
           </div>
         </div>
       </div>
@@ -57,132 +66,74 @@
 </template>
 
 <script>
-import UnitOrganisasiHeader from "./Content/UnitOrganisasiHeader.vue"
-import UnitOrganisasiItem from "./Content/UnitOrganisasiItem.vue"
+import AkunPenggunaHeader from "./Content/AkunPenggunaHeader.vue"
+import AkunPenggunaItem from "./Content/AkunPenggunaItem.vue"
 import axios from "axios"
 const env = import.meta.env
 export default {
   components: {
-    UnitOrganisasiHeader,
-    UnitOrganisasiItem,
+    AkunPenggunaHeader,
+    AkunPenggunaItem
   },
   data() {
     return {
+      btnActive: "admin",
       isLoading: false,
-      dataUnitOrganisasi: [],
-      findDataUnitOrganisasi: [],
-      searchValue: ""
+      dataAkun: [],
+      searchValue: "",
+      newAkun: {}
     }
   },
   watch: {
-    searchValue(val) {
-      if(val.length > 4) {
-        this.keySearch()
-      } else if (val.length === 0) {
-        this.findDataUnitOrganisasi = []
-        this.getDataUnitOrganisasi()
-      }
+    btnActive() {
+      this.getUsers()
     }
   },
   methods: {
-    keySearch() {
-      this.findDataUnitOrganisasi = []
-      let findFirst = this.dataUnitOrganisasi.filter(el => el.nama.toLowerCase().includes(this.searchValue.toLowerCase()))
-      let findElement = []
-      for (let i = 0; i < findFirst.length; i++) {
-        if (findFirst[i].kodeKomponen.split(".").length > 1) {
-          let kodeKomponen = findFirst[i].kodeKomponen.split(".")
-          kodeKomponen.splice(kodeKomponen.length - 1)
-          kodeKomponen = kodeKomponen.join(".")
-          if(kodeKomponen !== "431.") {
-            let findAnother = this.dataUnitOrganisasi.filter(ele => ele.kodeKomponen === kodeKomponen)
-            findAnother.forEach(ele => {
-              if ((findElement.filter(ele_ => ele_.id === ele.id)).length === 0 && findFirst.filter(ele_ => ele_.id === ele.id).length === 0) {
-                findFirst.push(ele)
-              }
-            })
-          }
-        }
-        // let kodeKomponen = findFirst[i].kodeKomponen.concat(".")
-        // if(kodeKomponen !== "431.") {
-        //   let findAnother = this.dataUnitOrganisasi.filter(el => el.kodeKomponen.includes(kodeKomponen))
-        //   findAnother.forEach(ele => {
-        //     if ((findElement.filter(ele_ => ele_.id === ele.id)).length === 0 && findFirst.filter(ele_ => ele_.id === ele.id).length === 0) {
-        //       findFirst.push(ele)
-        //     }
-        //   })
-        // }
-        if ((findElement.filter(ele => ele.id === findFirst[i].id)).length === 0) findElement.push(findFirst[i])
-      }
-      let findSecond = this.sortUnitOrganisasi(findElement)
-      this.findDataUnitOrganisasi = this.sortUnitOrganisasi(findElement)
-    },
-    addDataUnitOrganisasi() {
-      this.$store.commit("onModalMethod", "CREATE")
-      this.$store.commit("onModalFolder", "UnitOrganisasi")
-      this.$store.commit("onModalContent", "DataUnitOrganisasi")
-    },
-    orderUnitOrganisasi(val) {
-      let order = 0
-      if (val.split(".").length > 1) {
-        for (let i = 0; i < (val.split(".").length) - 1; i++) {
-          order = order + 10
-        }
-      }
-      return order
-    },
-    deleteDataUnitKerja(item) {
+    resetPassword(item) {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      let data = this.$store.getters.getEncrypt(JSON.stringify(item), u)
       axios({
-        url: `${env.VITE_BACKEND_URL}/unit-organisasi/${item.id}`,
-        method: "DELETE",
+        url: `${env.VITE_BACKEND_URL}/reset-password`,
+        method: "POST",
         headers: {
           "Authorization": localStorage.getItem("token")
         },
+        data: {
+          message: data
+        }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.getDataUnitOrganisasi()
+        $("#modal-reset-password").click()
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusChangePassword")
+        this.$store.commit("onModalData", data)
       })
     },
-    updateDataUnitKerja(item) {
-      this.$store.commit("onModalMethod", "UPDATE")
-      this.$store.commit("onModalFolder", "UnitOrganisasi")
-      this.$store.commit("onModalContent", "DataUnitOrganisasi")
-      this.$store.commit("onModalData", item)
-    },
-    getDataUnitOrganisasi() {
+    getUsers() {
       this.isLoading = true
-      this.dataUnitOrganisasi = []
-      let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
-      let u = token.username
+      this.dataAkun = []
       axios({
-        url: `${env.VITE_BACKEND_URL}/unit-organisasi`,
+        url: `${env.VITE_BACKEND_URL}/user-${this.btnActive}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         this.isLoading = false
+        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataUnitOrganisasi = data.message
+        this.dataAkun = data.message
       })
     },
-    sortUnitOrganisasi(val) {
-      let unor = []
-      val.forEach(el => {
-        unor.push(el.kodeKomponen)
-      })
-      unor = unor.sort()
-      let unor_ = []
-      unor.forEach(el => {
-        let findEl = val.find(ele => ele.kodeKomponen === el)
-        unor_.push(findEl)
-      })
-      return unor_
-    }
+    addAkunAdmin() {
+      this.$store.commit("onModalMethod", "CREATE")
+      this.$store.commit("onModalFolder", "AkunPengguna")
+      this.$store.commit("onModalContent", "AkunPengguna")
+    },
   },
   created() {
-    this.getDataUnitOrganisasi()
+    this.getUsers()
   }
 }
 </script>
@@ -197,7 +148,7 @@ export default {
 }
 .unor-item-wrapper {
   height: 100%;
-  max-height: calc(100% - 120px);
+  min-height: 200px;
   box-sizing: border-box;
   margin: 20px 0px;
   overflow: hidden;
@@ -248,7 +199,7 @@ export default {
   min-width: 200px;
   margin: 0px 20px;
   padding: 40px;
-  height: 100%;
+  height: 100vh;
   max-height: 100%;
   box-sizing: border-box;
   position: relative;
@@ -281,8 +232,9 @@ export default {
         color: #477b79;
         border-color: #477b79;
         border-bottom-color: white;
-        border-bottom-width: 2px;
         margin-top: 1px;
+        border-bottom-width: 2px;
+        z-index: 2;
         &:hover {
           color: #477b79 !important;
           border-color: #477b79 !important;

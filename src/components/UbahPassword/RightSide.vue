@@ -102,7 +102,7 @@ export default {
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        if(data.status === 1) {
+        if(data.status == 2) {
           localStorage.setItem("token", this.$store.getters.getEncrypt(JSON.stringify({
             id: data.id,
             username: data.username,

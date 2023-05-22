@@ -29,8 +29,20 @@
         </tr>
       </tbody>
     </table>
-    <table class="table table-bordered" style="margin: 0;" v-for="unor in opd" :key="unor.id">
+    <!-- <table class="table table-bordered" style="margin: 0;" v-for="unor in opd" :key="unor.id">
       <tbody v-if="unor.kodeKomponen.includes(filterOpdValue)">
+          <tr>
+            <th colspan="3" scope="row" style="position: sticky; top: -100px;" class="text-primary">{{ unor.nama }}</th>
+          </tr>
+          <tr v-for="jbtn in filterDataJabatan(unor.kodeKomponen)" :key="jbtn.id">
+            <td style="padding: 0; margin: 0; padding-left: 12px; width: 100px; vertical-align: middle;"><small>Jabatan</small></td>
+            <td style="padding: 0; margin: 0; padding-left: 12px; vertical-align: middle;"><small>{{ jbtn.jabatan }}</small></td>
+            <td style="padding: 0; margin: 0; padding-left: 12px; width: 160px; vertical-align: middle;"><small>Terisi: {{ jbtn.jabatanTerisi }}<br>Kebutuhan: {{ jbtn.kebutuhan }}</small></td>
+          </tr>
+      </tbody>
+    </table> -->
+    <table class="table table-bordered" style="margin: 0;">
+      <tbody v-for="unor in opd" :key="unor.id" v-show="unor.kodeKomponen.includes(filterOpdValue)">
           <tr>
             <th colspan="3" scope="row" style="position: sticky; top: -100px;" class="text-primary">{{ unor.nama }}</th>
           </tr>

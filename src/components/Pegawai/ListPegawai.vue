@@ -5,7 +5,7 @@
         Pegawai pada {{ namaUnitOrganisasi }}
       </h5>
       <h6 class="text-black">
-        Total Pegawai: {{ totalPegawai }} Pegawai {{ `${totalPegawaiLoaded} (pegawai terproses)` }}
+        Total Pegawai: {{ totalPegawai }} Pegawai
       </h6>
       <div v-if="getIdAppRoleUser == 1" class="btn my-btn-primary"
             data-toggle="modal"
@@ -25,11 +25,19 @@
         />
       </div>
     </div>
-    <div id="list-pegawai-wrapper" v-on:scroll="scrollEvent()">
+    <div id="list-pegawai-wrapper">
       <div id="list-pegawai">
-        <div @click="$emit('selectPegawai', item.id)" v-for="item in pegawai" :key="item.id" style="margin: 10px;" v-show="searchValue.length < 5 ? true : (item.nama.toLowerCase().includes(searchValue.toLowerCase()) || item.nip.toLowerCase().includes(searchValue.toLowerCase()))">
+        <div @click="$emit('selectPegawai', item.id)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" style="margin: 10px;">
           <ListPegawaiItem :pegawai="item" />
         </div>
+        <ul class="pagination-wrapper" style="margin-top: 24px;">
+          <!-- <li class="pagination-item" v-for="i in (totalPage==0?totalPage:pagination)" :key="i" :class="i == pageActive ? 'active' : ''" @click="pageActive=i">{{ i }}</li>
+          <li style="list-style-type: none; padding: 4px 8px;" v-if="pageActive < totalPage-7">...</li>
+          <li class="pagination-item" v-if="totalPage !== 0 && pageActive < totalPage-6" @click="pageActive=totalPage">{{ totalPage }}</li> -->
+          <li class="pagination-item" :class="pageActive === 1 ? 'disabled' : ''" @click="pageActive=pageActive===1?pageActive:pageActive-1">Sebelumnya</li>
+          <div style="width: 12px;"></div>
+          <li class="pagination-item" :class="pageActive === totalPage ? 'disabled' : ''" @click="pageActive=pageActive===totalPage?pageActive:pageActive+1">Selanjutnya</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -52,9 +60,22 @@ export default {
       namaUnitOrganisasi: "",
       searchValue: "",
       totalPegawaiLoaded: 0,
+      dataPerPage: 100,
+      pageActive: 1
+    }
+  },
+  watch: {
+    searchValue () {
+      this.pageActive = 1
     }
   },
   computed: {
+    filterPegawai () {
+      return this.searchValue === "" ? this.pegawai : this.pegawai.filter(el => el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) || el.nama.toLowerCase().includes(this.searchValue.toLowerCase()))
+    },
+    totalPage() {
+      return this.filterPegawai.length == 0 ? 0 : Math.ceil(this.filterPegawai.length / this.dataPerPage)
+    },
     getIdAppRoleUser() {
       return this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").idAppRoleUser
     }
@@ -75,23 +96,24 @@ export default {
       }).then(res => {
         let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        let pegawai = data.message
-        if (pegawai.length > 100) {
-          let tempPegawai = []
-          for(let i=0; i<pegawai.length; i++) {
-            tempPegawai.push(pegawai.splice(0,100))
-          }
-          for(let i=0; i<tempPegawai.length; i++) {
-            setTimeout(() => {
-              for(let j=0; j<tempPegawai[i].length; j++) {
-                this.pegawai.push(tempPegawai[i][j])
-              }
-              this.totalPegawaiLoaded += tempPegawai[i].length
-            }, 200)
-          }
-        } else {
-          this.pegawai = pegawai
-        }
+        this.pegawai = data.message
+        // let pegawai = data.message
+        // if (pegawai.length > 100) {
+        //   let tempPegawai = []
+        //   for(let i=0; i<pegawai.length; i++) {
+        //     tempPegawai.push(pegawai.splice(0,100))
+        //   }
+        //   for(let i=0; i<tempPegawai.length; i++) {
+        //     setTimeout(() => {
+        //       for(let j=0; j<tempPegawai[i].length; j++) {
+        //         this.pegawai.push(tempPegawai[i][j])
+        //       }
+        //       this.totalPegawaiLoaded += tempPegawai[i].length
+        //     }, 200)
+        //   }
+        // } else {
+        //   this.pegawai = pegawai
+        // }
       })
     },
     getTotalPegawai() {
@@ -130,12 +152,6 @@ export default {
           this.pegawai.push(this.tempPegawai[i])
         }
         this.tempPegawai.splice(0, 20)
-      }
-    },
-    scrollEvent() {
-      let div = document.getElementById("list-pegawai-wrapper")
-      if ((div.clientHeight - div.scrollTop) < (div.clientHeight * 0.5)) {
-        this.pushDataPegawai()
       }
     }
   },

@@ -18,6 +18,7 @@ import UsulanContent from "@/components/Modal/Usulan/UsulanContent.vue"
 import UsulanCallbackContent from "@/components/Modal/Usulan/UsulanCallbackContent.vue"
 import StatusChangePasswordContent from "@/components/Modal/StatusCallback/StatusChangePasswordContent.vue"
 import DataPegawaiContent from "@/components/Modal/Pegawai/DataPegawaiContent.vue"
+import AkunPenggunaContent from "@/components/Modal/AkunPengguna/AkunPenggunaContent.vue"
 
 Vue.component("ModalWrapper", ModalWrapper)
 Vue.component("ModalHeaderFooter", ModalHeaderFooter)
@@ -37,3 +38,4 @@ Vue.component("UsulanContent", UsulanContent)
 Vue.component("UsulanCallbackContent", UsulanCallbackContent)
 Vue.component("StatusChangePasswordContent", StatusChangePasswordContent)
 Vue.component("DataPegawaiContent", DataPegawaiContent)
+Vue.component("AkunPenggunaContent", AkunPenggunaContent)
