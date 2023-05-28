@@ -134,7 +134,7 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        if (data.status === 1) {
+        if (data.status === 2) {
           this.dataKeluarga.dataPasangan = data.message
         } else {
           localStorage.clear()
@@ -161,7 +161,7 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        if (data.status === 1) {
+        if (data.status === 2) {
           this.dataKeluarga.dataAnak = data.message
         } else {
           localStorage.clear()

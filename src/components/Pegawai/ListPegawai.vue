@@ -126,7 +126,7 @@ export default {
       }).then(res => {
         let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 1) {
+        if(data.status === 2) {
           this.totalPegawai = data.message
         }
       })
@@ -141,7 +141,7 @@ export default {
       }).then(res => {
         let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 1) {
+        if(data.status === 2) {
           this.namaUnitOrganisasi = data.message
         }
       })

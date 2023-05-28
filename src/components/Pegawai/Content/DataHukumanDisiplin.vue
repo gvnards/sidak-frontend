@@ -74,7 +74,7 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        if (data.status === 1) {
+        if (data.status === 2) {
           this.dataHukumanDisiplin = data.message
         } else {
           localStorage.clear()

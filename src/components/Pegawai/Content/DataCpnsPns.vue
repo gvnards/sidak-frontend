@@ -198,7 +198,7 @@ export default {
       }).then((res) => {
         this.isLoading = false
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        if (data.status === 1) {
+        if (data.status === 2) {
           this.dataCpnsPns = data.message[0]
         } else {
           localStorage.clear()
@@ -230,7 +230,7 @@ export default {
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 1 || data.status === true ? "Success" : "Failed",
+          status: data.status === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
         $("#showModal").trigger("click")

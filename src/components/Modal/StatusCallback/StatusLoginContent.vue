@@ -1,7 +1,7 @@
 <template>
   <div class="modal-content" style="max-width: 500px; left: 50%; transform: translateX(-50%);">
     <div class="modal-body text-center">
-      <div v-if="getStatus === 1">
+      <div v-if="getStatus === 2">
         <IllustrationLaunch class="illustration" />
         <h5 class="text-primary">{{ getText }}</h5>
         <p v-if="getModalMethod === 'LOGIN'">Silahkan klik lanjutkan untuk masuk ke dalam aplikasi Sidak.</p>
@@ -9,13 +9,13 @@
       </div>
       <div v-else>
         <IllustrationCaution class="illustration" />
-        <h5 :class="getStatus === 1 ? 'text-primary' : 'text-red'">{{ getText }}</h5>
+        <h5 :class="getStatus === 2 ? 'text-primary' : 'text-red'">{{ getText }}</h5>
         <p v-if="getModalMethod === 'LOGIN'">Silahkan cek kembali username/password Anda masukkan.</p>
         <p v-if="getModalMethod === 'FORGETPASSWORD'">Silahkan cek kembali NIP/NIK yang Anda masukkan.</p>
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" @click="closeModal()" class="btn btn-lg btn-block my-btn-primary">{{ getStatus === 1 ? 'Lanjutkan' : 'Tutup'}}</button>
+      <button type="button" @click="closeModal()" class="btn btn-lg btn-block my-btn-primary">{{ getStatus === 2 ? 'Lanjutkan' : 'Tutup'}}</button>
     </div>
   </div>
 </template>
@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     closeModal() {
-      if (this.getStatus === 1 && this.getModalMethod === "LOGIN") {
+      if (this.getStatus === 2 && this.getModalMethod === "LOGIN") {
         this.$router.push({
           name: "sidak",
         })

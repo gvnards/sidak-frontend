@@ -129,7 +129,7 @@ export default {
         this.$store.commit("onModalMethod", getModalMethod)
         this.$store.commit("onModalFolder", "Usulan")
         this.$store.commit("onModalContent", "UsulanCallback")
-        this.$store.commit("onModalStatusCallback", data.status === 1 || data.status === true ? "Success" : "Failed")
+        this.$store.commit("onModalStatusCallback", data.status === 2 || data.status === true ? "Success" : "Failed")
       })
     }
   }

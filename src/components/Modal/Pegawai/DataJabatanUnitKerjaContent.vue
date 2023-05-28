@@ -1,36 +1,94 @@
 <template>
-  <ModalHeaderFooter :header-title="'Jabatan/Unit Kerja'" :header-subtitle="'jabatan/unit kerja'" :illustration="'IllustrationDataJabatanUnitKerja'" @onUsulkan="onUsulkan()">
-    <div class="form-group text-left" style="margin: 0;">
+  <ModalHeaderFooter
+    :header-title="'Jabatan/Unit Kerja'"
+    :header-subtitle="'jabatan/unit kerja'"
+    :illustration="'IllustrationDataJabatanUnitKerja'"
+    @onUsulkan="onUsulkan()"
+  >
+    <div class="form-group text-left" style="margin: 0">
       <label for="fieldUnitOrganisasi">Unit Organisasi</label>
     </div>
     <div v-for="(unor, idx) in unitOrganisasi" :key="idx">
       <div class="row row-form">
         <div class="col-12">
-          <div class="form-group text-left" style="margin-bottom: 8px;">
-            <select class="custom-select" @change="onSelectedUnitOrganisasi(idx, $event)">
-              <option value="0" :selected="(selectedUnitOrganisasi[idx] === undefined)" disabled>Pilih {{ idx !== 0 ? 'Sub' : '' }} Unit Organisasi</option>
-              <option :selected="(selectedUnitOrganisasi[idx] !== undefined && (selectedUnitOrganisasi[idx].id === item.id))" v-for="item in unor" :key="item.id" :value="JSON.stringify(item)">
+          <div class="form-group text-left" style="margin-bottom: 8px">
+            <select
+              class="custom-select"
+              @change="onSelectedUnitOrganisasi(idx, $event)"
+            >
+              <option
+                value="0"
+                :selected="selectedUnitOrganisasi[idx] === undefined"
+                disabled
+              >
+                Pilih {{ idx !== 0 ? "Sub" : "" }} Unit Organisasi
+              </option>
+              <option
+                :selected="
+                  selectedUnitOrganisasi[idx] !== undefined &&
+                  selectedUnitOrganisasi[idx].id === item.id
+                "
+                v-for="item in unor"
+                :key="item.id"
+                :value="JSON.stringify(item)"
+              >
                 {{ item.nama }}
               </option>
             </select>
           </div>
-          <div class="btn btn-sm my-btn-primary btn-block" v-if="(isSubOrganisasi[idx] === true)" @click="addSubOrganisasi(idx)">Tambah Sub Organisasi</div>
+          <div
+            class="btn btn-sm my-btn-primary btn-block"
+            v-if="isSubOrganisasi[idx] === true"
+            @click="addSubOrganisasi(idx)"
+          >
+            Tambah Sub Organisasi
+          </div>
         </div>
       </div>
     </div>
     <div class="row row-form">
       <div class="col-12">
-        <div class="form-group" style="padding-bottom: 0; margin-bottom: 0;">
+        <div class="form-group" style="padding-bottom: 0; margin-bottom: 0">
           <label for="fieldDaftarJabatan">Jabatan</label>
-          <select class="custom-select" :class="inputError.jabatan.status ? 'form-error' : ''" :disabled="(daftarJabatan.length === 0)" id="fieldDaftarJabatan" v-model="dataJabatanUnitKerja.idJabatan">
-            <option value="0" :selected="(dataJabatanUnitKerja.idJabatan === 0)" disabled>{{ daftarJabatan.length === 0 ? 'Tidak Ada Jabatan' : 'Pilih Jabatan' }}</option>
-            <option :selected="(dataJabatanUnitKerja.idJabatan === item.id)" v-for="item in daftarJabatan" :key="item.id" :value="item.id">
-              {{ `${item.jabatan} | terisi: ${item.jabatanTerisi} | kebutuhan: ${item.kebutuhan}` }}
+          <select
+            class="custom-select"
+            :class="inputError.jabatan.status ? 'form-error' : ''"
+            :disabled="daftarJabatan.length === 0"
+            id="fieldDaftarJabatan"
+            v-model="dataJabatanUnitKerja.idJabatan"
+          >
+            <option
+              value="0"
+              :selected="dataJabatanUnitKerja.idJabatan === 0"
+              disabled
+            >
+              {{
+                daftarJabatan.length === 0
+                  ? "Tidak Ada Jabatan"
+                  : "-- Pilih Jabatan --"
+              }}
+            </option>
+            <option
+              :selected="dataJabatanUnitKerja.idJabatan === item.id"
+              v-for="item in daftarJabatan"
+              :key="item.id"
+              :value="item.id"
+            >
+              {{
+                `${item.jabatan} | terisi: ${item.jabatanTerisi} | kebutuhan: ${item.kebutuhan}`
+              }}
             </option>
           </select>
-          <small class="text-red"><b>*Jika jabatan tidak ada, silahkan ubah unit organisasi sesuai hirarki</b></small>
-          <br>
-          <small class="text-red" v-if="inputError.jabatan.status"><b>*{{ inputError.jabatan.description }}</b></small>
+          <small class="text-red"
+            ><b
+              >*Jika jabatan tidak ada, silahkan ubah unit organisasi sesuai
+              hirarki</b
+            ></small
+          >
+          <br />
+          <small class="text-red" v-if="inputError.jabatan.status"
+            ><b>*{{ inputError.jabatan.description }}</b></small
+          >
         </div>
       </div>
     </div>
@@ -38,9 +96,38 @@
       <div class="col-12">
         <div class="form-group">
           <div class="custom-control custom-checkbox">
-            <input type="checkbox" v-model="dataJabatanUnitKerja.isPltPlh" class="custom-control-input" id="fieldIsPltPlh">
-            <label class="custom-control-label" for="fieldIsPltPlh">Centang jika jabatan yang akan diusulkan adalah jabatan Plt./Plh.</label>
+            <input
+              type="checkbox"
+              v-model="dataJabatanUnitKerja.isPltPlh"
+              class="custom-control-input"
+              id="fieldIsPltPlh"
+            />
+            <label class="custom-control-label" for="fieldIsPltPlh"
+              >Centang jika jabatan yang akan diusulkan adalah jabatan
+              Plt./Plh.</label
+            >
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="row row-form">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="fieldTugasTambahan">Tugas Tambahan</label>
+          <select
+            id="fieldTugasTambahan"
+            class="custom-select"
+            v-model="dataJabatanUnitKerja.idJabatanTugasTambahan"
+          >
+            <option disabled>-- Pilih Tugas Tambahan --</option>
+            <option
+              value="null"
+              :selected="dataJabatanUnitKerja.idJabatanTugasTambahan == null"
+            >
+              Tidak memiliki tugas tambahan
+            </option>
+            <option :value="item.id" v-for="item in daftarTugasTambahan" :key="item.id">{{ item.nama }}</option>
+          </select>
         </div>
       </div>
     </div>
@@ -48,15 +135,31 @@
       <div class="col-6">
         <div class="form-group">
           <label for="fieldTmt">TMT</label>
-          <input :class="inputError.tmt.status ? 'form-error' : ''" type="date" v-model="dataJabatanUnitKerja.tmt" id="fieldTmt" class="form-control">
-          <small class="text-red" v-if="inputError.tmt.status"><b>*{{ inputError.tmt.description }}</b></small>
+          <input
+            :class="inputError.tmt.status ? 'form-error' : ''"
+            type="date"
+            v-model="dataJabatanUnitKerja.tmt"
+            id="fieldTmt"
+            class="form-control"
+          />
+          <small class="text-red" v-if="inputError.tmt.status"
+            ><b>*{{ inputError.tmt.description }}</b></small
+          >
         </div>
       </div>
       <div class="col-6">
         <div class="form-group">
           <label for="fieldSpmt">SPMT</label>
-          <input :class="inputError.spmt.status ? 'form-error' : ''" type="date" v-model="dataJabatanUnitKerja.spmt" id="fieldSpmt" class="form-control">
-          <small class="text-red" v-if="inputError.spmt.status"><b>*{{ inputError.spmt.description }}</b></small>
+          <input
+            :class="inputError.spmt.status ? 'form-error' : ''"
+            type="date"
+            v-model="dataJabatanUnitKerja.spmt"
+            id="fieldSpmt"
+            class="form-control"
+          />
+          <small class="text-red" v-if="inputError.spmt.status"
+            ><b>*{{ inputError.spmt.description }}</b></small
+          >
         </div>
       </div>
     </div>
@@ -64,15 +167,32 @@
       <div class="col-6">
         <div class="form-group">
           <label for="fieldNomorDokumen">Nomor SK</label>
-          <input :class="inputError.nomorDokumen.status ? 'form-error' : ''" type="text" placeholder="Nomor SK Jabatan Anda" v-model="dataJabatanUnitKerja.nomorDokumen" id="fieldNomorDokumen" class="form-control">
-          <small class="text-red" v-if="inputError.nomorDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
+          <input
+            :class="inputError.nomorDokumen.status ? 'form-error' : ''"
+            type="text"
+            placeholder="Nomor SK Jabatan Anda"
+            v-model="dataJabatanUnitKerja.nomorDokumen"
+            id="fieldNomorDokumen"
+            class="form-control"
+          />
+          <small class="text-red" v-if="inputError.nomorDokumen.status"
+            ><b>*{{ inputError.nomorDokumen.description }}</b></small
+          >
         </div>
       </div>
       <div class="col-6">
         <div class="form-group">
           <label for="fieldTglDokumen">Tanggal SK</label>
-          <input :class="inputError.tanggalDokumen.status ? 'form-error' : ''" type="date" v-model="dataJabatanUnitKerja.tanggalDokumen" id="fieldTglDokumen" class="form-control">
-          <small class="text-red" v-if="inputError.tanggalDokumen.status"><b>*{{ inputError.tanggalDokumen.description }}</b></small>
+          <input
+            :class="inputError.tanggalDokumen.status ? 'form-error' : ''"
+            type="date"
+            v-model="dataJabatanUnitKerja.tanggalDokumen"
+            id="fieldTglDokumen"
+            class="form-control"
+          />
+          <small class="text-red" v-if="inputError.tanggalDokumen.status"
+            ><b>*{{ inputError.tanggalDokumen.description }}</b></small
+          >
         </div>
       </div>
     </div>
@@ -81,16 +201,46 @@
         <div class="form-group text-left">
           <label for="fieldDokumenSk">Dokumen SK</label>
           <div class="custom-file">
-            <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSk" @change="onChangeFile">
-            <label class="custom-file-label" for="fieldDokumenSk" :class="inputError.dokumenSk.status ? 'form-error' : ''">Cari dokumen</label>
+            <input
+              type="file"
+              class="custom-file-input"
+              accept="application/pdf"
+              id="fieldDokumenSk"
+              @change="onChangeFile"
+            />
+            <label
+              class="custom-file-label"
+              for="fieldDokumenSk"
+              :class="inputError.dokumenSk.status ? 'form-error' : ''"
+              >Cari dokumen</label
+            >
           </div>
-          <small :class="inputError.dokumenSk.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenSk.status ? inputError.dokumenSk.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
+          <small
+            :class="inputError.dokumenSk.status ? 'text-red' : 'text-primary'"
+            ><b
+              >*{{
+                inputError.dokumenSk.status
+                  ? inputError.dokumenSk.description
+                  : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${
+                      fileCategory.ukuran * 1024
+                    }KB).`
+              }}</b
+            ></small
+          >
         </div>
       </div>
     </div>
     <div class="row row-form">
       <div class="col-12">
-        <iframe v-if="dataJabatanUnitKerja.dokumen !== '' && dataJabatanUnitKerja.dokumen !== null" :src="dataJabatanUnitKerja.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        <iframe
+          v-if="
+            dataJabatanUnitKerja.dokumen !== '' &&
+            dataJabatanUnitKerja.dokumen !== null
+          "
+          :src="dataJabatanUnitKerja.dokumen"
+          frameborder="0"
+          style="width: 100%; height: 600px"
+        ></iframe>
       </div>
     </div>
   </ModalHeaderFooter>
@@ -137,6 +287,7 @@ export default {
       dataJabatanUnitKerja: {
         idJabatan: 0,
         isPltPlh: false,
+        idJabatanTugasTambahan: null,
         tmt: "",
         spmt: "",
         nomorDokumen: "",
@@ -144,7 +295,8 @@ export default {
         dokumen: "",
         kodeKomponen: ""
       },
-      daftarJabatan: []
+      daftarJabatan: [],
+      daftarTugasTambahan: []
     }
   },
   computed: {
@@ -188,7 +340,7 @@ export default {
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 1 || data.status === true ? "Success" : "Failed",
+          status: data.status === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
       }).catch(() => {
@@ -206,10 +358,10 @@ export default {
       this.selectedUnitOrganisasi[idx] = JSON.parse(event.target.value)
       let isDifferent = false
       for (let i = 0; i < tempSelectedUnitOrganisasi.length; i++) {
-        if(tempSelectedUnitOrganisasi[i].id !== this.selectedUnitOrganisasi[i].id) {
-          this.unitOrganisasi = this.unitOrganisasi.slice(0, i+1)
-          this.selectedUnitOrganisasi = this.selectedUnitOrganisasi.slice(0, i+1)
-          this.isSubOrganisasi = this.isSubOrganisasi.slice(0, i+1)
+        if (tempSelectedUnitOrganisasi[i].id !== this.selectedUnitOrganisasi[i].id) {
+          this.unitOrganisasi = this.unitOrganisasi.slice(0, i + 1)
+          this.selectedUnitOrganisasi = this.selectedUnitOrganisasi.slice(0, i + 1)
+          this.isSubOrganisasi = this.isSubOrganisasi.slice(0, i + 1)
           this.isSubOrganisasi.pop()
           this.getJabatan(this.selectedUnitOrganisasi[i].kodeKomponen)
           isDifferent = true
@@ -269,10 +421,26 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        this.isLoading = false
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         if (data.message.length > 0) {
           this.daftarJabatan = data.message
+        }
+      })
+    },
+    getTugasTambahan() {
+      this.daftarTugasTambahan = []
+      let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      let u = token.username
+      axios({
+        url: `${env.VITE_BACKEND_URL}/tugas-tambahan`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      }).then(res => {
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        if (data.status == 2) {
+          this.daftarTugasTambahan = data.message
         }
       })
     },
@@ -322,23 +490,21 @@ export default {
         this.dataJabatanUnitKerja.isPltPlh = this.dataJabatanUnitKerja.isPltPlh == 1
         let kodeKomponen = this.dataJabatanUnitKerja.kodeKomponen.split(".")
         let selectedUnitOrganisasi = []
-        for(let i=0; i<kodeKomponen.length-1; i++) {
-          if (kodeKomponen[i] !== "431") {
-            selectedUnitOrganisasi.push(kodeKomponen.slice(0,i+1).join("."))
-            this.isSubOrganisasi[i-1] = false
-            if (i===kodeKomponen.length-2) {
-              selectedUnitOrganisasi.push(kodeKomponen.slice(0,i+2).join("."))
-              this.hasSubOrganisasi(i, {kodeKomponen: kodeKomponen.slice(0,i+2).join(".")})
-            }
+        for (let i = 0; i < kodeKomponen.length - 1; i++) {
+          selectedUnitOrganisasi.push(kodeKomponen.slice(0, i + 1).join("."))
+          this.isSubOrganisasi[i - 1] = false
+          if (i === kodeKomponen.length - 2) {
+            selectedUnitOrganisasi.push(kodeKomponen.slice(0, i + 2).join("."))
+            this.hasSubOrganisasi(i, { kodeKomponen: kodeKomponen.slice(0, i + 2).join(".") })
           }
-          this.getUnitOrganisasi(kodeKomponen.slice(0,i+1).join("."))
+          this.getUnitOrganisasi(kodeKomponen.slice(0, i + 1).join("."))
         }
         let isFullfilleds = setInterval(() => {
-          if(this.unitOrganisasi.length === kodeKomponen.length-1) {
+          if (this.unitOrganisasi.length === kodeKomponen.length - 1) {
             selectedUnitOrganisasi.forEach(el => {
-              for(let i=0; i<this.unitOrganisasi.length; i++) {
+              for (let i = 0; i < this.unitOrganisasi.length; i++) {
                 let findUnitOrganisasi = this.unitOrganisasi[i].find(el_ => el_.kodeKomponen === el)
-                if(findUnitOrganisasi !== undefined) {
+                if (findUnitOrganisasi !== undefined) {
                   this.selectedUnitOrganisasi.push(findUnitOrganisasi)
                 }
               }
@@ -351,11 +517,12 @@ export default {
     }
   },
   async created() {
-    if(this.$store.getters.getModalMethod === "UPDATE") {
+    if (this.$store.getters.getModalMethod === "UPDATE") {
       this.getDataJabatanUnitKerja()
     } else {
       this.getUnitOrganisasi("431")
     }
+    this.getTugasTambahan()
     this.getMaxFileSize()
   }
 }

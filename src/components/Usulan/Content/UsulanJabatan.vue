@@ -25,6 +25,18 @@
         </div>
       </div>
     </div>
+    <div class="usulan-open-item-wrapper" v-if="dataJabatan.tugasTambahan !== null">
+      <div class="row row-form">
+        <div class="col-12">
+          <p class="text-primary usulan-item-header">
+            Tugas Tambahan
+          </p>
+          <p class="usulan-item-fill text-primary">
+            {{ dataJabatan.tugasTambahan }}
+          </p>
+        </div>
+      </div>
+    </div>
     <div class="usulan-open-item-wrapper">
       <div class="row row-form">
         <div class="col-6">
@@ -86,6 +98,7 @@ export default {
         return {
           unitOrganisasi: [],
           jabatan: "",
+          tugasTambahan: null,
           isPltPlh: 0,
           spmt: "",
           tmt: "",

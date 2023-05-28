@@ -274,7 +274,7 @@ export default {
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 1 || data.status === true ? "Success" : "Failed",
+          status: data.status === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
       }).catch(() => {
