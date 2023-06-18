@@ -4,7 +4,7 @@
       <IllustrationSuccess style="max-height: 200px;" v-if="$store.getters.getModalStatusCallback.status === 'Success'" />
       <IllustrationFailed style="max-height: 200px;" v-else />
       <h5 :class="$store.getters.getModalStatusCallback.status === 'Success' ? 'text-primary' : 'text-red'">{{ $store.getters.getModalStatusCallback.status === 'Success' ? 'Selamat !' : 'Gagal !'}}</h5>
-      <p>{{ $store.getters.getModalStatusCallback.message }}</p>
+      <p style="white-space: pre-line;">{{ $store.getters.getModalStatusCallback.message }}</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-lg btn-block my-btn-primary" data-dismiss="modal">Mengerti dan Tutup</button>
@@ -25,6 +25,7 @@ export default {
       let modalMethod = this.$store.getters.getModalMethod
       if (modalMethod.toLowerCase() === "create") return "ditambahkan"
       else if (modalMethod.toLowerCase() === "update") return "diperbaharui"
+      else if (modalMethod.toLowerCase() === "sync") return "disinkronisasi"
       return "dihapus"
     }
   }

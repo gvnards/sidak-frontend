@@ -38,7 +38,7 @@
     </div>
     <div class="usulan-open-item-wrapper">
       <div class="row row-form">
-        <div class="col-6">
+        <div class="col-12">
           <p class="text-primary usulan-item-header">
             Lama Diklat (Jam)
           </p>
@@ -46,12 +46,24 @@
             {{ dataDiklatKursus.lamaDiklat }}
           </p>
         </div>
-        <div class="col-6">
+      </div>
+    </div>
+    <div class="usulan-open-item-wrapper">
+      <div class="row row-form">
+        <div class="col-12 col-sm-6">
           <p class="text-primary usulan-item-header">
             Tanggal Mulai Diklat
           </p>
           <p class="usulan-item-fill text-primary">
             {{ dataDiklatKursus.tanggalDiklat }}
+          </p>
+        </div>
+        <div class="col-12 col-sm-6">
+          <p class="text-primary usulan-item-header">
+            Tanggal Selesai Diklat
+          </p>
+          <p class="usulan-item-fill text-primary">
+            {{ dataDiklatKursus.tanggalSelesaiDiklat }}
           </p>
         </div>
       </div>
@@ -76,6 +88,18 @@
           </p>
           <p class="usulan-item-fill text-primary">
             {{ dataDiklatKursus.institusiPenyelenggara }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="usulan-open-item-wrapper">
+      <div class="row row-form">
+        <div class="col-12">
+          <p class="text-primary usulan-item-header">
+            Nomor Dokumen Diklat/Kursus
+          </p>
+          <p class="usulan-item-fill text-primary">
+            {{ dataDiklatKursus.nomorDokumen }}
           </p>
         </div>
       </div>

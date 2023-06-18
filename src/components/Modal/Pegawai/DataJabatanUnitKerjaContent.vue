@@ -26,7 +26,7 @@
               <option
                 :selected="
                   selectedUnitOrganisasi[idx] !== undefined &&
-                  selectedUnitOrganisasi[idx].id === item.id
+                  selectedUnitOrganisasi[idx].kodeKomponen === item.kodeKomponen
                 "
                 v-for="item in unor"
                 :key="item.id"
@@ -484,7 +484,7 @@ export default {
         headers: {
           "Authorization": localStorage.getItem("token")
         }
-      }).then(res => {
+      }).then(async (res) => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.dataJabatanUnitKerja = data.message[0]
         this.dataJabatanUnitKerja.isPltPlh = this.dataJabatanUnitKerja.isPltPlh == 1
@@ -495,9 +495,9 @@ export default {
           this.isSubOrganisasi[i - 1] = false
           if (i === kodeKomponen.length - 2) {
             selectedUnitOrganisasi.push(kodeKomponen.slice(0, i + 2).join("."))
-            this.hasSubOrganisasi(i, { kodeKomponen: kodeKomponen.slice(0, i + 2).join(".") })
+            await this.hasSubOrganisasi(i, { kodeKomponen: kodeKomponen.slice(0, i + 2).join(".") })
           }
-          this.getUnitOrganisasi(kodeKomponen.slice(0, i + 1).join("."))
+          await this.getUnitOrganisasi(kodeKomponen.slice(0, i + 1).join("."))
         }
         let isFullfilleds = setInterval(() => {
           if (this.unitOrganisasi.length === kodeKomponen.length - 1) {

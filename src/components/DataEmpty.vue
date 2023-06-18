@@ -1,8 +1,9 @@
 <template>
   <div>
     <IllustrationDataNotFound class="illustration-not-found" />
-    <p>Belum ada data yang ditambahkan.</p>
+    <p style="margin-bottom: 0px;">Belum ada data yang ditambahkan.</p>
     <div
+      v-if="addData"
       class="btn my-btn-primary btn-circle"
       data-toggle="modal"
       data-target="#modal"
@@ -20,6 +21,13 @@ import IllustrationDataNotFound from "./icons/IllustrationDataNotFound.vue"
 export default {
   components: {
     IllustrationDataNotFound,
+  },
+  props: {
+    addData: {
+      default: true,
+      type: Boolean,
+      required: false
+    }
   }
 }
 </script>

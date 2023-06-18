@@ -18,9 +18,9 @@
       <div class="col-12">
         <div class="form-group text-left">
           <label for="fieldDaftarDiklatKursus">Daftar Diklat/Kursus</label>
-          <select class="custom-select" id="fieldDaftarDiklatKursus" :class="inputError.daftarDiklatKursus.status ? 'form-error' : ''" v-model="dataDiklatKursus.idDaftarDiklat">
-            <option value="0" selected disabled>Pilih Daftar Diklat/Kursus</option>
-            <option :selected="item.id === dataDiklatKursus.idDaftarDiklat" v-for="item in daftarDiklatKursus" :key="item.id" :value="item.id">
+          <select :disabled="dataDiklatKursus.idJenisDiklat == 0" class="custom-select" id="fieldDaftarDiklatKursus" :class="inputError.daftarDiklatKursus.status ? 'form-error' : ''" v-model="dataDiklatKursus.idDaftarDiklat">
+            <option value="0" selected disabled>{{ dataDiklatKursus.idJenisDiklat == 0 ? '-- Jenis Diklat/Kursus Belum Dipilih --' : '-- Pilih Daftar Diklat/Kursus --' }}</option>
+            <option v-show="dataDiklatKursus.idJenisDiklat > 2 ? item.idJenisDiklat > 2 : dataDiklatKursus.idJenisDiklat == item.idJenisDiklat" :selected="item.id === dataDiklatKursus.idDaftarDiklat" v-for="item in daftarDiklatKursus" :key="item.id" :value="item.id">
               {{ item.nama }}
             </option>
           </select>
@@ -38,18 +38,27 @@
       </div>
     </div>
     <div class="row row-form">
-      <div class="col-6">
+      <div class="col-12">
         <div class="form-group">
           <label for="fieldLamaJamDiklatKursus">Lama Diklat/Kursus(jam)</label>
           <input type="number" min="0" id="fieldLamaJamDiklatKursus" :class="inputError.lamaJamDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.lamaDiklat" placeholder="40">
           <small class="text-red" v-if="inputError.lamaJamDiklatKursus.status"><b>*{{ inputError.lamaJamDiklatKursus.description }}</b></small>
         </div>
       </div>
-      <div class="col-6">
+    </div>
+    <div class="row row-form">
+      <div class="col-12 col-sm-6">
         <div class="form-group">
-          <label for="fieldTanggalDiklatKursus">Tanggal Diklat/Kursus</label>
+          <label for="fieldTanggalDiklatKursus">Tanggal Mulai Diklat/Kursus</label>
           <input type="date" id="fieldTanggalDiklatKursus" :class="inputError.tanggalDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.tanggalDiklat">
           <small class="text-red" v-if="inputError.tanggalDiklatKursus.status"><b>*{{ inputError.tanggalDiklatKursus.description }}</b></small>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6">
+        <div class="form-group">
+          <label for="fieldTanggalSelesaiDiklatKursus">Tanggal Selesai Diklat/Kursus</label>
+          <input type="date" id="fieldTanggalSelesaiDiklatKursus" :class="inputError.tanggalSelesaiDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.tanggalSelesaiDiklat">
+          <small class="text-red" v-if="inputError.tanggalSelesaiDiklatKursus.status"><b>*{{ inputError.tanggalSelesaiDiklatKursus.description }}</b></small>
         </div>
       </div>
     </div>
@@ -75,6 +84,22 @@
           <small class="text-red" v-if="inputError.institusiPenyelenggara.status"><b>*{{ inputError.institusiPenyelenggara.description }}</b></small>
         </div>
       </div>
+    </div>
+    <div class="row row-form">
+      <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldNomorDokumen">Nomor Dokumen Diklat/Kursus</label>
+            <input
+              :class="inputError.nomorDokumen.status ? 'form-error' : ''"
+              type="text"
+              class="form-control"
+              id="fieldNomorDokumen"
+              placeholder="Nomor Dokumen Diklat/Kursus"
+              v-model="dataDiklatKursus.nomorDokumen"
+            />
+            <small class="text-red" v-if="inputError.nomorDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
+          </div>
+        </div>
     </div>
     <div class="row row-form">
       <div class="col-12">
@@ -110,8 +135,10 @@ export default {
         namaDiklat: "",
         lamaDiklat: 0,
         tanggalDiklat: "",
+        tanggalSelesaiDiklat: "",
         idDaftarInstansiDiklat: 0,
         institusiPenyelenggara: "",
+        nomorDokumen: "",
         dokumen: ""
       },
       inputError: {
@@ -135,11 +162,19 @@ export default {
           status: false,
           description: ""
         },
+        tanggalSelesaiDiklatKursus: {
+          status: false,
+          description: ""
+        },
         instansi: {
           status: false,
           description: ""
         },
         institusiPenyelenggara: {
+          status: false,
+          description: ""
+        },
+        nomorDokumen: {
           status: false,
           description: ""
         },
@@ -165,11 +200,15 @@ export default {
       this.inputError.lamaJamDiklatKursus.status = this.dataDiklatKursus.lamaDiklat === 0
       this.inputError.lamaJamDiklatKursus.description = this.dataDiklatKursus.lamaDiklat === 0 ? "Lama diklat/kursus harus diisi" : ""
       this.inputError.tanggalDiklatKursus.status = this.dataDiklatKursus.tanggalDiklat === ""
-      this.inputError.tanggalDiklatKursus.description = this.dataDiklatKursus.tanggalDiklat === "" ? "Tanggal diklat/kursus harus diisi" : ""
+      this.inputError.tanggalDiklatKursus.description = this.dataDiklatKursus.tanggalDiklat === "" ? "Tanggal mulai diklat/kursus harus diisi" : ""
+      this.inputError.tanggalSelesaiDiklatKursus.status = this.dataDiklatKursus.tanggalDiklat === ""
+      this.inputError.tanggalSelesaiDiklatKursus.description = this.dataDiklatKursus.tanggalDiklat === "" ? "Tanggal selesai diklat/kursus harus diisi" : ""
       this.inputError.instansi.status = this.dataDiklatKursus.idDaftarInstansiDiklat === 0
       this.inputError.instansi.description = this.dataDiklatKursus.idDaftarInstansiDiklat === 0 ? "Instansi harus dipilih" : ""
       this.inputError.institusiPenyelenggara.status = this.dataDiklatKursus.institusiPenyelenggara === ""
       this.inputError.institusiPenyelenggara.description = this.dataDiklatKursus.institusiPenyelenggara === "" ? "Institusi penyelenggara harus diisi" : ""
+      this.inputError.nomorDokumen.status = this.dataDiklatKursus.nomorDokumen === ""
+      this.inputError.nomorDokumen.description = this.dataDiklatKursus.nomorDokumen === "" ? "Nomor dokumen diklat/kursus harus diisi" : ""
       this.inputError.dokumenDiklat.status = this.dataDiklatKursus.dokumen === ""
       this.inputError.dokumenDiklat.description = this.dataDiklatKursus.dokumen === "" ? "Dokumen diklat harus diunggah" : ""
     },

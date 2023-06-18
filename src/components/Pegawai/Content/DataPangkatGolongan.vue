@@ -13,21 +13,16 @@
         class="data-not-found-wrapper"
         v-if="!isLoading && dataPangkatGolongan.length == 0"
       >
-        <DataEmpty @addData="addDataPangkatGolongan()" />
+        <DataEmpty @addData="addDataPangkatGolongan()" :addData="false" />
+          <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;"></p>
+        <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPangkatGolonganSiasn()">Sinkron Pangkat/Golongan dari MySAPK</button>
       </div>
       <div v-else-if="!isLoading && dataPangkatGolongan.length > 0">
+        <div style="padding-left: 20px; padding-right: 20px; padding-top: 16px;">
+          <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPangkatGolonganSiasn()">Sinkron Pangkat/Golongan dari MySAPK</button>
+        </div>
         <div v-for="item in dataPangkatGolongan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataPangkatGolongan(item)">
           <data-found :icon="'fa-solid fa-star'" :primaryBrief="item.golongan" :secondaryBrief="item.pangkat"></data-found>
-        </div>
-        <div
-          class="btn my-btn-primary btn-circle"
-          data-toggle="modal"
-          data-target="#modal"
-          data-backdrop="static"
-          data-keyboard="false"
-          @click="addDataPangkatGolongan()"
-        >
-          <i class="fa-solid fa-plus icon-plus"></i>
         </div>
       </div>
     </div>
@@ -41,10 +36,44 @@ export default {
   data() {
     return {
       isLoading: false,
-      dataPangkatGolongan: []
+      dataPangkatGolongan: [],
+      btnDisabled: {
+        sync: false
+      }
     }
   },
   methods: {
+    sinkronPangkatGolonganSiasn() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/siasn/pangkat-golongan/riwayat/sync/${this.$store.getters.getIdPegawai}`,
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
+    async btnSinkronPangkatGolonganSiasn() {
+      this.isLoading = true
+      this.btnDisabled.sync = true
+      await this.sinkronPangkatGolonganSiasn().then(res => {
+        this.btnDisabled.sync = false
+        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        $("#modal-sync").click()
+        this.$store.commit("onModalMethod", "SYNC")
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusCallback")
+        this.$store.commit("onModalStatusCallback", {
+          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          message: data.message
+        })
+        return this.getDataPangkatGolongan()
+      }).then(res => {
+        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.isLoading = false
+        this.dataPangkatGolongan = data.message
+      })
+    },
     addDataPangkatGolongan() {
       this.$store.commit("onModalMethod", "CREATE")
       this.$store.commit("onModalFolder", "Pegawai")
@@ -56,36 +85,36 @@ export default {
       this.$store.commit("onModalContent", "DataPangkatGolongan")
       this.$store.commit("onModalData", item)
     },
-    getDataPangkatGolongan() {
+    async getDataPangkatGolongan() {
       this.isLoading = true
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let url = `/data-golpang/${this.$store.getters.getIdPegawai}`
-      axios({
+      return axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         headers: {
           "Authorization": localStorage.getItem("token")
         }
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.isLoading = false
-        if (data.status === 2) {
-          this.dataPangkatGolongan = data.message
-        } else {
-          localStorage.clear()
-          this.$router.push({
-            name: "login"
-          })
-        }
-      }).catch(() => {
+      })
+    }
+  },
+  async created() {
+    this.getDataPangkatGolongan().then(res => {
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      this.isLoading = false
+      if (data.status === 2) {
+        this.dataPangkatGolongan = data.message
+      } else {
         localStorage.clear()
         this.$router.push({
           name: "login"
         })
+      }
+    }).catch(() => {
+      localStorage.clear()
+      this.$router.push({
+        name: "login"
       })
-    }
-  },
-  created() {
-    this.getDataPangkatGolongan()
+    })
   }
 }
 </script>

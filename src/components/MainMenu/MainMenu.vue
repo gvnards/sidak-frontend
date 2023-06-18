@@ -4,7 +4,7 @@
       <div class="menu-mobile-drawer" :class="menuMobileDrawer ? 'active' : ''">
         <div class="menu-mobile-drawer-item" :class="menuActive === menu.id ? 'active' : ''" v-for="menu in mainMenu.filter(item => item.nama !== 'Logout' && item.nama !== 'Pegawai' && item.nama !== 'Usulan')" :key="menu.id" @click="onActiveMenu(menu)" :style="menuActive === menu.id ? 'border-bottom: 2px solid white;' : ''">
             <span style="position: relative;"><i style="font-size: 18px; max-width: 14px; max-height: 14px;" :class="menu.icon"></i></span>
-            <div style="font-size: 10px; font-weight: 600;">
+            <div style="font-size: 1.75vw; font-weight: 600;">
               {{ menu.nama }}
             </div>
         </div>

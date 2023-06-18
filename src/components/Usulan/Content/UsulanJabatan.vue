@@ -20,7 +20,7 @@
             Jabatan
           </p>
           <p class="usulan-item-fill text-primary">
-            {{ dataJabatan.isPltPlh !== 0 && dataJabatan.isPltPlh !== undefined ? `Plt. ${dataJabatan.jabatan}` : dataJabatan.jabatan }}
+            {{ dataJabatan.isPltPlh != 0 && dataJabatan.isPltPlh !== undefined ? `Plt. ${dataJabatan.jabatan}` : dataJabatan.jabatan }}
           </p>
         </div>
       </div>

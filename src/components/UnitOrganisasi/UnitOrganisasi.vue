@@ -200,8 +200,8 @@ export default {
   max-height: calc(100% - 120px);
   box-sizing: border-box;
   margin: 20px 0px;
-  overflow: hidden;
-  overflow-y: auto;
+  overflow: auto;
+  min-height: 400px;
 }
 .search {
   border-radius: 40px;
@@ -340,6 +340,21 @@ export default {
         }
       }
     }
+  }
+}
+@media only screen and (max-width: 780px) {
+  #unit-organisasi-wrapper {
+    // background-color: #ffffff;
+    // box-shadow: 0px 10px 20px -2px rgba(71, 123, 121, 0.1);
+    // min-width: 200px;
+    margin: 0px 0px;
+    margin-bottom: 40px;;
+    padding: 20px;
+    padding-bottom: 40px;
+    // height: 100%;
+    // max-height: 100%;
+    // box-sizing: border-box;
+    // position: relative;
   }
 }
 </style>
