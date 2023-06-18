@@ -26,6 +26,7 @@
         </div>
       </div>
     </div>
+    <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>
   </div>
 </template>
 
