@@ -48,7 +48,7 @@
     </div>
     <div class="row row-form">
       <div class="col-12">
-        <div class="form-group" style="padding-bottom: 0; margin-bottom: 0">
+        <!-- <div class="form-group" style="padding-bottom: 0; margin-bottom: 0">
           <label for="fieldDaftarJabatan">Jabatan</label>
           <select
             class="custom-select"
@@ -73,6 +73,7 @@
               v-for="item in daftarJabatan"
               :key="item.id"
               :value="item.id"
+              :style="selectedUnitOrganisasi[selectedUnitOrganisasi.length-1].kodeKomponen !== item.kodeKomponen ? 'color: red;' : ''"
             >
               {{
                 `${item.jabatan} | terisi: ${item.jabatanTerisi} | kebutuhan: ${item.kebutuhan}`
@@ -89,7 +90,21 @@
           <small class="text-red" v-if="inputError.jabatan.status"
             ><b>*{{ inputError.jabatan.description }}</b></small
           >
-        </div>
+        </div> -->
+        <div class="form-group my-form-group">
+            <label>Jabatan</label>
+            <div :title="jabatanSelectedText" class="my-custom-input-wrapper my-custom-input" @click="jabatanSelectedText === '-- Pilih Unit Organisasi Dahulu --' || jabatanSelectedText === '-- Sedang Diproses --' ? '' : isShowDaftarJabatan = !isShowDaftarJabatan" :style="jabatanSelectedText === '-- Pilih Unit Organisasi Dahulu --' || jabatanSelectedText === '-- Sedang Diproses --' ? 'background-color:#e9ecef; cursor: not-allowed;' : ''">{{ jabatanSelectedText }}</div>
+            <div class="my-custom-input-item-wrapper-outside" v-show="isShowDaftarJabatan">
+              <input type="text" class="form-control" placeholder="Cari jabatan (minimal 5 karakter)" v-model="searchValue">
+              <div class="my-custom-input-item-wrapper-inside">
+                <div @click="onJabatanSelected(item)" class="my-custom-input-item" v-for="item in daftarJabatan" :key="item.id" v-show="searchValue.length < 5 ? true : item.jabatan.toLowerCase().includes(searchValue.toLowerCase())"
+              :style="selectedUnitOrganisasi[selectedUnitOrganisasi.length-1].kodeKomponen !== item.kodeKomponen ? 'color: red;' : ''">
+                  {{ `${item.jabatan} | terisi: ${item.jabatanTerisi} | kebutuhan: ${item.kebutuhan}` }}
+                </div>
+              </div>
+            </div>
+            <small class="text-red" v-if="inputError.jabatan.status"><b>*{{ inputError.jabatan.description }}</b></small>
+          </div>
       </div>
     </div>
     <div class="row row-form">
@@ -254,6 +269,9 @@ export default {
   mixins: [mixins],
   data() {
     return {
+      searchValue: "",
+      jabatanSelectedText: "-- Pilih Unit Organisasi Dahulu --",
+      isShowDaftarJabatan: false,
       fileCategory: {},
       inputError: {
         dokumenSk: {
@@ -319,12 +337,18 @@ export default {
       this.inputError.dokumenSk.status = this.dataJabatanUnitKerja.dokumen === ""
       this.inputError.dokumenSk.description = this.dataJabatanUnitKerja.dokumen === "" ? "Dokumen harus diisi" : ""
     },
+    onJabatanSelected(item) {
+      this.jabatanSelectedText = item.jabatan
+      this.dataJabatanUnitKerja.idJabatan = item.id
+      this.isShowDaftarJabatan = false
+    },
     onUsulkan() {
       if (!this.isFullfilled) return this.whereError()
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataJabatanUnitKerja.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-jabatan" : `/data-jabatan/${this.dataJabatanUnitKerja.id}`
       this.dataJabatanUnitKerja.date = Date.now()
+      this.dataJabatanUnitKerja.kodeKomponen = this.selectedUnitOrganisasi[this.selectedUnitOrganisasi.length-1].kodeKomponen
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         method: "POST",
@@ -374,27 +398,28 @@ export default {
         this.getJabatan(JSON.parse(event.target.value).kodeKomponen)
       }
     },
-    getUnitOrganisasi(kodeKomponen) {
-      let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
-      let u = token.username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/unit-organisasi/${kodeKomponen}.`,
+    async getUnitOrganisasi(kodeKomponen = null) {
+      let url = kodeKomponen === null ? "/unit-organisasi" : `/unit-organisasi/${kodeKomponen}.`
+      return axios({
+        url: `${env.VITE_BACKEND_URL}${url}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        this.isLoading = false
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        if (data.message.length > 0) {
-          this.unitOrganisasi.push(data.message)
         }
       })
     },
     addSubOrganisasi(idx) {
       this.isSubOrganisasi[idx] = false
       let kodeKomponen = this.selectedUnitOrganisasi[idx].kodeKomponen
-      this.getUnitOrganisasi(kodeKomponen)
+      this.getUnitOrganisasi(kodeKomponen).then(res => {
+        let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+        let u = token.username
+        this.isLoading = false
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        if (data.message.length > 0) {
+          this.unitOrganisasi.push(data.message)
+        }
+      })
     },
     hasSubOrganisasi(idx, item) {
       let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
@@ -412,10 +437,13 @@ export default {
     },
     getJabatan(kodeKomponen) {
       this.daftarJabatan = []
+      this.jabatanSelectedText = "-- Sedang Diproses --"
       let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
       let u = token.username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/jabatan/${kodeKomponen}`,
+      // let url = `${env.VITE_BACKEND_URL}/jabatan/${kodeKomponen}` // sama dengan peta jabatan
+      let url = `${env.VITE_BACKEND_URL}/jabatan-all-group/${kodeKomponen}` // tidak sama dengan peta jabatan (semua jabatan tampil)
+      return axios({
+        url: url,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
@@ -423,7 +451,10 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         if (data.message.length > 0) {
+          this.jabatanSelectedText = "-- Pilih Jabatan --"
           this.daftarJabatan = data.message
+        } else {
+          this.jabatanSelectedText = "-- Pilih Unit Organisasi Dahulu --"
         }
       })
     },
@@ -490,29 +521,42 @@ export default {
         this.dataJabatanUnitKerja.isPltPlh = this.dataJabatanUnitKerja.isPltPlh == 1
         let kodeKomponen = this.dataJabatanUnitKerja.kodeKomponen.split(".")
         let selectedUnitOrganisasi = []
-        for (let i = 0; i < kodeKomponen.length - 1; i++) {
-          selectedUnitOrganisasi.push(kodeKomponen.slice(0, i + 1).join("."))
-          this.isSubOrganisasi[i - 1] = false
-          if (i === kodeKomponen.length - 2) {
-            selectedUnitOrganisasi.push(kodeKomponen.slice(0, i + 2).join("."))
-            await this.hasSubOrganisasi(i, { kodeKomponen: kodeKomponen.slice(0, i + 2).join(".") })
+        for (let i = 0; i < kodeKomponen.length; i++) {
+          let kodeKomponenTemp = ""
+          for (let j = 0; j <= i; j++) {
+            kodeKomponenTemp = `${kodeKomponenTemp}.${kodeKomponen[j]}`
           }
-          await this.getUnitOrganisasi(kodeKomponen.slice(0, i + 1).join("."))
+          kodeKomponenTemp = `${kodeKomponenTemp}.`
+          kodeKomponenTemp = kodeKomponenTemp[0] === "." ? kodeKomponenTemp.slice(1) : kodeKomponenTemp
+          kodeKomponenTemp = kodeKomponenTemp[kodeKomponenTemp.length - 1] === "." ? kodeKomponenTemp.slice(0, kodeKomponenTemp.length - 1) : kodeKomponenTemp
+          selectedUnitOrganisasi.push(kodeKomponenTemp)
         }
-        let isFullfilleds = setInterval(() => {
-          if (this.unitOrganisasi.length === kodeKomponen.length - 1) {
-            selectedUnitOrganisasi.forEach(el => {
-              for (let i = 0; i < this.unitOrganisasi.length; i++) {
-                let findUnitOrganisasi = this.unitOrganisasi[i].find(el_ => el_.kodeKomponen === el)
-                if (findUnitOrganisasi !== undefined) {
-                  this.selectedUnitOrganisasi.push(findUnitOrganisasi)
-                }
-              }
-            })
-            this.getJabatan(this.dataJabatanUnitKerja.kodeKomponen)
-            clearInterval(isFullfilleds)
+        for (let i = 0; i < selectedUnitOrganisasi.length; i++) {
+          if (i !== 0) {
+            if (i + 1 === selectedUnitOrganisasi.length) {
+              await this.hasSubOrganisasi(i, { kodeKomponen: `${selectedUnitOrganisasi[i]}` })
+            } else {
+              this.isSubOrganisasi.push(false)
+            }
           }
-        }, 500)
+          await this.getUnitOrganisasi(selectedUnitOrganisasi[i]).then(res => {
+            let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+            let u = token.username
+            this.isLoading = false
+            let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+            if (data.message.length > 0) {
+              this.unitOrganisasi.push(data.message)
+            }
+          })
+          if (i !== 0) {
+            this.selectedUnitOrganisasi.push(this.unitOrganisasi[i-1].find(el => el.kodeKomponen === selectedUnitOrganisasi[i]))
+          }
+        }
+        await this.getJabatan(this.dataJabatanUnitKerja.kodeKomponen)
+        this.jabatanSelectedText = this.daftarJabatan.find(el => el.id == this.dataJabatanUnitKerja.idJabatan).jabatan
+        for (let i = 0; i < this.unitOrganisasi.length - this.selectedUnitOrganisasi.length; i++) {
+          this.unitOrganisasi.pop()
+        }
       })
     }
   },
@@ -520,10 +564,79 @@ export default {
     if (this.$store.getters.getModalMethod === "UPDATE") {
       this.getDataJabatanUnitKerja()
     } else {
-      this.getUnitOrganisasi("431")
+      this.getUnitOrganisasi("431").then(res => {
+        let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+        let u = token.username
+        this.isLoading = false
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        if (data.message.length > 0) {
+          this.unitOrganisasi.push(data.message)
+        }
+      })
     }
     this.getTugasTambahan()
     this.getMaxFileSize()
   }
 }
 </script>
+
+<style lang="less" scoped>
+.my-form-group {
+  position: relative;
+}
+.my-custom-input-wrapper {
+  font-weight: 600;
+  font-size: 14px;
+  color: #477b79;
+  border: 1px solid #477b79;
+  background-color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: default;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  &.my-custom-input {
+    display: inline-block;
+    width: 100%;
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    line-height: 1.5;
+    vertical-align: middle;
+    background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+    background-size: 8px 10px;
+    border-radius: 0.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+}
+.my-custom-input-item-wrapper-outside {
+  border-top: 1px solid #477b79;
+  border-left: 1px solid #477b79;
+  border-bottom: 1px solid #477b79;
+  position: absolute;
+  width: 100%;
+  background-color: #fff;
+  z-index: 2;
+  width: 100%;
+  .my-custom-input-item-wrapper-inside {
+    max-height: 200px;
+    overflow: auto;
+  }
+  .my-custom-input-item {
+    white-space: nowrap;
+    max-width: 100%;
+    display: block;
+    min-height: 1.2em;
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    font-weight: 600;
+    font-size: 14px;
+    color: #477b79;
+    cursor: pointer;
+    &:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+  }
+}
+</style>

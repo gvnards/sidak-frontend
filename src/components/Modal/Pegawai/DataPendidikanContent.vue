@@ -353,7 +353,7 @@ export default {
             let getPendidikan = pendidikan.find(el => parseInt(el.id) == parseInt(this.dataPendidikan.idDaftarPendidikan))
             this.pendidikanSelectedText = getPendidikan.nama
           } else {
-            this.pendidikanSelectedText = "Pilih Pendidikan"
+            this.pendidikanSelectedText = "-- Pilih Pendidikan --"
           }
           if (pendidikan.length > 500) {
             let tempPendidikan = []
