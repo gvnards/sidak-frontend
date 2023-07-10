@@ -87,6 +87,9 @@ export default {
       case "Data Anak":
         idUpdate = usulan_.idDataAnakUpdate
         break
+      case "Data Jabatan":
+        idUpdate = usulan_.idDataJabatanUpdate
+        break
       case "Data Diklat":
         idUpdate = usulan_.idDataDiklatUpdate
         break

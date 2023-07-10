@@ -75,6 +75,7 @@ export default {
     return {
       idAtasan: 0,
       dataStatusKepegawaian: {
+        idPegawai: this.$store.getters.getIdPegawai,
         idDaftarStatusKepegawaian: 0,
         tmt: ""
       },
