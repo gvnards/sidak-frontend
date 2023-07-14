@@ -119,7 +119,7 @@
           <div class="form-group text-left">
             <label for="fieldDokumenIjazah">Dokumen Ijazah</label>
             <div class="custom-file">
-              <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenIjazah" @change="onChangeFile">
+              <input @click="documentType = 'ijazah'" type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenIjazah" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenIjazah" :class="inputError.dokumen.status ? 'form-error' : ''">Cari dokumen</label>
             </div>
             <small :class="inputError.dokumen.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumen.status ? inputError.dokumen.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
@@ -130,6 +130,21 @@
         <div class="col-12">
           <iframe v-if="dataPendidikan.dokumen !== '' && dataPendidikan.dokumen !== null" :src="dataPendidikan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldDokumenTranskripNilai">Dokumen Transkrip Nilai</label>
+            <div class="custom-file">
+              <input @click="documentType = 'transkrip'" type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenTranskripNilai" @change="onChangeFile">
+              <label class="custom-file-label" for="fieldDokumenTranskripNilai" :class="inputError.dokumenTranskrip.status ? 'form-error' : ''">Cari dokumen</label>
+            </div>
+            <small :class="inputError.dokumenTranskrip.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenTranskrip.status ? inputError.dokumenTranskrip.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12" id="dokumenTranskrip"></div>
       </div>
     </ModalHeaderFooter>
 </template>
@@ -153,8 +168,10 @@ export default {
         tahunLulus: "",
         nomorDokumen: "",
         tanggalDokumen: "",
-        dokumen: ""
+        dokumen: "",
+        dokumenTranskrip: ""
       },
+      documentType: "",
       inputError: {
         jenisPendidikan: {
           status: false,
@@ -199,6 +216,10 @@ export default {
         dokumen: {
           status: false,
           description: ""
+        },
+        dokumenTranskrip: {
+          status: false,
+          description: ""
         }
       },
       fileCategory: {},
@@ -228,7 +249,7 @@ export default {
       return modalMethod
     },
     isFulfilled() {
-      return this.dataPendidikan.idJenisPendidikan !== 0 && this.dataPendidikan.idTingkatPendidikan !== 0 && this.dataPendidikan.idDaftarPendidikan !== 0 && this.dataPendidikan.namaSekolah !== "" && this.dataPendidikan.tanggalLulus !== "" && this.dataPendidikan.tahunLulus !== "" && this.dataPendidikan.nomorDokumen !== "" && this.dataPendidikan.tanggalDokumen !== "" && this.dataPendidikan.dokumen !== ""
+      return this.dataPendidikan.idJenisPendidikan !== 0 && this.dataPendidikan.idTingkatPendidikan !== 0 && this.dataPendidikan.idDaftarPendidikan !== 0 && this.dataPendidikan.namaSekolah !== "" && this.dataPendidikan.tanggalLulus !== "" && this.dataPendidikan.tahunLulus !== "" && this.dataPendidikan.nomorDokumen !== "" && this.dataPendidikan.tanggalDokumen !== "" && this.dataPendidikan.dokumen !== "" && this.dataPendidikan.dokumenTranskrip !== ""
     }
   },
   methods: {
@@ -250,7 +271,9 @@ export default {
       this.inputError.tanggalDokumenIjazah.status = this.dataPendidikan.tanggalDokumen === ""
       this.inputError.tanggalDokumenIjazah.description = this.dataPendidikan.tanggalDokumen === "" ? "Tanggal dokumen harus diisi" : ""
       this.inputError.dokumen.status = this.dataPendidikan.dokumen === ""
-      this.inputError.dokumen.description = this.dataPendidikan.dokumen === "" ? "Dokumen harus diisi" : ""
+      this.inputError.dokumen.description = this.dataPendidikan.dokumen === "" ? "Dokumen Ijazah harus diisi" : ""
+      this.inputError.dokumenTranskrip.status = this.dataPendidikan.dokumenTranskrip === ""
+      this.inputError.dokumenTranskrip.description = this.dataPendidikan.dokumenTranskrip === "" ? "Dokumen Transkrip harus diisi" : ""
     },
     onPendidikanSelected(item) {
       this.pendidikanSelectedText = item.nama
@@ -329,6 +352,7 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.dataPendidikan = data.message[0]
+        this.dataPendidikan.dokumenTranskrip = ""
       })
     },
     getDaftarPendidikan() {
@@ -390,18 +414,30 @@ export default {
     async onChangeFile(item) {
       if (item.target.files.length !== 0) {
         if (item.target.files[0].size > (1024000 * this.fileCategory.ukuran)) {
-          this.inputError.dokumen.status = true
-          this.inputError.dokumen.description = `Ukuran file melebihi ${this.fileCategory.ukuran * 1024}KB.`
+          this.inputError[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"]["status"] = true
+          this.inputError[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"]["description"] = `Ukuran file melebihi ${this.fileCategory.ukuran * 1024}KB.`
           item.target.value = null
-          this.dataPendidikan.dokumen = ""
+          this.dataPendidikan[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"] = ""
+          if (this.documentType === "transkrip") {
+            $("#dokumenTranskrip").empty()
+            console.log("masuk sini")
+          }
         } else if (item.target.files[0].type !== "application/pdf") {
-          this.inputError.dokumen.status = true
-          this.inputError.dokumen.description = "Dokumen harus berjenis PDF."
+          this.inputError[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"]["status"] = true
+          this.inputError[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"]["description"] = "Dokumen harus berjenis PDF."
           item.target.value = null
-          this.dataPendidikan.dokumen = ""
+          this.dataPendidikan[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"] = ""
+          if (this.documentType === "transkrip") {
+            $("#dokumenTranskrip").empty()
+            console.log("masuk sini")
+          }
         } else {
-          this.inputError.dokumen.status = false
-          this.dataPendidikan.dokumen = await this.getBase64(item.target.files[0])
+          this.inputError[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"]["status"] = false
+          this.dataPendidikan[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"] = await this.getBase64(item.target.files[0])
+          if (this.documentType === "transkrip") {
+            $("#dokumenTranskrip").empty()
+            $("#dokumenTranskrip").append(`<iframe src="${this.dataPendidikan.dokumenTranskrip}" frameborder="0" style="width: 100%; height: 600px;"></iframe>`)
+          }
         }
       }
     },

@@ -92,9 +92,21 @@
       <div class="row row-form">
         <div class="col-12">
           <p class="text-primary usulan-item-header">
-            Dokumen
+            Dokumen Ijazah
           </p>
           <iframe v-if="dataPendidikan.dokumen !== '' && dataPendidikan.dokumen !== null" :src="dataPendidikan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+          <div v-else class="text-danger" style="font-weight: 600;">Tidak ada Dokumen Ijazah</div>
+        </div>
+      </div>
+    </div>
+    <div class="usulan-open-item-wrapper">
+      <div class="row row-form">
+        <div class="col-12">
+          <p class="text-primary usulan-item-header">
+            Dokumen Transkrip
+          </p>
+          <iframe v-if="dataPendidikan.dokumenTranskrip !== '' && dataPendidikan.dokumenTranskrip !== null" :src="dataPendidikan.dokumenTranskrip" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+          <div v-else class="text-danger" style="font-weight: 600;">Tidak ada Dokumen Transkrip</div>
         </div>
       </div>
     </div>

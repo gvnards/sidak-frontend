@@ -6,13 +6,26 @@
     <IllustrationForgetPassword class="illustration" />
     <br>
     <br>
-    <div class="btn my-btn-outline-primary btn-block not-show" @click="$emit('goToFormChangePassword')">Menuju ke formulir <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i></div>
+    <div v-if="!isAppRolePegawai" class="btn my-btn-outline-primary btn-block not-show" @click="$emit('goToFormChangePassword')">Menuju ke formulir <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i></div>
+    <div v-else style="width: 100%; position: relative;">
+      <h6 class="text-center text-black" style="font-weight: 400;">Silahkan menggunakan aplikasi MySAPK untuk merubah password Anda.</h6>
+      <h6 class="text-center text-black">
+        <a href="https://mysapk.bkn.go.id/reset-password" target="_blank">Klik disini untuk menuju ke Aplikasi MySAPK</a>
+      </h6>
+    </div>
   </div>
 </template>
 
 <script>
 import IllustrationForgetPassword from "../icons/IllustrationForgetPassword.vue"
 export default {
+  props: {
+    isAppRolePegawai: {
+      required: true,
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
     IllustrationForgetPassword
   }

@@ -1,7 +1,7 @@
 <template>
   <div class="change-password-wrapper">
-    <LeftSide :class="goToForm ? 'not-show-mobile' : ''" @goToFormChangePassword="goToForm = true" />
-    <RightSide :class="goToForm ? '' : 'not-show-mobile'" />
+    <LeftSide :isAppRolePegawai="idAppRoleUser === 4" :class="goToForm ? 'not-show-mobile' : ''" @goToFormChangePassword="goToForm = true" />
+    <RightSide v-if="idAppRoleUser !== 4" :class="goToForm ? '' : 'not-show-mobile'" />
   </div>
 </template>
 
@@ -16,6 +16,11 @@ export default {
   data() {
     return {
       goToForm: false
+    }
+  },
+  computed: {
+    idAppRoleUser() {
+      return parseInt(this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").idAppRoleUser)
     }
   }
 }
