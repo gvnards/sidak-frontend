@@ -12,6 +12,7 @@ import DataPendidikanContent from "@/components/Modal/Pegawai/DataPendidikanCont
 import DataSkpContent from "@/components/Modal/Pegawai/DataSkpContent.vue"
 import DataJabatanUnitKerjaContent from "@/components/Modal/Pegawai/DataJabatanUnitKerjaContent.vue"
 import DataUnitOrganisasiContent from "@/components/Modal/UnitOrganisasi/DataUnitOrganisasiContent.vue"
+import DeleteUnitOrganisasiContent from "@/components/Modal/UnitOrganisasi/DeleteUnitOrganisasiContent.vue"
 import DataJabatanContent from "@/components/Modal/Jabatan/DataJabatanContent.vue"
 import StatusCallbackContent from "@/components/Modal/StatusCallback/StatusCallbackContent.vue"
 import UsulanContent from "@/components/Modal/Usulan/UsulanContent.vue"
@@ -39,3 +40,4 @@ Vue.component("UsulanCallbackContent", UsulanCallbackContent)
 Vue.component("StatusChangePasswordContent", StatusChangePasswordContent)
 Vue.component("DataPegawaiContent", DataPegawaiContent)
 Vue.component("AkunPenggunaContent", AkunPenggunaContent)
+Vue.component("DeleteUnitOrganisasiContent", DeleteUnitOrganisasiContent)

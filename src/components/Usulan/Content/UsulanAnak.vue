@@ -76,9 +76,10 @@
       <div class="row row-form">
         <div class="col-12">
           <p class="text-primary usulan-item-header">
-            Dokumen
+            Dokumen Akta Kelahiran
           </p>
           <iframe v-if="dataAnak.dokumen !== '' && dataAnak.dokumen !== null" :src="dataAnak.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+          <div v-else class="text-danger" style="font-weight: 600;">Tidak ada Dokumen Akta Kelahiran</div>
         </div>
       </div>
     </div>

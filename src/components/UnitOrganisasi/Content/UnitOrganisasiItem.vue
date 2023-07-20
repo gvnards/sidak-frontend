@@ -1,6 +1,6 @@
 <template>
   <div id="unor-item" class="text-black" style="position: relative;">
-    <div @click="$emit('onDelete')" class="unor-item-icon" style="position: absolute; top: 50%; transform: translateY(-50%); left: 20px; width: fit-content; cursor: pointer;">
+    <div data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="$emit('onDelete')" class="unor-item-icon" style="position: absolute; top: 50%; transform: translateY(-50%); left: 20px; width: fit-content; cursor: pointer;">
       <i class="fa-solid fa-trash-can text-red"></i>
     </div>
     <div data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="$emit('onUpdate')" class="unor-item-icon" style="position: absolute; top: 50%; transform: translateY(-50%);width: fit-content; left: 62px; cursor: pointer;">

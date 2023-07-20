@@ -81,9 +81,10 @@
       <div class="row row-form">
         <div class="col-12">
           <p class="text-primary usulan-item-header">
-            Dokumen
+            Dokumen SK Jabatan
           </p>
           <iframe v-if="dataJabatan.dokumen !== '' && dataJabatan.dokumen !== null" :src="dataJabatan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+          <div v-else class="text-danger" style="font-weight: 600;">Tidak ada Dokumen SK Jabatan</div>
         </div>
       </div>
     </div>

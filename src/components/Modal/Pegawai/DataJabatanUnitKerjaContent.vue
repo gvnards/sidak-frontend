@@ -214,7 +214,7 @@
     <div class="row row-form">
       <div class="col-12">
         <div class="form-group text-left">
-          <label for="fieldDokumenSk">Dokumen SK</label>
+          <label for="fieldDokumenSk">Dokumen SK Jabatan</label>
           <div class="custom-file">
             <input
               type="file"

@@ -1,6 +1,6 @@
 <template>
   <div id="list-pegawai-item-wrapper">
-    <div class="foto-wrapper" v-if="true">
+    <div class="foto-wrapper" v-if="pegawai.nip.charAt(14) === '1'">
       <IllustrationProfilePictureMan class="foto" />
     </div>
     <div class="foto-wrapper" v-else>

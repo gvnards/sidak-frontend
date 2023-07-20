@@ -90,7 +90,7 @@
     <div class="row row-form">
       <div class="col-12">
         <div class="form-group text-left">
-          <label for="fieldDokumenSk">Dokumen SK</label>
+          <label for="fieldDokumenSk">Dokumen SK Pangkat/Golongan</label>
           <div class="custom-file">
             <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSk" @change="onChangeFile">
             <label class="custom-file-label" for="fieldDokumenSk" :class="inputError.dokumenSk.status ? 'form-error' : ''">Cari dokumen</label>

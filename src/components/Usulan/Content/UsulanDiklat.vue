@@ -108,9 +108,10 @@
       <div class="row row-form">
         <div class="col-12">
           <p class="text-primary usulan-item-header">
-            Dokumen
+            Dokumen Diklat/Kursus
           </p>
           <iframe v-if="dataDiklatKursus.dokumen !== '' && dataDiklatKursus.dokumen !== null" :src="dataDiklatKursus.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+          <div v-else class="text-danger" style="font-weight: 600;">Tidak ada Dokumen Diklat/Kursus</div>
         </div>
       </div>
     </div>

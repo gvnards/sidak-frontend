@@ -132,17 +132,10 @@ export default {
       return order
     },
     deleteDataUnitKerja(item) {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/unit-organisasi/${item.id}`,
-        method: "DELETE",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.getDataUnitOrganisasi()
-      })
+      this.$store.commit("onModalMethod", "DELETE")
+      this.$store.commit("onModalFolder", "UnitOrganisasi")
+      this.$store.commit("onModalContent", "DeleteUnitOrganisasi")
+      this.$store.commit("onModalData", item)
     },
     updateDataUnitKerja(item) {
       this.$store.commit("onModalMethod", "UPDATE")

@@ -99,9 +99,10 @@
       <div class="row row-form">
         <div class="col-12">
           <p class="text-primary usulan-item-header">
-            Dokumen
+            Dokumen SK Pangkat/Golongan
           </p>
           <iframe v-if="dataPangkat.dokumen !== '' && dataPangkat.dokumen !== null" :src="dataPangkat.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+          <div v-else class="text-danger" style="font-weight: 600;">Tidak ada Dokumen SK Pangkat/Golongan</div>
         </div>
       </div>
     </div>
