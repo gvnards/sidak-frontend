@@ -10,35 +10,38 @@
       <IllustrationDataJabatan class="illustration-bg" />
       <div class="unit-organisasi-content">
         <LoadingAnimation class="loading" v-if="isLoading" />
-        <div v-if="!isLoading" style="height: 100%; max-height: 100%;">
+        <div style="height: 100%; max-height: 100%;">
           <div
             class="data-not-found-wrapper text-center"
-            v-if="!isLoading && dataJabatan.length == 0"
+            v-if="!isLoading && dataUnor.unor === undefined"
           >
             <DataEmpty @addData="addDataJabatan" />
           </div>
-          <div v-else style="height: 100%; max-height: 100%;">
-            <div class="form-group search-wrapper">
-              <i
-                class="fa-solid fa-magnifying-glass search-icon text-primary"
-              ></i>
-              <input
-                type="text"
-                v-model="searchValue"
-                class="form-control search"
-                placeholder="Cari data... (isikan minimal 5 karakter)"
-              />
-            </div>
-            <div class="unor-item-wrapper">
-              <!-- <UnitOrganisasiItem
-                @onDelete="deleteDataJabatan(item)"
-                @onUpdate="updateDataJabatan(item)"
-                v-for="item in findDataJabatan"
-                :key="item.id"
-                :orderUnitKerja="orderJabatan(item.kodeKomponen)"
-                :namaUnitKerja="`${item.nama}`"
-              /> -->
-            </div>
+          <div v-else-if="!isLoading && dataUnor.unor !== undefined" style="height: 100%; max-height: 100%; position: relative;">
+            <table class="table table-bordered">
+              <thead class="thead-dark">
+                <tr>
+                  <th colspan="2" style="background-color: #477b79; border-color: #477b79;"><i class="fa-solid fa-briefcase" style="margin-right: 10px;"></i> Data Jabatan Pemerintah Kabupaten Situbondo</th>
+                </tr>
+              </thead>
+              <tbody style="background-color: #fff;">
+                <tr>
+                  <td style="padding: 0; margin: 0; padding-left: 12px; width: 100px; vertical-align: middle;" class="text-primary"><small style="font-weight: 600;">Filter</small></td>
+                  <td style="box-sizing: border-box; vertical-align: middle;">
+                    <small>
+                      <div class="form-group" style="margin: 0;">
+                        <select class="custom-select" v-model="filterOpdValue">
+                          <option value="431" selected>Tampilkan Semua</option>
+                          <option v-for="unor in filterOpd" :key="unor.id" :value="unor.kodeKomponen">{{ unor.nama }}</option>
+                        </select>
+                      </div>
+                    </small>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- End Dropdown Filter -->
+            <UnorJabatanItem :unor="filterUnor" />
             <div
               class="btn btn-block my-btn-primary tambah-unor"
               data-toggle="modal"
@@ -58,20 +61,37 @@
 
 <script>
 import JabatanHeader from "./Content/JabatanHeader.vue"
+import UnorJabatanItem from "./Content/UnorJabatanItem.vue"
 import axios from "axios"
 const env = import.meta.env
 export default {
   components: {
     JabatanHeader,
+    UnorJabatanItem
   },
   data() {
     return {
       isLoading: false,
       dataJabatan: [],
-      searchValue: ""
+      searchValue: "",
+      dataUnor: {},
+      filterOpd: [],
+      filterOpdValue: "431"
     }
   },
   computed: {
+    filterUnor() {
+      if (this.filterOpdValue === "431") return this.dataUnor
+      let divideKodeKomponenTemp = this.filterOpdValue.split(".")
+      let divideKodeKomponen = [this.filterOpdValue]
+      for (let i = divideKodeKomponenTemp.length - 1; i > 0; i--) {
+        divideKodeKomponenTemp.pop()
+        divideKodeKomponen.push(divideKodeKomponenTemp.join("."))
+      }
+      divideKodeKomponen.reverse()
+      let dataUnor = JSON.parse(JSON.stringify(this.dataUnor))
+      return this.unorSearchRecursive(divideKodeKomponen, dataUnor)
+    },
     findDataJabatan() {
       if (this.searchValue.length > 4) {
         return this.keySearch
@@ -110,6 +130,56 @@ export default {
     },
   },
   methods: {
+    unorSearchRecursive(splitKodeKomponen, unor) {
+      if (splitKodeKomponen.length === 1) return unor
+      if (splitKodeKomponen[0] === "431") return {
+        id: unor.id,
+        nama: unor.nama,
+        kodeKomponen: unor.kodeKomponen,
+        jabatan: [],
+        unor: this.unorSearchRecursive(splitKodeKomponen.slice(1), unor.unor.filter(el => el.kodeKomponen === splitKodeKomponen[1]))
+      }
+      unor[0].jabatan = []
+      unor[0].unor = this.unorSearchRecursive(splitKodeKomponen.slice(1), unor[0].unor.filter(el => el.kodeKomponen === splitKodeKomponen[1]))
+      return unor
+    },
+    getFilterOpd() {
+      let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      let u = token.username
+      axios({
+        url: `${env.VITE_BACKEND_URL}/filter-opd`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      }).then(res => {
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.filterOpd = data.message
+      })
+    },
+    formatUnor(item, unors, jabatans) {
+      let unorChild = unors.filter(el => el.kodeKomponen.replace(item.kodeKomponen, "").indexOf(".") > -1 && el.kodeKomponen.replace(item.kodeKomponen, "").slice(el.kodeKomponen.indexOf(".")+1).indexOf(".") < 0)
+      unorChild.forEach((el, idx) => {
+        unorChild[idx]["jabatan"] = jabatans.filter(jab => jab.kodeKomponen === el.kodeKomponen)
+        unorChild[idx]["unor"] = this.formatUnor(el, unors.filter(el_ => el_.kodeKomponen.includes(el.kodeKomponen)), jabatans.filter(el_ => el_.kodeKomponen.includes(el.kodeKomponen)))
+      })
+      return item.kodeKomponen !== "431" ? unorChild : {
+        id: item.id,
+        nama: item.nama,
+        kodeKomponen: item.kodeKomponen,
+        jabatan: [],
+        unor: unorChild
+      }
+    },
+    getDataUnitOrganisasi() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/unit-organisasi`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     addDataJabatan() {
       this.$store.commit("onModalMethod", "CREATE")
       this.$store.commit("onModalFolder", "Jabatan")
@@ -138,74 +208,13 @@ export default {
     },
     getDataJabatan() {
       this.isLoading = true
-      this.dataJabatan = []
-      axios({
-        url: `${env.VITE_BACKEND_URL}/dataJabatan`,
-        method: "GET"
-      }).then(res => {
-        this.dataJabatan = res.data
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/jabatan`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
       })
-      setTimeout(() => {
-        let dataJabatan = [
-          {
-            id: 1,
-            nama: "Badan Kepegawaian dan Pengembangan Sumber Daya Manusia",
-            kodeKomponen: "431.404",
-          },
-          {
-            id: 2,
-            nama: "Pemerintah Kabupaten Situbondo",
-            kodeKomponen: "431",
-          },
-          {
-            id: 3,
-            nama: "BIDANG PENGEMBANGAN KOMPETENSI APARATUR",
-            kodeKomponen: "431.404.4",
-          },
-          {
-            id: 4,
-            nama: "SUB BAGIAN UMUM DAN KEPEGAWAIAN",
-            kodeKomponen: "431.404.1.1",
-          },
-          {
-            id: 5,
-            nama: "SEKRETARIAT",
-            kodeKomponen: "431.404.1",
-          },
-          {
-            id: 6,
-            nama: "SUB BAGIAN PENYUSUNAN PROGRAM DAN KEUANGAN ",
-            kodeKomponen: "431.404.1.2",
-          },
-          {
-            id: 7,
-            nama: "BIDANG PENGADAAN, INFORMASI DAN KESEJAHTERAAN PEGAWAI",
-            kodeKomponen: "431.404.2",
-          },
-          {
-            id: 8,
-            nama: "BIDANG MUTASI DAN KEPANGKATAN",
-            kodeKomponen: "431.404.3",
-          },
-          {
-            id: 9,
-            nama: "SUB BIDANG PENGEMBANGNAN KOMPETENSI MANJERIAL",
-            kodeKomponen: "431.404.4.1",
-          },
-          {
-            id: 10,
-            nama: "SUB BIDANG PEMBINAAN PEGAWAI",
-            kodeKomponen: "431.404.3.3",
-          },
-          {
-            id: 11,
-            nama: "BADAN KESATUAN BANGSA DAN POLITIK",
-            kodeKomponen: "431.421",
-          },
-        ]
-        this.isLoading = false
-        this.dataJabatan = this.sortUnitOrganisasi(dataJabatan)
-      }, 1000)
     },
     sortUnitOrganisasi(val) {
       let unor = []
@@ -222,12 +231,30 @@ export default {
     }
   },
   created() {
-    this.getDataJabatan()
+    this.getFilterOpd()
+    this.getDataJabatan().then(res => {
+      let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      let u = token.username
+      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      this.dataJabatan = data.message
+      return this.getDataUnitOrganisasi()
+    }).then(res => {
+      let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      let u = token.username
+      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      this.isLoading = false
+      this.dataUnor = this.formatUnor(data.message[0], data.message, this.dataJabatan)
+    })
   }
 }
 </script>
 
 <style lang="less" scoped>
+.tambah-unor {
+  position: sticky;
+  z-index: 10;
+  bottom: 0;
+}
 .illustration-bg {
   position: absolute;
   width: 90%;

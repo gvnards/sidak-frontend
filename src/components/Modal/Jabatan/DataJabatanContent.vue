@@ -2,13 +2,19 @@
   <ModalHeaderFooter :header-title="'Jabatan'" :header-subtitle="'jabatan'" :illustration="'IllustrationDataUnitOrganisasi'" @onUsulkan="actionButtonJabatan()" :primaryText="'Tambahkan'">
     <div class="row row-form">
       <div class="col-12">
-        <!-- <div class="form-group">
-          <label for="fieldUnitOrganisasi">Unit Organisasi</label>
-          <button class="btn btn-sm my-btn-primary" style="margin-left: 8px;"><i
-                class="fa-solid fa-magnifying-glass search-icon"
-              ></i></button>
-          <input type="text" disabled id="fieldUnitOrganisasi" class="form-control" :value="dataJabatan.unitOrganisasi.kodeKomponen !== '' && dataJabatan.unitOrganisasi.nama !== '' ? `${dataJabatan.unitOrganisasi.kodeKomponen} | ${dataJabatan.unitOrganisasi.nama}` : ''">
-        </div> -->
+        <div class="form-group text-left">
+          <label for="fieldJenisJabatan">Jenis Jabatan</label>
+          <select class="custom-select" id="fieldJenisJabatan" v-model="dataJabatan.idJenisJabatan">
+            <option value="0" selected disabled>Pilih Jenis Jabatan</option>
+            <option :selected="item.id === dataJabatan.idJenisJabatan" v-for="item in daftarJenisJabatan" :key="item.id" :value="item.id">
+              {{ item.nama }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row row-form">
+      <div class="col-12">
         <div class="form-group">
           <label for="fieldUnitOrganisasi">Kode Komponen Unit Organisasi</label>
           <input type="text" id="fieldUnitOrganisasi" class="form-control" placeholder="431.xx" v-model="dataJabatan.kodeKomponen">
@@ -93,9 +99,11 @@ export default {
         nama: "",
         kebutuhan: 0,
         idKelasJabatan: 0,
+        idJenisJabatan: 0,
         target: 0,
       },
       daftarKelasJabatan: [],
+      daftarJenisJabatan: []
     }
   },
   computed: {
@@ -108,7 +116,7 @@ export default {
   },
   methods: {
     actionButtonJabatan() {
-      let url = this.$store.getters.getModalMethod === "UPDATE" ? `/jabatan/${this.$store.getters.getModalData.id}` : "/jabatan"
+      let url = this.$store.getters.getModalMethod === "UPDATE" ? `/jabatan-detail/${this.$store.getters.getModalData.id}` : "/jabatan"
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
@@ -121,16 +129,34 @@ export default {
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        console.log(data)
       })
     },
     getDataJabatan() {
       axios({
-        url: `${env.VITE_BACKEND_URL}/dataJabatan`,
-        method: "GET"
+        url: `${env.VITE_BACKEND_URL}/jabatan-detail/${this.$store.getters.getModalData.id}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
       }).then(res => {
-        this.dataJabatan = res.data
+        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.dataJabatan = data.message
       })
-      this.dataJabatan = this.$store.getters.getModalData
+    },
+    getDaftarJenisJabatan() {
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      axios({
+        url: `${env.VITE_BACKEND_URL}/jenis-jabatan`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      }).then(res => {
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.daftarJenisJabatan = data.message
+      })
     },
     getDaftarKelasJabatan() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
@@ -147,7 +173,10 @@ export default {
     },
   },
   created() {
-    // this.getDataJabatan()
+    if (this.$store.getters.getModalMethod === "UPDATE") {
+      this.getDataJabatan()
+    }
+    this.getDaftarJenisJabatan()
     this.getDaftarKelasJabatan()
   },
   destroyed() {

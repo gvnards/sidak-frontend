@@ -210,4 +210,16 @@ ul.pagination-wrapper {
   border-bottom-style: dashed;
   border-bottom-width: 2px;
 }
+::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  // border-radius: 8px;
+  border: transparent;
+}
 </style>
