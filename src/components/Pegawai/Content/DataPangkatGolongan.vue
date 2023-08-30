@@ -13,7 +13,7 @@
         class="data-not-found-wrapper"
         v-if="!isLoading && dataPangkatGolongan.length == 0"
       >
-        <DataEmpty @addData="addDataPangkatGolongan()" :addData="false" />
+        <DataEmpty @addData="() => {}" :addData="false" />
           <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;"></p>
         <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPangkatGolonganSiasn()">Sinkron Pangkat/Golongan dari MySAPK</button>
       </div>

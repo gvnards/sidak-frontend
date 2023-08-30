@@ -13,25 +13,26 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataHukumanDisiplin.length == 0"
         >
-          <DataEmpty @addData="addDataHukumanDisiplin()" v-if="isVisibleButton" />
+          <DataEmpty @addData="userRole === 1 ? addDataHukumanDisiplin() : () => {}" :addData="userRole === 1" />
+          <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">{{ userRole === 1 ? 'atau' : '' }}</p>
+          <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronHukdisSiasn()">Sinkron Hukuman Disiplin dari MySAPK</button>
         </div>
         <div v-else-if="!isLoading && dataHukumanDisiplin.length > 0">
-          <div v-for="item in dataHukumanDisiplin" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataHukumanDisiplin(item)">
-            <data-found :icon="'fa-solid fa-file-contract'" :primaryBrief="item.jenisHukumanDisiplin" :secondaryBrief="item.daftarHukumanDisiplin"></data-found>
-          </div>
-          <div
-            class="btn my-btn-primary btn-circle"
+          <div style="padding-left: 20px; padding-right: 20px; padding-top: 16px;">
+            <button v-if="userRole === 1" :disabled="btnDisabled.sync" class="btn my-btn-primary btn-sm"
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false"
-            @click="addDataHukumanDisiplin()"
-            v-if="isVisibleButton"
-          >
-            <i class="fa-solid fa-plus icon-plus"></i>
+            data-keyboard="false" @click="userRole === 1 ? addDataHukumanDisiplin() : () => {}">Tambah Hukuman Disiplin</button>
+            <span style="margin: 0 10px; font-weight: 600;">{{ userRole === 1 ? 'atau' : '' }}</span>
+            <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronHukdisSiasn()">Sinkron Hukuman Disiplin dari MySAPK</button>
+          </div>
+          <div v-for="item in dataHukumanDisiplin" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataHukumanDisiplin(item)">
+            <data-found :icon="'fa-solid fa-file-contract'" :primaryBrief="item.jenisHukumanDisiplin" :secondaryBrief="item.daftarHukumanDisiplin"></data-found>
           </div>
         </div>
     </div>
+    <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>
   </div>
 </template>
 
@@ -43,10 +44,44 @@ export default {
     return {
       isLoading: false,
       dataHukumanDisiplin: [],
-      isVisibleButton: false
+      isVisibleButton: false,
+      btnDisabled: {
+        sync: false
+      }
     }
   },
   methods: {
+    sinkronHukdisSiasn() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/siasn/hukuman-disiplin/riwayat/sync/${this.$store.getters.getIdPegawai}`,
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
+    async btnSinkronHukdisSiasn() {
+      this.isLoading = true
+      this.btnDisabled.sync = true
+      await this.sinkronHukdisSiasn().then(res => {
+        this.btnDisabled.sync = false
+        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        $("#modal-sync").click()
+        this.$store.commit("onModalMethod", "SYNC")
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusCallback")
+        this.$store.commit("onModalStatusCallback", {
+          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          message: data.message
+        })
+        return this.getDataHukumanDisiplin()
+      }).then(res => {
+        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.isLoading = false
+        this.dataHukumanDisiplin = data.message
+      })
+    },
     addDataHukumanDisiplin() {
       this.$store.commit("onModalMethod", "CREATE")
       this.$store.commit("onModalFolder", "Pegawai")
@@ -88,6 +123,11 @@ export default {
           name: "login"
         })
       })
+    }
+  },
+  computed: {
+    userRole() {
+      return parseInt(this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").idAppRoleUser)
     }
   },
   created() {

@@ -22,6 +22,7 @@
       <UsulanDiklat v-if="getUsulanData.usulanKriteria === 'Data Diklat'" :dataDiklatKursus="usulanDetail" />
       <UsulanSkp v-if="getUsulanData.usulanKriteria === 'Data SKP'" :dataSkp="usulanDetail" />
       <UsulanJabatan v-if="getUsulanData.usulanKriteria === 'Data Jabatan'" :dataJabatan="usulanDetail" />
+      <UsulanPenghargaan v-if="getUsulanData.usulanKriteria === 'Data Penghargaan'" :dataPenghargaan="usulanDetail" />
     </div>
     <div class="row row-form" style="margin-top: 10px; position: relative; z-index: 2;" v-if="(getUsulanData.id !== undefined) && (getUsulanData.idUsulanStatus !== 3) && isVisibleButton">
       <div class="col-6"><div class="btn btn-block my-btn-danger"
@@ -49,6 +50,7 @@ import UsulanPangkat from "./Content/UsulanPangkat.vue"
 import UsulanDiklat from "./Content/UsulanDiklat.vue"
 import UsulanSkp from "./Content/UsulanSkp.vue"
 import UsulanJabatan from "./Content/UsulanJabatan.vue"
+import UsulanPenghargaan from "./Content/UsulanPenghargaan.vue"
 import axios from "axios"
 const env = import.meta.env
 export default {
@@ -60,7 +62,8 @@ export default {
     UsulanPangkat,
     UsulanDiklat,
     UsulanSkp,
-    UsulanJabatan
+    UsulanJabatan,
+    UsulanPenghargaan
   },
   watch: {
     getUsulanData(val) {
@@ -107,6 +110,7 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.usulanDetail = data.message[0]
+        console.log(this.usulanDetail)
         if(this.usulanDetail.idUsulanHasil == 3) {
           if (role === 1) {
             this.isVisibleButton = true

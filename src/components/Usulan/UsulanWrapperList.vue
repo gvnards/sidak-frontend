@@ -97,10 +97,6 @@ export default {
             nama: "Belum Diproses",
           },
           {
-            id: 2,
-            nama: "Sedang Diproses",
-          },
-          {
             id: 3,
             nama: "Sudah Diproses",
           },

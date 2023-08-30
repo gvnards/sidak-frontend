@@ -105,6 +105,9 @@ export default {
       case "Data Skp":
         idUpdate = usulan_.idDataSkpUpdate
         break
+      case "Data Penghargaan":
+        idUpdate = usulan_.idDataPenghargaanUpdate
+        break
       default:
         break
       }

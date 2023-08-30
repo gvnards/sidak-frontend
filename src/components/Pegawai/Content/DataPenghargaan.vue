@@ -1,36 +1,34 @@
 <template>
-  <div id="data-pendidikan" class="text-left">
+  <div id="data-penghargaan" class="text-left">
     <div class="btn-wrapper">
       <div
-        class="btn-pendidikan text-center active"
+        class="btn-penghargaan text-center active"
       >
-        <span>Pendidikan</span>
+        <span>Penghargaan</span>
       </div>
     </div>
-    <div class="data-pendidikan-content text-center">
+    <div class="data-penghargaan-content text-center">
       <LoadingAnimation class="loading" v-if="isLoading" />
         <div
           class="data-not-found-wrapper"
-          v-if="!isLoading && dataPendidikan.length == 0"
+          v-if="!isLoading && dataPenghargaan.length == 0"
         >
-          <DataEmpty @addData="() => {}" :addData="false" />
-          <!-- <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p> -->
-          <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;"></p>
-          <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPendidikanSiasn()">Sinkron Pendidikan dari MySAPK</button>
+          <DataEmpty @addData="addDataPenghargaan()" />
+          <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p>
+          <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPenghargaanSiasn()">Sinkron Penghargaan dari MySAPK</button>
         </div>
-        <div v-else-if="!isLoading && dataPendidikan.length > 0">
+        <div v-else-if="!isLoading && dataPenghargaan.length > 0">
           <div style="padding-left: 20px; padding-right: 20px; padding-top: 16px;">
-            <!-- <button :disabled="btnDisabled.sync" class="btn my-btn-primary btn-sm"
+            <button :disabled="btnDisabled.sync" class="btn my-btn-primary btn-sm"
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false" @click="addDataPendidikan()">Tambah Pendidikan</button>
-            <span style="margin: 0 10px; font-weight: 600;">atau</span> -->
-            <span style="margin: 0 10px; font-weight: 600;"></span>
-            <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPendidikanSiasn()">Sinkron Pendidikan dari MySAPK</button>
+            data-keyboard="false" @click="addDataPenghargaan()">Tambah Penghargaan</button>
+            <span style="margin: 0 10px; font-weight: 600;">atau</span>
+            <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPenghargaanSiasn()">Sinkron Penghargaan dari MySAPK</button>
           </div>
-          <div v-for="item in dataPendidikan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataPendidikan(item)">
-            <data-found :icon="'fa-solid fa-graduation-cap'" :primaryBrief="item.tingkatPendidikan" :secondaryBrief="item.namaSekolah"></data-found>
+          <div v-for="item in dataPenghargaan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataPenghargaan(item)">
+            <data-found :icon="'fa-solid fa-medal'" :primaryBrief="item.penghargaan" :secondaryBrief="item.tahun"></data-found>
           </div>
         </div>
     </div>
@@ -45,25 +43,25 @@ export default {
   data() {
     return {
       isLoading: false,
-      dataPendidikan: [],
+      dataPenghargaan: [],
       btnDisabled: {
         sync: false
       }
     }
   },
   methods: {
-    sinkronPendidikanSiasn() {
+    sinkronPenghargaanSiasn() {
       return axios({
-        url: `${env.VITE_BACKEND_URL}/siasn/pendidikan/riwayat/sync/${this.$store.getters.getIdPegawai}`,
+        url: `${env.VITE_BACKEND_URL}/siasn/penghargaan/riwayat/sync/${this.$store.getters.getIdPegawai}`,
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       })
     },
-    async btnSinkronPendidikanSiasn() {
+    async btnSinkronPenghargaanSiasn() {
       this.isLoading = true
       this.btnDisabled.sync = true
-      await this.sinkronPendidikanSiasn().then(res => {
+      await this.sinkronPenghargaanSiasn().then(res => {
         this.btnDisabled.sync = false
         let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
@@ -75,28 +73,28 @@ export default {
           status: data.status === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataPendidikan()
+        return this.getDataPenghargaan()
       }).then(res => {
         let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        this.dataPendidikan = data.message
+        this.dataPenghargaan = data.message
       })
     },
-    addDataPendidikan() {
+    addDataPenghargaan() {
       this.$store.commit("onModalMethod", "CREATE")
       this.$store.commit("onModalFolder", "Pegawai")
-      this.$store.commit("onModalContent", "DataPendidikan")
+      this.$store.commit("onModalContent", "DataPenghargaan")
     },
-    editDataPendidikan(item) {
+    editDataPenghargaan(item) {
       this.$store.commit("onModalMethod", "UPDATE")
       this.$store.commit("onModalFolder", "Pegawai")
-      this.$store.commit("onModalContent", "DataPendidikan")
+      this.$store.commit("onModalContent", "DataPenghargaan")
       this.$store.commit("onModalData", item)
     },
-    async getDataPendidikan() {
+    async getDataPenghargaan() {
       this.isLoading = true
-      let url = `/data-pendidikan/${this.$store.getters.getIdPegawai}`
+      let url = `/data-penghargaan/${this.$store.getters.getIdPegawai}`
       return axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         headers: {
@@ -106,12 +104,12 @@ export default {
     }
   },
   async created() {
-    this.getDataPendidikan().then(res => {
+    this.getDataPenghargaan().then(res => {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
       this.isLoading = false
       if (data.status === 2) {
-        this.dataPendidikan = data.message
+        this.dataPenghargaan = data.message
       } else {
         localStorage.clear()
         this.$router.push({
@@ -146,10 +144,10 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-#data-pendidikan {
+#data-penghargaan {
   height: 100%;
   .btn-wrapper {
-    .btn-pendidikan {
+    .btn-penghargaan {
       display: inline-block;
       padding: 6px 16px;
       box-sizing: border-box;
@@ -183,7 +181,7 @@ export default {
       }
     }
   }
-  .data-pendidikan-content {
+  .data-penghargaan-content {
     position: relative;
     border: 1px solid #477b79;
     border-radius: 0px 6px 6px 6px;

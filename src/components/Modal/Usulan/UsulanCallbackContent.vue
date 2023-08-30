@@ -3,8 +3,8 @@
     <div class="modal-body text-center">
       <IllustrationSuccess style="max-height: 200px;" v-if="$store.getters.getModalStatusCallback === 'Success'" />
       <IllustrationFailed style="max-height: 200px;" v-else />
-      <h5 :class="$store.getters.getModalStatusCallback === 'Success' ? 'text-primary' : 'text-red'">{{ $store.getters.getModalStatusCallback === 'Success' ? 'Selamat !' : 'Gagal !'}}</h5>
-      <p>{{ $store.getters.getModalStatusCallback === 'Success' ? `Data berhasil ${modalMethod}.` : `Data gagal ${modalMethod}.`}}</p>
+      <h5 :class="$store.getters.getModalStatusCallback === 'Success' ? 'text-primary' : 'text-red'">{{ $store.getters.getModalStatusCallback === 'Success' ? 'Selamat !' : 'Gagal !' }}</h5>
+      <p>{{ $store.getters.getModalStatusCallback === 'Success' ? `Data berhasil ${modalMethod}.` : `Data gagal ${modalMethod}.` }}</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-lg btn-block my-btn-primary" data-dismiss="modal">Mengerti dan Tutup</button>
