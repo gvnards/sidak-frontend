@@ -3,7 +3,7 @@
     <i class="fa-solid fa-envelope-open-text bg-icon"></i>
     <UsulanHeader :mainText="getUsulanData.usulanKriteria" style="position: relative; z-index: 2;" />
     <div id="usulan-open-item">
-      <div class="usulan-open-item-wrapper usulan-status" v-if="(getUsulanData.idUsulanStatus !== undefined && getUsulanData.idUsulanStatus == 3 && usulanDetail.id !== undefined)">
+      <div class="usulan-open-item-wrapper usulan-status" v-if="parseInt(usulanDetail.idUsulanStatus) === 3">
         <div class="row row-form">
           <div class="col-12">
             <p class="usulan-item-header" :style="getUsulanData.idUsulanHasil == 1 ? 'color: #477b79;' : 'color: #EC392F;'">
@@ -23,6 +23,7 @@
       <UsulanSkp v-if="getUsulanData.usulanKriteria === 'Data SKP'" :dataSkp="usulanDetail" />
       <UsulanJabatan v-if="getUsulanData.usulanKriteria === 'Data Jabatan'" :dataJabatan="usulanDetail" />
       <UsulanPenghargaan v-if="getUsulanData.usulanKriteria === 'Data Penghargaan'" :dataPenghargaan="usulanDetail" />
+      <UsulanAngkaKredit v-if="getUsulanData.usulanKriteria === 'Data Angka Kredit'" :dataAngkaKredit="usulanDetail" />
     </div>
     <div class="row row-form" style="margin-top: 10px; position: relative; z-index: 2;" v-if="(getUsulanData.id !== undefined) && (getUsulanData.idUsulanStatus !== 3) && isVisibleButton">
       <div class="col-6"><div class="btn btn-block my-btn-danger"
@@ -51,6 +52,7 @@ import UsulanDiklat from "./Content/UsulanDiklat.vue"
 import UsulanSkp from "./Content/UsulanSkp.vue"
 import UsulanJabatan from "./Content/UsulanJabatan.vue"
 import UsulanPenghargaan from "./Content/UsulanPenghargaan.vue"
+import UsulanAngkaKredit from "./Content/UsulanAngkaKredit.vue"
 import axios from "axios"
 const env = import.meta.env
 export default {
@@ -63,7 +65,8 @@ export default {
     UsulanDiklat,
     UsulanSkp,
     UsulanJabatan,
-    UsulanPenghargaan
+    UsulanPenghargaan,
+    UsulanAngkaKredit
   },
   watch: {
     getUsulanData(val) {
@@ -110,11 +113,10 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.usulanDetail = data.message[0]
-        console.log(this.usulanDetail)
-        if(this.usulanDetail.idUsulanHasil == 3) {
+        if(parseInt(this.usulanDetail.idUsulanHasil) === 3) {
           if (role === 1) {
             this.isVisibleButton = true
-          } else if ((role === 2 || role === 3) && (item.usulanKriteria === "Data Pasangan" || item.usulanKriteria === "Data Anak")) {
+          } else if ((parseInt(role) === 2 || parseInt(role) === 3) && (item.usulanKriteria === "Data Pasangan" || item.usulanKriteria === "Data Anak")) {
             this.isVisibleButton = true
           }
         }

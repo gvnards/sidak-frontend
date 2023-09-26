@@ -62,6 +62,23 @@ body {
     background-color: #bb1e16;
   }
 }
+.my-btn-outline-danger {
+  border-color: #EC392F;
+  color: #EC392F;
+  background-color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.4s;
+  cursor: pointer;
+  &:hover {
+    color: #ffffff;
+    background-color: #EC392F;
+  }
+  &:active {
+    color: #ffffff;
+    background-color: #d32921;
+  }
+}
 .my-btn-outline-primary {
   border-color: #477b79;
   color: #477b79;

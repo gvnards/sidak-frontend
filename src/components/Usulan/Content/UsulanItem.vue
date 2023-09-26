@@ -2,11 +2,16 @@
   <div class="item-wrapper">
     <div class="row">
       <div class="col-2">
+        <div class="form-group" style="height: 100%;">
+          <input type="checkbox" class="form-control checked-box" style="width: 16px; height: 16px; transform: translateY(-50%); top: 50%; margin: auto; position: relative;" :checked="isChecked && !isDisabled" :disabled="isDisabled">
+        </div>
+      </div>
+      <div class="col-2">
         <div class="circle" :class="isSetujui ? 'setuju' : 'tolak'">
           <i class="icon" :class="icon"></i>
         </div>
       </div>
-      <div class="col-10">
+      <div class="col-8">
         <div class="text-wrapper">
           <h6 class="text-black">{{ mainText }}</h6>
           <p class="nama">{{ subText }}</p>
@@ -20,6 +25,16 @@
 <script>
 export default {
   props: {
+    isDisabled: {
+      default: false,
+      required: true,
+      type: Boolean
+    },
+    isChecked: {
+      default: false,
+      required: true,
+      type: Boolean
+    },
     statusUsulan: {
       default: "",
       required: true,
@@ -47,6 +62,9 @@ export default {
     }
   },
   computed: {
+    checked() {
+      return this.isChecked
+    },
     icon() {
       if(this.statusUsulan === "Belum Diproses") return "fa-solid fa-envelope"
       else if(this.statusUsulan === "Sedang Diproses") return "fa-solid fa-envelope-open-text"

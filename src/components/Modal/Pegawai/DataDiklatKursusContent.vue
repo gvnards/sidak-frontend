@@ -192,7 +192,7 @@ export default {
   methods: {
     whereError() {
       this.inputError.jenisDiklatKursus.status = this.dataDiklatKursus.idJenisDiklat === 0
-      this.inputError.jenisDiklatKursus.description = this.dataDiklatKursus.idJenisDiklat === 0 ?"Jenis diklat/kursus harus dipilih" : ""
+      this.inputError.jenisDiklatKursus.description = this.dataDiklatKursus.idJenisDiklat === 0 ? "Jenis diklat/kursus harus dipilih" : ""
       this.inputError.daftarDiklatKursus.status = this.dataDiklatKursus.idDaftarDiklat === 0
       this.inputError.daftarDiklatKursus.description = this.dataDiklatKursus.idDaftarDiklat === 0 ? "Daftar diklat/kursus harus dipilih" : ""
       this.inputError.namaDiklatKursus.status = this.dataDiklatKursus.namaDiklat === ""

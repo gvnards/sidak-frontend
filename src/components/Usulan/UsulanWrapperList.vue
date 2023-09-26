@@ -6,15 +6,31 @@
     </div>
     <div style="position: relative;">
       <div class="sub-menu-wrapper" @wheel="scrollHorizontal($event)">
-        <span :class="subMenuActive === item.id ? 'active' : ''" @click="subMenuActive = item.id" v-for="item in subMenu" :key="item.id">{{ item.nama }}</span>
+        <span :class="subMenuActive === item.id ? 'active' : ''" @click="subMenuActive = item.id; isCheckedAll = false; dataMultipleVerification = []" v-for="item in subMenu" :key="item.id">{{ item.nama }}</span>
       </div>
-      <!-- <div class="btn my-btn-primary btn-circle">
-        <i class="fa-solid fa-plus icon-plus"></i>
-      </div> -->
     </div>
     <div class="data-usulan-found">
-      <div @click="onUsulanActive(item, index)" v-for="(item, index) in dataUsulan" :key="index">
-        <UsulanItem :style="(usulanActive === index) ? 'background-color: #EFF5F5;' : ''" :statusUsulan="item.statusUsulan" :mainText="`${item.usulan} ${item.usulanKriteria}`" :subText="item.nama" :timeText="item.createdAt" :isSetujui="item.idUsulanHasil !== 2" />
+      <div class="row row-form" style="border-bottom: 0.5px solid lightgray;">
+        <div class="col-2">
+          <input type="checkbox" class="form-control checked-box" style="width: 16px; height: 16px; transform: translateY(-50%); top: 50%; left: 55%; position: relative;" :checked="isCheckedAll" @click="onCheckedAll()" :disabled="userRole === 4">
+        </div>
+        <div class="col-10">
+          <div class="row row-form">
+            <div :class="dataMultipleVerification.length > 0 && userRole !== 4 ? 'col-5' : 'col-12'">
+              <h6 class="text-primary" style="margin: 0; padding: 0; font-weight: 600; position: relative; transform: translateY(-50%); top: 50%;">Daftar Usulan</h6>
+            </div>
+            <div class="col-7" v-if="dataMultipleVerification.length > 0 && userRole !== 4 && subMenuActive !== 3">
+              <div class="btn btn-sm my-btn-primary" style="font-size: 12px; top: 50%; transform: translateY(-50%); position: relative;" @click="onMultipleVerification()"
+              data-toggle="modal"
+              data-target="#modal"
+              data-backdrop="static"
+              data-keyboard="false">Verifikasi ({{ dataMultipleVerification.length }}) data</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div @click="onUsulanActive(item, index, $event)" v-for="(item, index) in (dataUsulan.length > 0 ? dataUsulan[page.active-1] : [])" :key="index" :title="`${item.usulan} ${item.usulanKriteria}`">
+        <UsulanItem :isChecked="item.isChecked" :style="(usulanActive === index) ? 'background-color: #EFF5F5;' : ''" :statusUsulan="item.statusUsulan" :mainText="`${item.usulan} ${item.usulanKriteria}`" :subText="item.nama" :timeText="item.createdAt" :isSetujui="parseInt(item.idUsulanHasil) !== 2" :isDisabled="(userRole === 4) || ((userRole === 2 || userRole === 3) && !(item.usulanKriteria === 'Data Pasangan' || item.usulanKriteria === 'Data Anak'))" />
       </div>
     </div>
   </div>
@@ -33,6 +49,9 @@ export default {
       this.$store.commit("resetUsulanData")
       this.getDataUsulan(val)
       this.usulanActive = -1
+    },
+    dataMultipleVerification(val) {
+      if (val.length < 1) this.isCheckedAll = false
     }
   },
   data() {
@@ -41,13 +60,55 @@ export default {
       subMenuActive: 1,
       subMenu: [],
       dataUsulan: [],
-      isLoading: false
+      isLoading: false,
+      isCheckedAll: false,
+      page: {
+        active: 1,
+        total: 1
+      },
+      dataMultipleVerification: [],
+      userRole: 0
     }
   },
   methods: {
-    onUsulanActive(item, index) {
-      this.usulanActive = index
-      this.$store.commit("onUsulanData", item)
+    onMultipleVerification() {
+      this.$store.commit("onModalFolder", "Usulan")
+      this.$store.commit("onModalContent", "UsulanMultipleVerification")
+      this.$store.commit("onModalData", this.dataMultipleVerification)
+    },
+    onCheckedAll() {
+      this.dataMultipleVerification = []
+      this.isCheckedAll = !this.isCheckedAll
+      this.dataUsulan[this.page.active-1].forEach(el => {
+        el.isChecked = this.isCheckedAll
+        if (this.isCheckedAll) {
+          if ((this.userRole === 1) || ((this.userRole === 2 || this.userRole === 3) && (el.usulanKriteria === "Data Pasangan" || el.usulanKriteria === "Data Anak"))) {
+            this.dataMultipleVerification.push({
+              id: el.id,
+              usulanKriteria: el.usulanKriteria
+            })
+          }
+        }
+      })
+    },
+    onUsulanActive(item, index, ev) {
+      if (ev.target.classList.contains("checked-box")) {
+        if ((this.userRole === 1) || ((this.userRole === 2 || this.userRole === 3) && (item.usulanKriteria === "Data Pasangan" || item.usulanKriteria === "Data Anak"))) {
+          this.dataUsulan[this.page.active-1][index].isChecked = !this.dataUsulan[this.page.active-1][index].isChecked
+          if (!this.dataUsulan[this.page.active-1][index].isChecked) {
+            this.dataMultipleVerification = this.dataMultipleVerification.filter(el => !(parseInt(el.id) === parseInt(item.id) && parseInt(el.idUsulan) === parseInt(item.idUsulan) && el.usulanKriteria === item.usulanKriteria))
+          } else {
+            this.dataMultipleVerification.push({
+              id: item.id,
+              idUsulan: item.idUsulan,
+              usulanKriteria: item.usulanKriteria
+            })
+          }
+        }
+      } else {
+        this.usulanActive = index
+        this.$store.commit("onUsulanData", item)
+      }
     },
     getDataUsulan(subMenuActive) {
       this.isLoading = true
@@ -65,22 +126,23 @@ export default {
       }).then(res => {
         this.isLoading = false
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        let dataUsulan = data.message
-        if (dataUsulan.length > 500) {
-          let tempDataUsulan = []
-          for (let i=0; i<dataUsulan.length; i++) {
-            tempDataUsulan.push(dataUsulan.splice(0, 500))
-          }
-          for (let i=0; i<tempDataUsulan.length; i++) {
-            setTimeout(() => {
-              for (let j=0; j<tempDataUsulan[i].length; j++) {
-                this.dataUsulan.push(tempDataUsulan[i][j])
-              }
-            }, 1)
-          }
-        } else {
-          this.dataUsulan = dataUsulan
+        // let dataUsulan = data.message
+        let dataUsulan = []
+        data.message.forEach(el => {
+          el.isChecked = false
+          dataUsulan.push(el)
+        })
+        // for (let i = 0; i < 100; i++) {
+        //   data.message.forEach(element => {
+        //     element.isChecked = false
+        //     dataUsulan.push({...element})
+        //   })
+        // }
+        let tempDataUsulan = []
+        for (let i=0; i<dataUsulan.length; i++) {
+          tempDataUsulan.push(dataUsulan.splice(0, 50))
         }
+        this.dataUsulan = tempDataUsulan
       })
     },
     getSubMenu() {
@@ -108,6 +170,8 @@ export default {
     }
   },
   created() {
+    let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+    this.userRole = parseInt(token.idAppRoleUser)
     this.getSubMenu()
     this.getDataUsulan(this.subMenuActive)
   }

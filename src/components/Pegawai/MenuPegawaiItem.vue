@@ -37,6 +37,7 @@
           <DataJabatanUnitKerja v-else-if="dataMenuPegawaiItem.data.illustration.split('Illustration')[1] === 'DataJabatanUnitKerja'" />
           <DataStatusKepegawaian v-else-if="dataMenuPegawaiItem.data.illustration.split('Illustration')[1] === 'DataStatusKepegawaian'" />
           <DataPenghargaan v-else-if="dataMenuPegawaiItem.data.illustration.split('Illustration')[1] === 'DataPenghargaan'" />
+          <DataAngkaKredit v-else-if="dataMenuPegawaiItem.data.illustration.split('Illustration')[1] === 'DataAngkaKredit'" />
         </div>
       </div>
       <div
@@ -71,6 +72,7 @@ import DataSkp from "./Content/DataSkp.vue"
 import DataJabatanUnitKerja from "./Content/DataJabatanUnitKerja.vue"
 import DataStatusKepegawaian from "./Content/DataStatusKepegawaian.vue"
 import DataPenghargaan from "./Content/DataPenghargaan.vue"
+import DataAngkaKredit from "./Content/DataAngkaKredit.vue"
 export default {
   components: {
     DataCpnsPns,
@@ -83,7 +85,8 @@ export default {
     DataSkp,
     DataJabatanUnitKerja,
     DataStatusKepegawaian,
-    DataPenghargaan
+    DataPenghargaan,
+    DataAngkaKredit
   },
   props: {
     dataMenuPegawaiItem: {

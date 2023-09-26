@@ -1,7 +1,6 @@
 <template>
   <div id="unit-organisasi-wrapper">
     <AkunPenggunaHeader />
-    <div class="btn btn-sm my-btn-primary" @click="cobaApi()">Coba</div>
     <div id="unit-organisasi" class="text-left">
       <div class="btn-wrapper">
         <div class="btn-unor text-center" :class="btnActive == 'asn' ? 'active' : ''" @click="btnActive='asn'">
@@ -91,34 +90,6 @@ export default {
     }
   },
   methods: {
-    cobaApi() {
-      axios({
-        url: "https://apimws.bkn.go.id/oauth2/token",
-        method: "POST",
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-      })
-      // axios({
-      //   url: "https://apimws.bkn.go.id/oauth2/token",
-      //   method: "POST",
-      //   auth: {
-      //     username: "5JsEkdA7pWuuVJi8QIqboD_IeDEa",
-      //     password: "egPz9sSf34Q2_tD73YmjHEXNATEa"
-      //   },
-      //   headers: {
-      //     "Content-Type": "application/x-www-form-urlencoded",
-      //     "Access-Control-Allow-Origin": "*",
-      //     "x": "1"
-      //   },
-      //   withCredentials: true,
-      //   data: {
-      //     grant_type: "client_credentials"
-      //   },
-      // }).then(res => {
-      //   console.log(res)
-      // })
-    },
     resetPassword(item) {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let data = this.$store.getters.getEncrypt(JSON.stringify(item), u)

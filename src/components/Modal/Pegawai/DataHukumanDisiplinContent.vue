@@ -98,10 +98,10 @@
       </div>
     </div>
     <div class="row row-form">
-      <div class="col 12">
+      <div class="col-12">
         <div class="form-group">
           <label for="fieldKeterangan">Keterangan Alasan Hukuman</label>
-          <input type="text" :value="dataHukumanDisiplin.keteranganAlasanHukdis" class="form-control">
+          <input type="text" v-model="dataHukumanDisiplin.keteranganAlasanHukdis" class="form-control">
           <small class="text-red" v-if="inputError.keteranganAlasanHukuman.status"><b>*{{ inputError.keteranganAlasanHukuman.description }}</b></small>
         </div>
       </div>
