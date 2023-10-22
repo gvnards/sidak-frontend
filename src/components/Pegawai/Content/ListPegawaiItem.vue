@@ -1,11 +1,11 @@
 <template>
   <div id="list-pegawai-item-wrapper">
-    <div class="foto-wrapper" v-if="pegawai.nip.charAt(14) === '1'">
+    <!-- <div class="foto-wrapper" v-if="pegawai.nip.charAt(14) === '1'">
       <IllustrationProfilePictureMan class="foto" />
     </div>
     <div class="foto-wrapper" v-else>
       <IllustrationProfilePictureWoman class="foto" />
-    </div>
+    </div> -->
     <div style="height: 8px;"></div>
     <h6 :title="pegawai.nama" class="text-primary text-center" style="margin: 0;">{{ pegawai.nama }}</h6>
     <p class="text-center" style="font-size: 12px; padding: 0; margin: 0;">{{ pegawai.nip }}</p>

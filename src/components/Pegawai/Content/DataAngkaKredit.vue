@@ -78,7 +78,7 @@ export default {
         let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        this.dataAngkaKredit = data.message
+        this.dataAngkaKredit = data.message.dataAngkaKredit
       })
     },
     addDataAngkaKredit() {
@@ -110,7 +110,6 @@ export default {
       this.isLoading = false
       if (data.status === 2) {
         this.dataAngkaKredit = data.message.dataAngkaKredit
-        console.log(data.message)
       } else {
         localStorage.clear()
         this.$router.push({

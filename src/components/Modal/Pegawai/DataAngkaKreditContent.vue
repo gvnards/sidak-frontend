@@ -227,6 +227,16 @@ export default {
         }
       })
     },
+    getDataUpdated() {
+      this.isLoading = true
+      let url = `/angka-kredit/updated/${this.$store.getters.getIdPegawai}/${this.$store.getters.getModalData.id}`
+      return axios({
+        url: `${env.VITE_BACKEND_URL}${url}`,
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     async onChangeFile(item) {
       if (item.target.files.length !== 0) {
         if (item.target.files[0].size > (1024000 * this.fileCategory.ukuran)) {
@@ -274,13 +284,24 @@ export default {
     }
   },
   created() {
-    this.getDataCreated().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-      this.jabatan = data.message.jabatan
-      this.jenisAngkaKredit = data.message.jenisAngkaKredit
-      this.fileCategory = data.message.dokumenKategori
-    })
+    if(this.$store.getters.getModalMethod === "UPDATE") {
+      this.getDataUpdated().then(res => {
+        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.jabatan = data.message.jabatan
+        this.jenisAngkaKredit = data.message.jenisAngkaKredit
+        this.fileCategory = data.message.dokumenKategori
+        this.dataAngkaKredit = data.message.dataAngkaKredit[0]
+      })
+    } else {
+      this.getDataCreated().then(res => {
+        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.jabatan = data.message.jabatan
+        this.jenisAngkaKredit = data.message.jenisAngkaKredit
+        this.fileCategory = data.message.dokumenKategori
+      })
+    }
   }
 }
 </script>

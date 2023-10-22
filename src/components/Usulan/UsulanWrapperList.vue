@@ -30,7 +30,7 @@
         </div>
       </div>
       <div @click="onUsulanActive(item, index, $event)" v-for="(item, index) in (dataUsulan.length > 0 ? dataUsulan[page.active-1] : [])" :key="index" :title="`${item.usulan} ${item.usulanKriteria}`">
-        <UsulanItem :isChecked="item.isChecked" :style="(usulanActive === index) ? 'background-color: #EFF5F5;' : ''" :statusUsulan="item.statusUsulan" :mainText="`${item.usulan} ${item.usulanKriteria}`" :subText="item.nama" :timeText="item.createdAt" :isSetujui="parseInt(item.idUsulanHasil) !== 2" :isDisabled="(userRole === 4) || ((userRole === 2 || userRole === 3) && !(item.usulanKriteria === 'Data Pasangan' || item.usulanKriteria === 'Data Anak'))" />
+        <UsulanItem :isChecked="item.isChecked" :style="(usulanActive === index) ? 'background-color: #EFF5F5;' : ''" :statusUsulan="item.statusUsulan" :mainText="`${item.usulan} ${item.usulanKriteria}`" :subText="item.nama" :timeText="item.createdAt" :isSetujui="parseInt(item.idUsulanHasil) !== 2" :isDisabled="(userRole === 4) || ((userRole === 2 || userRole === 3) && !(item.usulanKriteria === 'Data Pasangan' || item.usulanKriteria === 'Data Anak')) || parseInt(item.idUsulan) === 2" />
       </div>
     </div>
   </div>
@@ -82,11 +82,13 @@ export default {
       this.dataUsulan[this.page.active-1].forEach(el => {
         el.isChecked = this.isCheckedAll
         if (this.isCheckedAll) {
-          if ((this.userRole === 1) || ((this.userRole === 2 || this.userRole === 3) && (el.usulanKriteria === "Data Pasangan" || el.usulanKriteria === "Data Anak"))) {
-            this.dataMultipleVerification.push({
-              id: el.id,
-              usulanKriteria: el.usulanKriteria
-            })
+          if (parseInt(el.idUsulan) !== 2) {
+            if ((this.userRole === 1) || ((this.userRole === 2 || this.userRole === 3) && (el.usulanKriteria === "Data Pasangan" || el.usulanKriteria === "Data Anak"))) {
+              this.dataMultipleVerification.push({
+                id: el.id,
+                usulanKriteria: el.usulanKriteria
+              })
+            }
           }
         }
       })

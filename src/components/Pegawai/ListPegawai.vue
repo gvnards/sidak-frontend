@@ -63,6 +63,19 @@
         <div @click="$emit('selectPegawai', item.id)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" style="margin: 10px;">
           <ListPegawaiItem :pegawai="item" />
         </div>
+        <!-- <table class="table">
+          <thead class="thead-dark">
+            <tr style="font-size: 0.85rem;">
+              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Nama/NIP</th>
+              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Golongan</th>
+              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Jabatan</th>
+              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Unit Organisasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ListPegawaiItemX />
+          </tbody>
+        </table> -->
         <ul class="pagination-wrapper" style="margin-top: 24px;">
           <!-- <li class="pagination-item" v-for="i in (totalPage==0?totalPage:pagination)" :key="i" :class="i == pageActive ? 'active' : ''" @click="pageActive=i">{{ i }}</li>
           <li style="list-style-type: none; padding: 4px 8px;" v-if="pageActive < totalPage-7">...</li>

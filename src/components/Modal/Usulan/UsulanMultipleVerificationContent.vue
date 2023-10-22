@@ -34,17 +34,17 @@
     </div>
     <div class="modal-footer">
       <div class="row" style="width: 100%; margin: 0;">
-        <div class="col-12 col-sm-6" v-if="method !== ''" style="margin-top: 4px; margin-bottom: 4px;">
-          <div class="btn btn-sm btn-block my-btn-primary" @click="onProcess()">Proses Verifikasi Usulan</div>
-        </div>
         <div :class="method !== '' ? 'col-12 col-sm-6' : 'col-12'" style="margin-top: 4px; margin-bottom: 4px;">
           <div
             type="button"
-            class="btn btn-block my-btn-secondary"
+            class="btn btn-sm btn-block my-btn-secondary"
             @click="closeModal()"
           >
             Batal
           </div>
+        </div>
+        <div class="col-12 order-first order-sm-12 col-sm-6" v-if="method !== ''" style="margin-top: 4px; margin-bottom: 4px;">
+          <div class="btn btn-sm btn-block my-btn-primary" @click="onProcess()">Proses Verifikasi Usulan</div>
         </div>
       </div>
     </div>
