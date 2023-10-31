@@ -134,9 +134,9 @@ export default {
         tanggalDokumen: "",
         periodePenilaianMulai: "",
         periodePenilaianSelesai: "",
-        angkaKreditUtama: 0.01,
-        angkaKreditPenunjang: 0.01,
-        angkaKreditTotal: 0.01,
+        angkaKreditUtama: 0.001,
+        angkaKreditPenunjang: 0.001,
+        angkaKreditTotal: 0.001,
         dokumen: ""
       },
       jenisAngkaKredit: [],
