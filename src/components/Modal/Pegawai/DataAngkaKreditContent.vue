@@ -63,21 +63,21 @@
       <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1">
         <div class="form-group">
           <label for="fieldKreditUtama">Utama</label>
-          <input type="number" min="0" step="0.01" id="fieldKreditUtama" v-model="dataAngkaKredit.angkaKreditUtama" class="form-control">
+          <input type="number" min="0" step="0.001" id="fieldKreditUtama" v-model="dataAngkaKredit.angkaKreditUtama" class="form-control">
           <small class="text-red" v-if="inputError.angkaKreditUtama.status"><b>*{{ inputError.angkaKreditUtama.description }}</b></small>
         </div>
       </div>
       <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1">
         <div class="form-group">
           <label for="fieldKreditPenunjang">Penunjang</label>
-          <input type="number" min="0" step="0.01" id="fieldKreditPenunjang" v-model="dataAngkaKredit.angkaKreditPenunjang" class="form-control">
+          <input type="number" min="0" step="0.001" id="fieldKreditPenunjang" v-model="dataAngkaKredit.angkaKreditPenunjang" class="form-control">
           <small class="text-red" v-if="inputError.angkaKreditPenunjang.status"><b>*{{ inputError.angkaKreditPenunjang.description }}</b></small>
         </div>
       </div>
       <div class="col-12">
         <div class="form-group">
           <label for="fieldKreditTotal">Total</label>
-          <input type="number" min="0" step="0.01" id="fieldKreditTotal" v-model="dataAngkaKredit.angkaKreditTotal" class="form-control">
+          <input type="number" min="0" step="0.001" id="fieldKreditTotal" v-model="dataAngkaKredit.angkaKreditTotal" class="form-control">
           <small class="text-red" v-if="inputError.angkaKreditTotal.status"><b>*{{ inputError.angkaKreditTotal.description }}</b></small>
         </div>
       </div>
