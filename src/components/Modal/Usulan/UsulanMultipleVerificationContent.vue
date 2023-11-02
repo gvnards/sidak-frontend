@@ -88,13 +88,12 @@ export default {
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        console.log(data)
-        // let getModalMethod = this.$store.getters.getModalMethod
+        let getModalMethod = this.method.toLowerCase() === "disetujui" ? "APPROVE" : "DECLINE"
         // callback status
-        // this.$store.commit("onModalMethod", getModalMethod)
-        // this.$store.commit("onModalFolder", "Usulan")
-        // this.$store.commit("onModalContent", "UsulanCallback")
-        // this.$store.commit("onModalStatusCallback", data.status === 2 || data.status === true ? "Success" : "Failed")
+        this.$store.commit("onModalMethod", getModalMethod)
+        this.$store.commit("onModalFolder", "Usulan")
+        this.$store.commit("onModalContent", "UsulanCallback")
+        this.$store.commit("onModalStatusCallback", data.status === 2 || data.status === true ? "Success" : "Failed")
       })
     }
   }
