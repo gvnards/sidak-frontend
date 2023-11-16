@@ -15,6 +15,7 @@ import IllustrationDataStatusKepegawaian from "@/components/icons/IllustrationDa
 import IllustrationDataPenghargaan from "@/components/icons/IllustrationDataPenghargaan.vue"
 import IllustrationComingSoon from "@/components/icons/IllustrationComingSoon.vue"
 import IllustrationDataAngkaKredit from "@/components/icons/IllustrationDataAngkaKredit.vue"
+import IllustrationDataEDocument from "@/components/icons/IllustrationDataEDocument.vue"
 
 Vue.component("IllustrationDataPribadi", IllustrationDataPribadi)
 Vue.component("IllustrationDataKeluarga", IllustrationDataKeluarga)
@@ -31,3 +32,4 @@ Vue.component("IllustrationDataStatusKepegawaian", IllustrationDataStatusKepegaw
 Vue.component("IllustrationDataPenghargaan", IllustrationDataPenghargaan)
 Vue.component("IllustrationComingSoon", IllustrationComingSoon)
 Vue.component("IllustrationDataAngkaKredit", IllustrationDataAngkaKredit)
+Vue.component("IllustrationDataEDocument", IllustrationDataEDocument)

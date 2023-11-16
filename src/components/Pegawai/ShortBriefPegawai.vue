@@ -1,8 +1,6 @@
 <!-- eslint-disable no-undef -->
 <template>
   <div class="short-brief-wrapper">
-    <blob-shape-1 class="blob" style="right: -40%; top: -10%"></blob-shape-1>
-    <blob-shape-1 class="blob" style="left: -20%; bottom: -10%"></blob-shape-1>
     <div class="short-brief-data-wrapper">
       <div class="profile-picture-wrapper">
         <img
@@ -48,15 +46,13 @@
 import IconFourLeafClover from "../icons/IconFourLeafClover.vue"
 import IllustrationProfilePictureMan from "../icons/IllustrationProfilePictureMan.vue"
 import IllustrationProfilePictureWoman from "../icons/IllustrationProfilePictureWoman.vue"
-import BlobShape1 from "../icons/BlobShape1.vue"
 import axios from "axios"
 const env = import.meta.env
 export default {
   components: {
     IconFourLeafClover,
     IllustrationProfilePictureMan,
-    IllustrationProfilePictureWoman,
-    BlobShape1
+    IllustrationProfilePictureWoman
   },
   data() {
     return {
@@ -125,12 +121,25 @@ export default {
   position: relative;
 }
 .short-brief-wrapper {
+  &::after {
+    background-image: url('./../icons/BlobShape1.svg');
+    // background-repeat: space right;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
   height: 100%;
+  min-height: 400px;
   max-width: 400px;
   min-width: 280px;
   border-radius: 8px;
   background-color: rgba(239, 245, 245, 0.3);
   overflow: hidden;
+  overflow-y: auto;
+  // padding-bottom: 80px;
   box-sizing: border-box;
   position: relative;
 }
@@ -140,7 +149,7 @@ export default {
   box-sizing: border-box;
   padding: 40px 20px;
   z-index: 2;
-  overflow: hidden;
+  // overflow: hidden;
   position: relative;
   .profile-picture-wrapper {
     // filter: blur(4px);
@@ -186,6 +195,7 @@ export default {
   .short-brief-wrapper {
     max-width: 100%;
     height: 100%;
+    min-height: auto;
     max-height: 240px;
   }
   .short-brief-data-wrapper {

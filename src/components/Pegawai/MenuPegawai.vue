@@ -87,7 +87,7 @@ export default {
     &.clicked {
       width: 100%;
       max-width: 100%;
-      min-height: 100%;
+      min-height: 100px;
       height: 100%;
       max-height: 100%;
     }

@@ -10,6 +10,20 @@
       </div>
     </div>
     <div class="data-usulan-found">
+      <p class="text-primary">
+        <span style="font-weight: 500;">Total Usulan:</span> <span style="font-weight: 600;">{{ `${((page.active - 1) * page.maxDataPerPage) + 1}-${((page.active - 1) * page.maxDataPerPage) + dataUsulanVisible.length}` }}</span> dari <span style="font-weight: 600;">{{ dataUsulan.length }}</span>
+      </p>
+      <div class="form-group search-wrapper" style="margin-top: 8px;">
+        <i
+          class="fa-solid fa-magnifying-glass search-icon text-primary"
+        ></i>
+        <input
+          type="text"
+          v-model="searchValue"
+          class="form-control search"
+          placeholder="Cari berdasarkan NIP/Nama"
+        />
+      </div>
       <div class="row row-form" style="border-bottom: 0.5px solid lightgray;">
         <div class="col-2">
           <input type="checkbox" class="form-control checked-box" style="width: 16px; height: 16px; transform: translateY(-50%); top: 50%; left: 55%; position: relative;" :checked="isCheckedAll" @click="onCheckedAll()" :disabled="userRole === 4">
@@ -29,9 +43,15 @@
           </div>
         </div>
       </div>
-      <div @click="onUsulanActive(item, index, $event)" v-for="(item, index) in (dataUsulan.length > 0 ? dataUsulan[page.active-1] : [])" :key="index" :title="`${item.usulan} ${item.usulanKriteria}`">
+      <div @click="onUsulanActive(item, index, $event)" v-for="(item, index) in dataUsulanVisible" :key="index" :title="`${item.usulan} ${item.usulanKriteria}`">
         <UsulanItem :isChecked="item.isChecked" :style="(usulanActive === index) ? 'background-color: #EFF5F5;' : ''" :statusUsulan="item.statusUsulan" :mainText="`${item.usulan} ${item.usulanKriteria}`" :subText="item.nama" :timeText="item.createdAt" :isSetujui="parseInt(item.idUsulanHasil) !== 2" :isDisabled="(userRole === 4) || ((userRole === 2 || userRole === 3) && !(item.usulanKriteria === 'Data Pasangan' || item.usulanKriteria === 'Data Anak')) || parseInt(item.idUsulan) === 2" />
       </div>
+      <!-- Ini kurang pagging nya aja, mau dibikin "Sebelumnya - Selanjutnya" atau "Pagging Number" juga terserah -->
+      <ul class="pagination-wrapper" style="margin-top: 24px;" v-if="page.total > 1">
+        <li class="pagination-item" :class="page.active === 1 ? 'disabled' : ''" @click="page.active=page.active===1?page.active:page.active-1">Sebelumnya</li>
+        <div style="width: 12px;"></div>
+        <li class="pagination-item" :class="page.active >= page.total ? 'disabled' : ''" @click="page.active=page.active===page.total?page.active:page.active+1">Selanjutnya</li>
+      </ul>
     </div>
   </div>
 </template>
@@ -52,10 +72,21 @@ export default {
     },
     dataMultipleVerification(val) {
       if (val.length < 1) this.isCheckedAll = false
+    },
+    searchValue(val) {
+      if (this.dataUsulan.length < 1) return
+      if (val === "") {
+        this.page.total = Math.ceil(this.dataUsulan.length / this.page.maxDataPerPage)
+      } else {
+        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(val.toLowerCase()))
+        this.page.total = Math.ceil(data.length / this.page.maxDataPerPage)
+        this.page.active = 1
+      }
     }
   },
   data() {
     return {
+      searchValue: "",
       usulanActive: -1,
       subMenuActive: 1,
       subMenu: [],
@@ -64,11 +95,22 @@ export default {
       isCheckedAll: false,
       page: {
         active: 1,
-        total: 1
+        total: 1,
+        maxDataPerPage: 50,
       },
       dataMultipleVerification: [],
       userRole: 0
     }
+  },
+  computed: {
+    dataUsulanVisible() {
+      if (this.dataUsulan.length < 1) return []
+      if (this.searchValue !== "") {
+        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(this.searchValue.toLowerCase()))
+        return data.filter((el, idx) => (idx) < (this.page.maxDataPerPage * this.page.active) && idx >= ((this.page.active - 1) * this.page.maxDataPerPage))
+      }
+      return this.dataUsulan.filter((el, idx) => (idx) < (this.page.maxDataPerPage * this.page.active) && idx >= ((this.page.active - 1) * this.page.maxDataPerPage))
+    },
   },
   methods: {
     onMultipleVerification() {
@@ -128,23 +170,8 @@ export default {
       }).then(res => {
         this.isLoading = false
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        // let dataUsulan = data.message
-        let dataUsulan = []
-        data.message.forEach(el => {
-          el.isChecked = false
-          dataUsulan.push(el)
-        })
-        // for (let i = 0; i < 100; i++) {
-        //   data.message.forEach(element => {
-        //     element.isChecked = false
-        //     dataUsulan.push({...element})
-        //   })
-        // }
-        let tempDataUsulan = []
-        for (let i=0; i<dataUsulan.length; i++) {
-          tempDataUsulan.push(dataUsulan.splice(0, 50))
-        }
-        this.dataUsulan = tempDataUsulan
+        this.dataUsulan = data.message
+        this.page.total = Math.ceil(data.message.length / this.page.maxDataPerPage)
       })
     },
     getSubMenu() {
@@ -250,6 +277,25 @@ export default {
       top: -4px;
       left: 50%;
       transform: translateX(-50%);
+    }
+  }
+}
+.search {
+  border-radius: 40px;
+  padding-left: 50px;
+  letter-spacing: 1px;
+  &-wrapper {
+    position: relative;
+    max-width: 100%;
+    margin-top: 20px;
+    .search-icon {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      padding: 6px;
+      padding-left: 16px;
+      transform: translateY(-50%);
     }
   }
 }

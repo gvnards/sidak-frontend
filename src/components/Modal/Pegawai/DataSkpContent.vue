@@ -1,5 +1,5 @@
 <template>
-  <ModalHeaderFooter :step="step !== 4 ? 'step' : 'stepEnd'" :header-title="'SKP'" :header-subtitle="'skp'" :illustration="'IllustrationDataSkp'" @onNext="onNext()" @onPrev="onPrev()" @onUsulkan="onUsulkan()">
+  <ModalHeaderFooter :step="step !== 4 ? 'step' : 'stepEnd'" :header-title="'SKP'" :header-subtitle="'skp'" :illustration="'IllustrationDataSkp'" @onNext="onNext()" @onPrev="onPrev()" @onUsulkan="/*onUsulkan()*/() => {}">
     <div class="row row-form">
       <div class="col-3 step-wrapper" v-for="item in 4" :key="item">
         <div class="step">

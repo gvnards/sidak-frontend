@@ -17,7 +17,7 @@
       <div type="button" class="btn my-btn-secondary" @click="step === 'step' || step == 'stepEnd' ? $emit('onPrev') : closeModal()">
         {{ step == 'step' || step == 'stepEnd' ? 'Sebelumnya' : 'Batal'}}
       </div>
-      <button type="button" class="btn my-btn-primary" @click="step === 'step' ? $emit('onNext') : $emit('onUsulkan')">{{ step == 'step' ? 'Selanjutnya' : primaryText }}</button>
+      <button v-if="step !== 'stepEnd'" type="button" class="btn my-btn-primary" @click="step === 'step' ? $emit('onNext') : $emit('onUsulkan')">{{ step == 'step' ? 'Selanjutnya' : primaryText }}</button>
     </div>
   </div>
 </template>
