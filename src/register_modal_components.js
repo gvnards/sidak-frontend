@@ -11,6 +11,7 @@ import DataPangkatGolonganContent from "@/components/Modal/Pegawai/DataPangkatGo
 import DataPendidikanContent from "@/components/Modal/Pegawai/DataPendidikanContent.vue"
 import DataSkpContent from "@/components/Modal/Pegawai/DataSkpContent.vue"
 import DataJabatanUnitKerjaContent from "@/components/Modal/Pegawai/DataJabatanUnitKerjaContent.vue"
+import DataEDocumentContent from "@/components/Modal/Pegawai/DataEDocumentContent.vue"
 import DataPenghargaanContent from "@/components/Modal/Pegawai/DataPenghargaanContent.vue"
 import DataAngkaKreditContent from "@/components/Modal/Pegawai/DataAngkaKreditContent.vue"
 import DataUnitOrganisasiContent from "@/components/Modal/UnitOrganisasi/DataUnitOrganisasiContent.vue"
@@ -47,3 +48,4 @@ Vue.component("DeleteUnitOrganisasiContent", DeleteUnitOrganisasiContent)
 Vue.component("DataPenghargaanContent", DataPenghargaanContent)
 Vue.component("UsulanMultipleVerificationContent", UsulanMultipleVerificationContent)
 Vue.component("DataAngkaKreditContent", DataAngkaKreditContent)
+Vue.component("DataEDocumentContent", DataEDocumentContent)

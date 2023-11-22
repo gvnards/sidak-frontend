@@ -32,6 +32,7 @@ const store = new Vuex.Store({
       usulanData: {},
       isUsulanMobile: false,
       windowWidth: window.innerWidth,
+      resultCallbackReload: ""
     }
   },
   getters: {
@@ -45,9 +46,13 @@ const store = new Vuex.Store({
     getIdPegawai: state => state.idPegawai,
     getUsulanData: state => state.usulanData,
     getIsUsulanMobile: state => state.isUsulanMobile,
-    getWindowWidth: state => state.windowWidth
+    getWindowWidth: state => state.windowWidth,
+    getResultCallbackReload: state => state.resultCallbackReload
   },
   mutations: {
+    onResultCallbackReload(state, val) {
+      state.resultCallbackReload = val
+    },
     resetModal(state) {
       state.modalContent = ""
       state.modalData = {}

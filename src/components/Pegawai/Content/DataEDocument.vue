@@ -2,36 +2,27 @@
   <div>
     <div class="container">
       <div class="row">
-        <div class="col-12 col-" v-for="item in listDocument" :key="item.id">
-          <div class="form-group text-left">
-            <label for="fieldDokumenAngkaKredit">Dokumen {{ item.nama }}</label>
-            <small class="text-danger" v-if="item.keterangan !== ''" style="font-weight: 600; display: block; margin-top: -10px;">({{ item.keterangan }})</small>
-            <div class="container" v-if="hasDocument(item.id).length > 0">
-              <div class="row">
-                <div class="col-6 btn btn-sm btn-block my-btn-primary">
-                  Lihat Dokumen<!--{{ hasDocument(item.id)[0].nama }} -->
+        <div class="col-12" v-for="item in listDocument" :key="item.id">
+            <div class="row">
+              <div class="col-10" style="border: 0.5px solid lightgrey;">
+                <div class="form-group text-left">
+                  <label :for="`fieldDokumen${item.kategori}`">Dokumen {{ item.nama }}</label>
+                  <small class="text-danger" v-show="item.keterangan !== ''" style="font-weight: 600; display: block; margin-top: -10px;">({{ item.keterangan }})</small>
                 </div>
-                <div class="col-6">
-                  <div class="btn btn-sm btn-block my-btn-outline-danger">Hapus Dokumen</div>
-                </div>
+              </div>
+              <div class="col-2 text-left" style="border: 0.5px solid lightgrey;; padding: 0; padding-left: 4px; cursor: pointer;"
+              data-toggle="modal"
+              data-target="#modal"
+              data-backdrop="static"
+              data-keyboard="false" @click="onModalPopup(item.id, item.nama)">
+                <small style="font-weight: 600;">Status: </small>
+                <i v-if="hasDocument(item.id)" class="fa-solid fa-circle-check text-primary"></i>
+                <i v-else class="fa-solid fa-circle-xmark text-danger"></i>
+                <br>
+                <small style="font-weight: 600;">Aksi: </small>
+                <i class="fa-solid fa-pen-to-square text-info"></i>
               </div>
             </div>
-            <div v-else class="row">
-              <div :class="findIndexDocumentWillUpload(item.id) > -1 ? 'col-10' : 'col-12'">
-                <div class="custom-file">
-                  <input @click="documentCategory = item.kategori; dokumenAkanUpload.id = item.id" type="file" class="custom-file-input" accept="application/pdf" :id="`field${item.kategori}`" @change="onChangeFile">
-                  <label class="custom-file-label" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" for="fieldDokumenAngkaKredit">{{ findIndexDocumentWillUpload(item.id) > -1 ? dokumenAkanUpload.dokumen[findIndexDocumentWillUpload(item.id)].nama : 'Cari dokumen' }}</label>
-                </div>
-              </div>
-              <div @click="uploadDocument(item.id)" v-if="findIndexDocumentWillUpload(item.id) > -1" class="col-2">
-                <div class="upload" style="position: relative; height: 100%; text-align: center; cursor: pointer;">
-                  <i class="fa-solid fa-cloud-arrow-up text-primary" style="width: 28px; height: 28px;"></i>
-                  <small class="text-primary">Upload</small>
-                </div>
-              </div>
-            </div>
-            <!-- <small :class="inputError.dokumenAngkaKredit.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenAngkaKredit.status ? inputError.dokumenAngkaKredit.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small> -->
-          </div>
         </div>
       </div>
     </div>
@@ -41,59 +32,52 @@
 <script>
 import axios from "axios"
 const env = import.meta.env
-import mixins from "@/mixins/index.js"
 export default {
-  mixins: [mixins],
+  watch: {
+    resultCallbackReload(val) {
+      if (val === "ReloadListDataEDocument") {
+        this.listDocument = [],
+        this.dataDocuments = [],
+        this.fileCategory = {},
+        this.getDataCreated().then(res => {
+          let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+          let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+          this.listDocument = data.daftarDokumen
+          this.dataDocuments = data.dataDokumen
+          this.fileCategory = data.dokumenKategori
+        })
+        this.$store.commit("onResultCallbackReload", "")
+      }
+    }
+  },
   data() {
     return {
-      documentCategory: "",
       listDocument: [],
       dataDocuments: [],
       fileCategory: {},
-      dokumenAkanUpload: {
-        id: -1,
-        dokumen: []
-      },
     }
   },
   methods: {
-    async onChangeFile(item) {
-      if (item.target.files.length !== 0) {
-        if (item.target.files[0].size > (1024000 * this.fileCategory.ukuran)) {
-          if (this.findIndexDocumentWillUpload(parseInt(this.dokumenAkanUpload.id)) > -1) this.dokumenAkanUpload.dokumen.splice(this.findIndexDocumentWillUpload(parseInt(this.dokumenAkanUpload.id)),1)
-          item.target.value = null
-        } else {
-          let dataDokumen = {
-            idDaftar: parseInt(this.dokumenAkanUpload.id),
-            nama: item.target.files[0].name,
-            dokumen: await this.getBase64(item.target.files[0])
-          }
-          if (this.findIndexDocumentWillUpload(parseInt(this.dokumenAkanUpload.id)) > -1) this.dokumenAkanUpload.dokumen[this.findIndexDocumentWillUpload(parseInt(this.dokumenAkanUpload.id))] = dataDokumen
-          else this.dokumenAkanUpload.dokumen.push(dataDokumen)
-        }
-        this.dokumenAkanUpload.id = -1
-        // else if (item.target.files[0].type !== "application/pdf") {
-        //   this.inputError.dokumen.status = true
-        //   this.inputError.dokumen.description = "Dokumen harus berjenis PDF"
-        //   item.target.value = null
-        //   this.dataPenghargaan.dokumen = ""
-        // } else {
-        //   this.inputError.dokumen.status = false
-        //   // this.dataPenghargaan.dokumen = await this.getBase64(item.target.files[0])
-        //   console.log(item.target)
-        // }
-        console.log(this.dokumenAkanUpload.dokumen)
+    onModalPopup(id, namaDokumen) {
+      let isUpdated = this.hasDocument(id)
+      this.$store.commit("onModalMethod", isUpdated ? "UPDATE" : "CREATE")
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "DataEDocument")
+      let modalData = {
+        namaDokumen: namaDokumen,
+        fileCategory: this.fileCategory,
+        idDaftarDokumen: id
       }
+      this.$store.commit("onModalData", modalData)
+      // if isUpdated, then this.dataDocuments.filter(el => parseInt(el.idDaftar) === parseInt(id))
+      // this.$store.commit("onModalData", item)
     },
     hasDocument(id) {
-      return this.dataDocuments.filter(el => parseInt(el.idDaftar) === parseInt(id))
-    },
-    findIndexDocumentWillUpload(id) {
-      return this.dokumenAkanUpload.dokumen.findIndex(el => parseInt(el.idDaftar) === parseInt(id))
+      return this.dataDocuments.filter(el => parseInt(el.idDaftar) === parseInt(id)).length > 0
     },
     getDataCreated() {
       // this.isLoading = true
-      let url = `/dokumen-elektronik/created/${this.$store.getters.getIdPegawai}`
+      let url = `/dokumen-elektronik/list/${this.$store.getters.getIdPegawai}`
       return axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         headers: {
@@ -101,25 +85,11 @@ export default {
         }
       })
     },
-    uploadDocument(id) {
-      let dok = {...this.dokumenAkanUpload.dokumen[this.findIndexDocumentWillUpload(id)]}
-      dok["idPegawai"] = parseInt(this.$store.getters.getIdPegawai)
-      dok["date"] = Date.now()
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let url = "/dokumen-elektronik"
-      axios({
-        url: `${env.VITE_BACKEND_URL}${url}`,
-        method: "POST",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-        data: {
-          message: this.$store.getters.getEncrypt(JSON.stringify(dok), u)
-        }
-      }).then(res => {
-        console.log(res)
-      })
-    }
+  },
+  computed: {
+    resultCallbackReload() {
+      return this.$store.getters.getResultCallbackReload
+    },
   },
   created() {
     this.getDataCreated().then(res => {

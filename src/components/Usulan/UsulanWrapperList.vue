@@ -21,7 +21,7 @@
           type="text"
           v-model="searchValue"
           class="form-control search"
-          placeholder="Cari berdasarkan NIP/Nama"
+          placeholder="Cari berdasarkan Nama/Usulan"
         />
       </div>
       <div class="row row-form" style="border-bottom: 0.5px solid lightgray;">
@@ -78,7 +78,7 @@ export default {
       if (val === "") {
         this.page.total = Math.ceil(this.dataUsulan.length / this.page.maxDataPerPage)
       } else {
-        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(val.toLowerCase()))
+        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(val.toLowerCase()) || el.usulanKriteria.toLowerCase().includes(this.searchValue.toLowerCase()))
         this.page.total = Math.ceil(data.length / this.page.maxDataPerPage)
         this.page.active = 1
       }
@@ -106,7 +106,7 @@ export default {
     dataUsulanVisible() {
       if (this.dataUsulan.length < 1) return []
       if (this.searchValue !== "") {
-        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(this.searchValue.toLowerCase()))
+        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(this.searchValue.toLowerCase()) || el.usulanKriteria.toLowerCase().includes(this.searchValue.toLowerCase()))
         return data.filter((el, idx) => (idx) < (this.page.maxDataPerPage * this.page.active) && idx >= ((this.page.active - 1) * this.page.maxDataPerPage))
       }
       return this.dataUsulan.filter((el, idx) => (idx) < (this.page.maxDataPerPage * this.page.active) && idx >= ((this.page.active - 1) * this.page.maxDataPerPage))
