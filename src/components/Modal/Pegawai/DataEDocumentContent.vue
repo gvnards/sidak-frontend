@@ -126,7 +126,7 @@ export default {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}/dokumen-elektronik`,
-        method: "POST",
+        method: this.$store.getters.getModalMethod === "UPDATE" ? "PUT" : "POST",
         headers: {
           "Authorization": localStorage.getItem("token")
         },
