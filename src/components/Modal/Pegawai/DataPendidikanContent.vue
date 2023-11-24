@@ -352,7 +352,10 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.dataPendidikan = data.message[0]
-        this.dataPendidikan.dokumenTranskrip = ""
+        if (this.dataPendidikan.dokumenTranskrip !== "") {
+          $("#dokumenTranskrip").empty()
+          $("#dokumenTranskrip").append(`<iframe src="${this.dataPendidikan.dokumenTranskrip}" frameborder="0" style="width: 100%; height: 600px;"></iframe>`)
+        }
       })
     },
     getDaftarPendidikan() {
@@ -420,7 +423,6 @@ export default {
           this.dataPendidikan[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"] = ""
           if (this.documentType === "transkrip") {
             $("#dokumenTranskrip").empty()
-            console.log("masuk sini")
           }
         } else if (item.target.files[0].type !== "application/pdf") {
           this.inputError[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"]["status"] = true
@@ -429,7 +431,6 @@ export default {
           this.dataPendidikan[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"] = ""
           if (this.documentType === "transkrip") {
             $("#dokumenTranskrip").empty()
-            console.log("masuk sini")
           }
         } else {
           this.inputError[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"]["status"] = false
