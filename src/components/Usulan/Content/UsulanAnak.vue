@@ -1,5 +1,6 @@
 <template>
   <div>
+    <InformasiUpdateUsulan />
     <div class="usulan-open-item-wrapper">
       <div class="row row-form">
         <div class="col-12">
@@ -87,7 +88,11 @@
 </template>
 
 <script>
+import InformasiUpdateUsulan from "./InformasiUpdateUsulan.vue"
 export default {
+  components: {
+    InformasiUpdateUsulan
+  },
   props: {
     dataAnak: {
       default() {
