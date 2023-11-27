@@ -24,14 +24,14 @@
           </div>
         </div>
       </div>
-      <UsulanPasangan v-if="getUsulanData.usulanKriteria === 'Data Pasangan'" :dataPasangan="usulanDetail" />
+      <UsulanPasangan v-if="getUsulanData.usulanKriteria === 'Data Pasangan'" :dataPasangan="usulanDetail" :dataPasanganBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
       <UsulanAnak v-if="getUsulanData.usulanKriteria === 'Data Anak'" :dataAnak="usulanDetail" :dataAnakBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
-      <UsulanPendidikan v-if="getUsulanData.usulanKriteria === 'Data Pendidikan'" :dataPendidikan="usulanDetail" />
-      <UsulanPangkat v-if="getUsulanData.usulanKriteria === 'Data Pangkat'" :dataPangkat="usulanDetail" />
+      <UsulanPendidikan v-if="getUsulanData.usulanKriteria === 'Data Pendidikan'" :dataPendidikan="usulanDetail" :dataPendidikanBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
+      <UsulanPangkat v-if="getUsulanData.usulanKriteria === 'Data Pangkat'" :dataPangkat="usulanDetail" :dataPangkatBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
       <UsulanDiklat v-if="getUsulanData.usulanKriteria === 'Data Diklat'" :dataDiklatKursus="usulanDetail" :dataDiklatKursusBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
-      <UsulanSkp v-if="getUsulanData.usulanKriteria === 'Data SKP'" :dataSkp="usulanDetail" />
-      <UsulanJabatan v-if="getUsulanData.usulanKriteria === 'Data Jabatan'" :dataJabatan="usulanDetail" />
-      <UsulanPenghargaan v-if="getUsulanData.usulanKriteria === 'Data Penghargaan'" :dataPenghargaan="usulanDetail" />
+      <UsulanSkp v-if="getUsulanData.usulanKriteria === 'Data SKP'" :dataSkp="usulanDetail" :dataSkpBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
+      <UsulanJabatan v-if="getUsulanData.usulanKriteria === 'Data Jabatan'" :dataJabatan="usulanDetail" :dataJabatanBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
+      <UsulanPenghargaan v-if="getUsulanData.usulanKriteria === 'Data Penghargaan'" :dataPenghargaan="usulanDetail" :dataPenghargaanBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
       <UsulanAngkaKredit v-if="getUsulanData.usulanKriteria === 'Data Angka Kredit'" :dataAngkaKredit="usulanDetail" :dataAngkaKreditBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
     </div>
     <div class="row row-form" style="margin-top: 10px; position: relative; z-index: 2;" v-if="(getUsulanData.id !== undefined) && (getUsulanData.idUsulanStatus !== 3) && isVisibleButton">
