@@ -6,6 +6,9 @@
           <p class="text-primary usulan-item-header">
             Jenis Penghargaan
           </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataPenghargaanBeforeUpdate.jenisPenghargaan }}
+          </p>
           <p class="usulan-item-fill text-primary">
             {{ dataPenghargaan.jenisPenghargaan }}
           </p>
@@ -17,6 +20,9 @@
         <div class="col-12">
           <p class="text-primary usulan-item-header">
             Tahun Penghargaan Diperoleh
+          </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataPenghargaanBeforeUpdate.tahunPenghargaan }}
           </p>
           <p class="usulan-item-fill text-primary">
             {{ dataPenghargaan.tahunPenghargaan }}
@@ -30,6 +36,9 @@
           <p class="text-primary usulan-item-header">
             Nomor Dokumen
           </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataPenghargaanBeforeUpdate.nomorDokumen }}
+          </p>
           <p class="usulan-item-fill text-primary">
             {{ dataPenghargaan.nomorDokumen }}
           </p>
@@ -37,6 +46,9 @@
         <div class="col-12 col-sm-6">
           <p class="text-primary usulan-item-header">
             Tanggal Dokumen
+          </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataPenghargaanBeforeUpdate.tanggalDokumen }}
           </p>
           <p class="usulan-item-fill text-primary">
             {{ dataPenghargaan.tanggalDokumen }}
@@ -50,7 +62,8 @@
           <p class="text-primary usulan-item-header">
             Dokumen
           </p>
-          <iframe v-if="dataPenghargaan.dokumen !== '' && dataPenghargaan.dokumen !== null" :src="dataPenghargaan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+          <iframe v-if="dataPenghargaanBeforeUpdate.dokumen !== '' && dataPenghargaanBeforeUpdate.dokumen !== null && isUsulanUpdate" :src="dataPenghargaanBeforeUpdate.dokumen" frameborder="0" style="width: 100%; height: 600px; border: 1px solid #EC392F; border-radius: 4px; box-sizing: border-box; padding: 10px;"></iframe>
+          <iframe v-if="dataPenghargaan.dokumen !== '' && dataPenghargaan.dokumen !== null" :src="dataPenghargaan.dokumen" frameborder="0" style="width: 100%; height: 600px; border: 1px solid #477b79; border-radius: 4px; box-sizing: border-box; padding: 10px;"></iframe>
           <div v-else class="text-danger" style="font-weight: 600;">Tidak ada Dokumen Penghargaan</div>
         </div>
       </div>
@@ -61,7 +74,24 @@
 <script>
 export default {
   props: {
+    isUsulanUpdate: {
+      default: false,
+      required: true,
+      type: Boolean
+    },
     dataPenghargaan: {
+      default() {
+        return {
+          jenisPenghargaan: "",
+          tahunPenghargaan: "",
+          tanggalDokumen: "",
+          nomorDokumen: "",
+          dokumen: "",
+        }
+      },
+      type: Object
+    },
+    dataPenghargaanBeforeUpdate: {
       default() {
         return {
           jenisPenghargaan: "",
@@ -93,6 +123,16 @@ p {
   &.usulan-item-fill {
     margin-top: 4px;
     border: 1px solid #477b79;
+    background-color: #EBEBEB;
+    border-radius: 4px;
+    font-weight: 500;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    cursor: default;
+  }
+  &.usulan-item-fill-red {
+    border: 1px solid #EC392F;
+    margin-top: 4px;
     background-color: #EBEBEB;
     border-radius: 4px;
     font-weight: 500;

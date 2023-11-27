@@ -15,15 +15,24 @@
           </div>
         </div>
       </div>
+      <div class="usulan-open-item-wrapper-info" v-if="usulanDetail.idUsulan !== undefined && parseInt(usulanDetail.idUsulan) === 2">
+        <div class="row row-form">
+          <div class="col-12">
+            <p class="usulan-item-info">
+              <i class="fa-solid fa-circle-info text-info"></i> Sekilas info:<br />Untuk pembaharuan (update):<br/><span class="text-danger" style="font-weight: 800;">Text/garis merah</span> = data sebelum diupdate<br /><span class="text-primary" style="font-weight: 800;">Text/garis hijau</span> = data akan diupdate
+            </p>
+          </div>
+        </div>
+      </div>
       <UsulanPasangan v-if="getUsulanData.usulanKriteria === 'Data Pasangan'" :dataPasangan="usulanDetail" />
-      <UsulanAnak v-if="getUsulanData.usulanKriteria === 'Data Anak'" :dataAnak="usulanDetail" />
+      <UsulanAnak v-if="getUsulanData.usulanKriteria === 'Data Anak'" :dataAnak="usulanDetail" :dataAnakBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
       <UsulanPendidikan v-if="getUsulanData.usulanKriteria === 'Data Pendidikan'" :dataPendidikan="usulanDetail" />
       <UsulanPangkat v-if="getUsulanData.usulanKriteria === 'Data Pangkat'" :dataPangkat="usulanDetail" />
-      <UsulanDiklat v-if="getUsulanData.usulanKriteria === 'Data Diklat'" :dataDiklatKursus="usulanDetail" />
+      <UsulanDiklat v-if="getUsulanData.usulanKriteria === 'Data Diklat'" :dataDiklatKursus="usulanDetail" :dataDiklatKursusBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
       <UsulanSkp v-if="getUsulanData.usulanKriteria === 'Data SKP'" :dataSkp="usulanDetail" />
       <UsulanJabatan v-if="getUsulanData.usulanKriteria === 'Data Jabatan'" :dataJabatan="usulanDetail" />
       <UsulanPenghargaan v-if="getUsulanData.usulanKriteria === 'Data Penghargaan'" :dataPenghargaan="usulanDetail" />
-      <UsulanAngkaKredit v-if="getUsulanData.usulanKriteria === 'Data Angka Kredit'" :dataAngkaKredit="usulanDetail" />
+      <UsulanAngkaKredit v-if="getUsulanData.usulanKriteria === 'Data Angka Kredit'" :dataAngkaKredit="usulanDetail" :dataAngkaKreditBeforeUpdate="usulanDetailBeforeUpdate" :isUsulanUpdate="isUsulanUpdate" />
     </div>
     <div class="row row-form" style="margin-top: 10px; position: relative; z-index: 2;" v-if="(getUsulanData.id !== undefined) && (getUsulanData.idUsulanStatus !== 3) && isVisibleButton">
       <div class="col-6"><div class="btn btn-block my-btn-danger"
@@ -86,6 +95,8 @@ export default {
   data() {
     return {
       usulanDetail: {},
+      usulanDetailBeforeUpdate: {}, // digunakan ketika ada usulan update dan store data lama
+      isUsulanUpdate: false,
       isVisibleButton: false
     }
   },
@@ -113,6 +124,10 @@ export default {
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.usulanDetail = data.message[0]
+        this.isUsulanUpdate = parseInt(this.usulanDetail.idUsulan) === 2
+        if (this.isUsulanUpdate) {
+          this.usulanDetailBeforeUpdate = data.message[1]
+        }
         if(parseInt(this.usulanDetail.idUsulanHasil) === 3) {
           if (role === 1) {
             this.isVisibleButton = true
@@ -138,6 +153,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.usulan-open-item-wrapper-info {
+  margin: 0px;
+  padding: 0px;
+}
+.usulan-item-info {
+  margin: 0px;
+  border: 1px solid #477b79;
+  background-color: #ffffff;
+  border-radius: 4px;
+  font-weight: 500;
+  padding: 6px 10px !important;
+  box-sizing: border-box;
+  cursor: default;
+}
 
 .usulan-open-item-wrapper {
   margin-bottom: 20px;

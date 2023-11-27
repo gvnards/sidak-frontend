@@ -1,11 +1,13 @@
 <template>
   <div>
-    <InformasiUpdateUsulan />
     <div class="usulan-open-item-wrapper">
       <div class="row row-form">
         <div class="col-12">
           <p class="text-primary usulan-item-header">
             Nama
+          </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataAnakBeforeUpdate.nama }}
           </p>
           <p class="usulan-item-fill text-primary">
             {{ dataAnak.nama }}
@@ -19,6 +21,9 @@
           <p class="text-primary usulan-item-header">
             Tempat Lahir
           </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataAnakBeforeUpdate.tempatLahir }}
+          </p>
           <p class="usulan-item-fill text-primary">
             {{ dataAnak.tempatLahir }}
           </p>
@@ -26,6 +31,9 @@
         <div class="col-6">
           <p class="text-primary usulan-item-header">
             Tanggal Lahir
+          </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataAnakBeforeUpdate.tanggalLahir }}
           </p>
           <p class="usulan-item-fill text-primary">
             {{ dataAnak.tanggalLahir }}
@@ -39,6 +47,9 @@
           <p class="text-primary usulan-item-header">
             Status Anak
           </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataAnakBeforeUpdate.statusAnak }}
+          </p>
           <p class="usulan-item-fill text-primary">
             {{ dataAnak.statusAnak }}
           </p>
@@ -46,6 +57,9 @@
         <div class="col-6">
           <p class="text-primary usulan-item-header">
             Nama Orang Tua
+          </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataAnakBeforeUpdate.namaOrangTua }}
           </p>
           <p class="usulan-item-fill text-primary">
             {{ dataAnak.namaOrangTua }}
@@ -59,6 +73,9 @@
           <p class="text-primary usulan-item-header">
             Nomor Dokumen
           </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataAnakBeforeUpdate.nomorDokumen }}
+          </p>
           <p class="usulan-item-fill text-primary">
             {{ dataAnak.nomorDokumen }}
           </p>
@@ -66,6 +83,9 @@
         <div class="col-6">
           <p class="text-primary usulan-item-header">
             Tanggal Dokumen
+          </p>
+          <p v-if="isUsulanUpdate" class="usulan-item-fill-red text-red">
+            {{ dataAnakBeforeUpdate.tanggalDokumen }}
           </p>
           <p class="usulan-item-fill text-primary">
             {{ dataAnak.tanggalDokumen }}
@@ -79,7 +99,8 @@
           <p class="text-primary usulan-item-header">
             Dokumen Akta Kelahiran
           </p>
-          <iframe v-if="dataAnak.dokumen !== '' && dataAnak.dokumen !== null" :src="dataAnak.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+          <iframe v-if="dataAnakBeforeUpdate.dokumen !== '' && dataAnakBeforeUpdate.dokumen !== null && isUsulanUpdate" :src="dataAnakBeforeUpdate.dokumen" frameborder="0" style="width: 100%; height: 600px; border: 1px solid #EC392F; border-radius: 4px; box-sizing: border-box; padding: 10px;"></iframe>
+          <iframe v-if="dataAnak.dokumen !== '' && dataAnak.dokumen !== null" :src="dataAnak.dokumen" frameborder="0" style="width: 100%; height: 600px; border: 1px solid #477b79; border-radius: 4px; box-sizing: border-box; padding: 10px;"></iframe>
           <div v-else class="text-danger" style="font-weight: 600;">Tidak ada Dokumen Akta Kelahiran</div>
         </div>
       </div>
@@ -88,12 +109,13 @@
 </template>
 
 <script>
-import InformasiUpdateUsulan from "./InformasiUpdateUsulan.vue"
 export default {
-  components: {
-    InformasiUpdateUsulan
-  },
   props: {
+    isUsulanUpdate: {
+      default: false,
+      required: true,
+      type: Boolean
+    },
     dataAnak: {
       default() {
         return {
@@ -109,7 +131,23 @@ export default {
         }
       },
       type: Object
-    }
+    },
+    dataAnakBeforeUpdate: {
+      default() {
+        return {
+          nama: "",
+          tempatLahir: "",
+          tanggalLahir: "",
+          statusAnak: "",
+          namaOrangTua: "",
+          nomorDokumen: "",
+          tanggalDokumen: "",
+          dokumen: "",
+          keteranganUsulan: ""
+        }
+      },
+      type: Object
+    },
   }
 }
 </script>
@@ -130,6 +168,16 @@ p {
   &.usulan-item-fill {
     margin-top: 4px;
     border: 1px solid #477b79;
+    background-color: #EBEBEB;
+    border-radius: 4px;
+    font-weight: 500;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    cursor: default;
+  }
+  &.usulan-item-fill-red {
+    border: 1px solid #EC392F;
+    margin-top: 4px;
     background-color: #EBEBEB;
     border-radius: 4px;
     font-weight: 500;
