@@ -11,7 +11,7 @@
     <div class="form-group text-left" style="margin: 0">
       <label for="fieldUnitOrganisasi">Unit Organisasi</label>
       <div style="margin-bottom: 8px;" v-if="dataJabatanUnitKerja.kodeKomponen.includes('-')">
-        <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitKerja.jabatan }}</div>
+        <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitKerja.unitOrganisasi }}</div>
         <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data unit organisasi.</small>
       </div>
     </div>
@@ -161,7 +161,8 @@
       <div class="col-6">
         <div class="form-group">
           <label for="fieldTmt">TMT</label>
-          <input
+          <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitKerja.tmt }}</div>
+          <input v-else
             :class="inputError.tmt.status ? 'form-error' : ''"
             type="date"
             v-model="dataJabatanUnitKerja.tmt"
@@ -176,7 +177,8 @@
       <div class="col-6">
         <div class="form-group">
           <label for="fieldSpmt">SPMT</label>
-          <input
+          <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitKerja.spmt }}</div>
+          <input v-else
             :class="inputError.spmt.status ? 'form-error' : ''"
             type="date"
             v-model="dataJabatanUnitKerja.spmt"
@@ -209,7 +211,8 @@
       <div class="col-6">
         <div class="form-group">
           <label for="fieldTglDokumen">Tanggal SK</label>
-          <input
+          <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitKerja.tanggalDokumen }}</div>
+          <input v-else
             :class="inputError.tanggalDokumen.status ? 'form-error' : ''"
             type="date"
             v-model="dataJabatanUnitKerja.tanggalDokumen"
@@ -331,6 +334,9 @@ export default {
   computed: {
     isFullfilled() {
       return this.dataJabatanUnitKerja.idJabatan !== 0 && this.dataJabatanUnitKerja.tmt !== "" && this.dataJabatanUnitKerja.spmt !== "" && this.dataJabatanUnitKerja.nomorDokumen !== "" && this.dataJabatanUnitKerja.tanggalDokumen !== "" && this.dataJabatanUnitKerja.dokumen !== ""
+    },
+    isMethodUpdate() {
+      return this.$store.getters.getModalMethod === "UPDATE"
     }
   },
   methods: {
