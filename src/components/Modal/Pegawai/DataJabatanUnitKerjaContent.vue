@@ -5,8 +5,15 @@
     :illustration="'IllustrationDataJabatanUnitKerja'"
     @onUsulkan="onUsulkan()"
   >
+    <div style="margin-bottom: 8px;" v-if="dataJabatanUnitKerja.kodeKomponen.includes('-')">
+      <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">*Data Unit Organisasi dan Data Jabatan TIDAK SESUAI dengan Daftar Data di MySAPK/MyASN.</div>
+    </div>
     <div class="form-group text-left" style="margin: 0">
       <label for="fieldUnitOrganisasi">Unit Organisasi</label>
+      <div style="margin-bottom: 8px;" v-if="dataJabatanUnitKerja.kodeKomponen.includes('-')">
+        <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitKerja.jabatan }}</div>
+        <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data unit organisasi.</small>
+      </div>
     </div>
     <div v-for="(unor, idx) in unitOrganisasi" :key="idx">
       <div class="row row-form">
@@ -93,6 +100,10 @@
         </div> -->
         <div class="form-group my-form-group">
             <label>Jabatan</label>
+            <div style="margin-bottom: 8px;" v-if="dataJabatanUnitKerja.kodeKomponen.includes('-')">
+              <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitKerja.jabatan }}</div>
+              <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data jabatan.</small>
+            </div>
             <div :title="jabatanSelectedText" class="my-custom-input-wrapper my-custom-input" @click="jabatanSelectedText === '-- Pilih Unit Organisasi Dahulu --' || jabatanSelectedText === '-- Sedang Diproses --' ? '' : isShowDaftarJabatan = !isShowDaftarJabatan" :style="jabatanSelectedText === '-- Pilih Unit Organisasi Dahulu --' || jabatanSelectedText === '-- Sedang Diproses --' ? 'background-color:#e9ecef; cursor: not-allowed;' : ''">{{ jabatanSelectedText }}</div>
             <div class="my-custom-input-item-wrapper-outside" v-show="isShowDaftarJabatan">
               <input type="text" class="form-control" placeholder="Cari jabatan (minimal 5 karakter)" v-model="searchValue">
@@ -519,27 +530,9 @@ export default {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.dataJabatanUnitKerja = data.message[0]
         this.dataJabatanUnitKerja.isPltPlh = this.dataJabatanUnitKerja.isPltPlh == 1
-        let kodeKomponen = this.dataJabatanUnitKerja.kodeKomponen.split(".")
-        let selectedUnitOrganisasi = []
-        for (let i = 0; i < kodeKomponen.length; i++) {
-          let kodeKomponenTemp = ""
-          for (let j = 0; j <= i; j++) {
-            kodeKomponenTemp = `${kodeKomponenTemp}.${kodeKomponen[j]}`
-          }
-          kodeKomponenTemp = `${kodeKomponenTemp}.`
-          kodeKomponenTemp = kodeKomponenTemp[0] === "." ? kodeKomponenTemp.slice(1) : kodeKomponenTemp
-          kodeKomponenTemp = kodeKomponenTemp[kodeKomponenTemp.length - 1] === "." ? kodeKomponenTemp.slice(0, kodeKomponenTemp.length - 1) : kodeKomponenTemp
-          selectedUnitOrganisasi.push(kodeKomponenTemp)
-        }
-        for (let i = 0; i < selectedUnitOrganisasi.length; i++) {
-          if (i !== 0) {
-            if (i + 1 === selectedUnitOrganisasi.length) {
-              await this.hasSubOrganisasi(i, { kodeKomponen: `${selectedUnitOrganisasi[i]}` })
-            } else {
-              this.isSubOrganisasi.push(false)
-            }
-          }
-          await this.getUnitOrganisasi(selectedUnitOrganisasi[i]).then(res => {
+        /// check dulu kalo kode komponennya ada "-", yang mengartikan bahwa di SIASN Unor itu TIDAK ADA, maka lgsg munculkan seperti nambah baru
+        if (this.dataJabatanUnitKerja.kodeKomponen.includes("-")) {
+          this.getUnitOrganisasi("431").then(res => {
             let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
             let u = token.username
             this.isLoading = false
@@ -548,14 +541,45 @@ export default {
               this.unitOrganisasi.push(data.message)
             }
           })
-          if (i !== 0) {
-            this.selectedUnitOrganisasi.push(this.unitOrganisasi[i-1].find(el => el.kodeKomponen === selectedUnitOrganisasi[i]))
+        } else {
+          let kodeKomponen = this.dataJabatanUnitKerja.kodeKomponen.split(".")
+          let selectedUnitOrganisasi = []
+          for (let i = 0; i < kodeKomponen.length; i++) {
+            let kodeKomponenTemp = ""
+            for (let j = 0; j <= i; j++) {
+              kodeKomponenTemp = `${kodeKomponenTemp}.${kodeKomponen[j]}`
+            }
+            kodeKomponenTemp = `${kodeKomponenTemp}.`
+            kodeKomponenTemp = kodeKomponenTemp[0] === "." ? kodeKomponenTemp.slice(1) : kodeKomponenTemp
+            kodeKomponenTemp = kodeKomponenTemp[kodeKomponenTemp.length - 1] === "." ? kodeKomponenTemp.slice(0, kodeKomponenTemp.length - 1) : kodeKomponenTemp
+            selectedUnitOrganisasi.push(kodeKomponenTemp)
           }
-        }
-        await this.getJabatan(this.dataJabatanUnitKerja.kodeKomponen)
-        this.jabatanSelectedText = this.daftarJabatan.find(el => el.id == this.dataJabatanUnitKerja.idJabatan).jabatan
-        for (let i = 0; i < this.unitOrganisasi.length - this.selectedUnitOrganisasi.length; i++) {
-          this.unitOrganisasi.pop()
+          for (let i = 0; i < selectedUnitOrganisasi.length; i++) {
+            if (i !== 0) {
+              if (i + 1 === selectedUnitOrganisasi.length) {
+                await this.hasSubOrganisasi(i, { kodeKomponen: `${selectedUnitOrganisasi[i]}` })
+              } else {
+                this.isSubOrganisasi.push(false)
+              }
+            }
+            await this.getUnitOrganisasi(selectedUnitOrganisasi[i]).then(res => {
+              let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+              let u = token.username
+              this.isLoading = false
+              let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+              if (data.message.length > 0) {
+                this.unitOrganisasi.push(data.message)
+              }
+            })
+            if (i !== 0) {
+              this.selectedUnitOrganisasi.push(this.unitOrganisasi[i-1].find(el => el.kodeKomponen === selectedUnitOrganisasi[i]))
+            }
+          }
+          await this.getJabatan(this.dataJabatanUnitKerja.kodeKomponen)
+          this.jabatanSelectedText = this.daftarJabatan.find(el => el.id == this.dataJabatanUnitKerja.idJabatan).jabatan
+          for (let i = 0; i < this.unitOrganisasi.length - this.selectedUnitOrganisasi.length; i++) {
+            this.unitOrganisasi.pop()
+          }
         }
       })
     }
