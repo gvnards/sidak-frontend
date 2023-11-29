@@ -60,14 +60,14 @@
       <div class="col-12">
         <p class="text-primary" style="margin: 0; padding: 0; font-weight: 600;">Penilaian Angka Kredit</p>
       </div>
-      <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1">
+      <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1 || parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 4">
         <div class="form-group">
           <label for="fieldKreditUtama">Utama</label>
           <input type="number" min="0" step="0.001" id="fieldKreditUtama" v-model="dataAngkaKredit.angkaKreditUtama" class="form-control">
           <small class="text-red" v-if="inputError.angkaKreditUtama.status"><b>*{{ inputError.angkaKreditUtama.description }}</b></small>
         </div>
       </div>
-      <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1">
+      <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1 || parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 4">
         <div class="form-group">
           <label for="fieldKreditPenunjang">Penunjang</label>
           <input type="number" min="0" step="0.001" id="fieldKreditPenunjang" v-model="dataAngkaKredit.angkaKreditPenunjang" class="form-control">
