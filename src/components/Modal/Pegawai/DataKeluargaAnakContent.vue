@@ -245,45 +245,21 @@ export default {
         })
       })
     },
-    getDataOrangTua() {
+    getDataAnakDetail() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
-        url: `${env.VITE_BACKEND_URL}/orang-tua/${idPegawai}`,
+        url: `${env.VITE_BACKEND_URL}/data-anak/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataOrangTua = data.message
-      })
-    },
-    getDataAnak() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let idPegawai = this.$store.getters.getIdPegawai
-      axios({
-        url: `${env.VITE_BACKEND_URL}/data-anak/${idPegawai}/${this.$store.getters.getModalData.id}`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataAnak = data.message[0]
-      })
-    },
-    getMaxFileSize() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/dokumen-kategori/anak`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.fileCategory = data.message[0]
+        this.dataAnak = data.message.dataAnak[0]
+        this.fileCategory = data.message.dokumenKategori
+        this.statusAnak = data.message.dataStatusAnak
+        this.dataOrangTua = data.message.dataOrangTua
       })
     },
     async onChangeFile(item) {
@@ -304,27 +280,28 @@ export default {
         }
       }
     },
-    getStatusAnak() {
+    getDataCreated() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
-        url: `${env.VITE_BACKEND_URL}/status-anak`,
+        url: `${env.VITE_BACKEND_URL}/data-anak/created/${this.$store.getters.getIdPegawai}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.statusAnak = data.message
+        this.fileCategory = data.message.dokumenKategori
+        this.statusAnak = data.message.dataStatusAnak
+        this.dataOrangTua = data.message.dataOrangTua
       })
     }
   },
   created() {
-    this.getMaxFileSize()
-    this.getStatusAnak()
     if(this.$store.getters.getModalMethod === "UPDATE") {
-      this.getDataAnak()
+      this.getDataAnakDetail()
+    } else {
+      this.getDataCreated()
     }
-    this.getDataOrangTua()
   },
   destroyed() {
     this.$destroy()
