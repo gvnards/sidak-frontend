@@ -191,10 +191,11 @@ export default {
   },
   methods: {
     whereError() {
-      this.inputError.jenisDiklatKursus.status = this.dataDiklatKursus.idJenisDiklat === 0
-      this.inputError.jenisDiklatKursus.description = this.dataDiklatKursus.idJenisDiklat === 0 ? "Jenis diklat/kursus harus dipilih" : ""
-      this.inputError.daftarDiklatKursus.status = this.dataDiklatKursus.idDaftarDiklat === 0
-      this.inputError.daftarDiklatKursus.description = this.dataDiklatKursus.idDaftarDiklat === 0 ? "Daftar diklat/kursus harus dipilih" : ""
+      let jenisAndDaftarIsCorect = this.daftarDiklatKursus.filter(el => { return parseInt(el.idJenisDiklat > 2) ? parseInt(el.idJenisDiklat > 2) : parseInt(el.idJenisDiklat) === parseInt(this.dataDiklatKursus.idJenisDiklat) && parseInt(el.id) === parseInt(this.dataDiklatKursus.idDaftarDiklat) })
+      this.inputError.jenisDiklatKursus.status = this.dataDiklatKursus.idJenisDiklat === 0 || jenisAndDaftarIsCorect.length <= 0
+      this.inputError.jenisDiklatKursus.description = this.dataDiklatKursus.idJenisDiklat === 0 ? "Jenis diklat/kursus harus dipilih" : jenisAndDaftarIsCorect.length <= 0 ? "Jenis diklat/kursus atau daftar diklat tidak valid" : ""
+      this.inputError.daftarDiklatKursus.status = this.dataDiklatKursus.idDaftarDiklat === 0 || jenisAndDaftarIsCorect.length <= 0
+      this.inputError.daftarDiklatKursus.description = this.dataDiklatKursus.idDaftarDiklat === 0 ? "Daftar diklat/kursus harus dipilih" : jenisAndDaftarIsCorect.length <= 0 ? "Jenis diklat/kursus atau daftar diklat tidak valid" : ""
       this.inputError.namaDiklatKursus.status = this.dataDiklatKursus.namaDiklat === ""
       this.inputError.namaDiklatKursus.description = this.dataDiklatKursus.namaDiklat === "" ? "Nama diklat/kursus harus diisi" : ""
       this.inputError.lamaJamDiklatKursus.status = this.dataDiklatKursus.lamaDiklat === 0
@@ -246,57 +247,38 @@ export default {
         })
       })
     },
-    getDataDiklatKursus() {
+    getDataDiklatKursusDetail() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
-        url: `${env.VITE_BACKEND_URL}/data-diklat/${idPegawai}/${this.$store.getters.getModalData.id}`,
+        url: `${env.VITE_BACKEND_URL}/data-diklat/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataDiklatKursus = data.message[0]
+        this.dataDiklatKursus = data.message.dataDiklat[0]
+        this.daftarDiklatKursus = data.message.daftarDiklat
+        this.jenisDiklatKursus = data.message.jenisDiklat
+        this.daftarInstansi = data.message.daftarInstansiDiklat
+        this.fileCategory = data.message.dokumenKategori
       })
     },
-    getJenisDiklatKursus() {
+    getDataDiklatCreated() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
-        url: `${env.VITE_BACKEND_URL}/jenis-diklat`,
+        url: `${env.VITE_BACKEND_URL}/data-diklat/created`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.jenisDiklatKursus = data.message
-      })
-    },
-    getDaftarDiklatKursus() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/daftar-diklat`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.daftarDiklatKursus = data.message
-      })
-    },
-    getDaftarInstansi() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/daftar-instansi-diklat`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.daftarInstansi = data.message
+        this.daftarDiklatKursus = data.message.daftarDiklat
+        this.jenisDiklatKursus = data.message.jenisDiklat
+        this.daftarInstansi = data.message.daftarInstansiDiklat
+        this.fileCategory = data.message.dokumenKategori
       })
     },
     async onChangeFile(item) {
@@ -317,33 +299,19 @@ export default {
         }
       }
     },
-    getMaxFileSize() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/dokumen-kategori/diklat`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.fileCategory = data.message[0]
-      })
-    },
   },
   computed: {
     isFulfilled() {
-      return this.dataDiklatKursus.idJenisDiklat !== 0 && this.dataDiklatKursus.idDaftarDiklat !== 0 && this.dataDiklatKursus.namaDiklat !== "" && this.dataDiklatKursus.lamaDiklat !== 0 && this.dataDiklatKursus.tanggalDiklat !== 0 && this.dataDiklatKursus.idDaftarInstansiDiklat !== 0 && this.dataDiklatKursus.institusiPenyelenggara !== "" && this.dataDiklatKursus.dokumen !== ""
+      let jenisAndDaftarIsCorect = this.daftarDiklatKursus.filter(el => { return parseInt(el.idJenisDiklat > 2) ? parseInt(el.idJenisDiklat > 2) : parseInt(el.idJenisDiklat) === parseInt(this.dataDiklatKursus.idJenisDiklat) && parseInt(el.id) === parseInt(this.dataDiklatKursus.idDaftarDiklat) })
+      return this.dataDiklatKursus.idJenisDiklat !== 0 && this.dataDiklatKursus.idDaftarDiklat !== 0 && jenisAndDaftarIsCorect.length > 0 && this.dataDiklatKursus.namaDiklat !== "" && this.dataDiklatKursus.lamaDiklat !== 0 && this.dataDiklatKursus.tanggalDiklat !== 0 && this.dataDiklatKursus.idDaftarInstansiDiklat !== 0 && this.dataDiklatKursus.institusiPenyelenggara !== "" && this.dataDiklatKursus.dokumen !== ""
     }
   },
   created() {
     if(this.$store.getters.getModalMethod === "UPDATE") {
-      this.getDataDiklatKursus()
+      this.getDataDiklatKursusDetail()
+    } else {
+      this.getDataDiklatCreated()
     }
-    this.getJenisDiklatKursus()
-    this.getDaftarDiklatKursus()
-    this.getDaftarInstansi()
-    this.getMaxFileSize()
   }
 }
 </script>
