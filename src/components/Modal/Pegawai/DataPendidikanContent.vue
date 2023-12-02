@@ -34,7 +34,7 @@
             <div class="my-custom-input-item-wrapper-outside" v-show="isShowDaftarPendidikan">
               <input type="text" class="form-control" placeholder="Cari pendidikan (minimal 5 karakter)" v-model="searchValue">
               <div class="my-custom-input-item-wrapper-inside">
-                <div @click="onPendidikanSelected(item)" class="my-custom-input-item" v-for="item in pendidikan" :key="item.id" v-show="searchValue.length < 5 ? true : item.nama.toLowerCase().includes(searchValue.toLowerCase())">
+                <div @click="onPendidikanSelected(item)" class="my-custom-input-item" v-for="item in daftarPendidikan" :key="item.id" v-show="searchValue.length < 5 ? true : item.nama.toLowerCase().includes(searchValue.toLowerCase())">
                   {{ item.nama }}
                 </div>
               </div>
@@ -232,14 +232,10 @@ export default {
       afterCreated: true
     }
   },
-  watch: {
-    "dataPendidikan.idTingkatPendidikan" (val) {
-      if (val !== 0) {
-        this.getDaftarPendidikan()
-      }
-    }
-  },
   computed: {
+    daftarPendidikan() {
+      return this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan))
+    },
     getModalMethod() {
       let modalMethod = ""
       let getModalMethod = this.$store.getters.getModalMethod
@@ -249,17 +245,17 @@ export default {
       return modalMethod
     },
     isFulfilled() {
-      return this.dataPendidikan.idJenisPendidikan !== 0 && this.dataPendidikan.idTingkatPendidikan !== 0 && this.dataPendidikan.idDaftarPendidikan !== 0 && this.dataPendidikan.namaSekolah !== "" && this.dataPendidikan.tanggalLulus !== "" && this.dataPendidikan.tahunLulus !== "" && this.dataPendidikan.nomorDokumen !== "" && this.dataPendidikan.tanggalDokumen !== "" && this.dataPendidikan.dokumen !== "" && this.dataPendidikan.dokumenTranskrip !== ""
+      return this.dataPendidikan.idJenisPendidikan !== 0 && this.dataPendidikan.idTingkatPendidikan !== 0 && this.dataPendidikan.idDaftarPendidikan !== 0 && (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length > 0 && this.dataPendidikan.namaSekolah !== "" && this.dataPendidikan.tanggalLulus !== "" && this.dataPendidikan.tahunLulus !== "" && this.dataPendidikan.nomorDokumen !== "" && this.dataPendidikan.tanggalDokumen !== "" && this.dataPendidikan.dokumen !== "" && this.dataPendidikan.dokumenTranskrip !== ""
     }
   },
   methods: {
     whereError() {
       this.inputError.jenisPendidikan.status = this.dataPendidikan.idJenisPendidikan === 0
       this.inputError.jenisPendidikan.description = this.dataPendidikan.idJenisPendidikan === 0 ? "Jenis pendidikan harus dipilih" : ""
-      this.inputError.tingkatPendidikan.status = this.dataPendidikan.idTingkatPendidikan === 0
-      this.inputError.tingkatPendidikan.description = this.dataPendidikan.idTingkatPendidikan === 0 ? "Tingkat pendidikan harus dipilih" : ""
-      this.inputError.pendidikan.status = this.dataPendidikan.idDaftarPendidikan === 0
-      this.inputError.pendidikan.description = this.dataPendidikan.idDaftarPendidikan === 0 ? "Pendidikan harus dipilih" : ""
+      this.inputError.tingkatPendidikan.status = this.dataPendidikan.idTingkatPendidikan === 0 || (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length <= 0
+      this.inputError.tingkatPendidikan.description = this.dataPendidikan.idTingkatPendidikan === 0 ? "Tingkat pendidikan harus dipilih" : (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length <= 0 ? "Tingkat pendidikan atau pendidikan tidak valid" : ""
+      this.inputError.pendidikan.status = this.dataPendidikan.idDaftarPendidikan === 0 || (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length <= 0
+      this.inputError.pendidikan.description = this.dataPendidikan.idDaftarPendidikan === 0 ? "Pendidikan harus dipilih" : (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length <= 0 ? "Tingkat pendidikan atau pendidikan tidak valid" : ""
       this.inputError.namaSekolah.status = this.dataPendidikan.namaSekolah === ""
       this.inputError.namaSekolah.description = this.dataPendidikan.namaSekolah === "" ? "Nama sekolah harus diisi" : ""
       this.inputError.tanggalLulus.status = this.dataPendidikan.tanggalLulus === ""
@@ -314,33 +310,7 @@ export default {
         })
       })
     },
-    getDataJenisPendidikan() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/jenis-pendidikan`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataJenisPendidikan = data.message
-      })
-    },
-    getDataTingkatPendidikan() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/tingkat-pendidikan`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataTingkatPendidikan = data.message
-      })
-    },
-    getDataPendidikan() {
+    getDataPendidikanDetail() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
@@ -351,67 +321,21 @@ export default {
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataPendidikan = data.message[0]
+        this.dataPendidikan = data.message.dataPendidikan[0]
+        this.fileCategory = data.message.dokumenKategori
+        this.dataJenisPendidikan = data.message.jenisPendidikan
+        this.dataTingkatPendidikan = data.message.tingkatPendidikan
+        this.pendidikan = data.message.daftarPendidikan
+        let pendidikanSelectedText_ = (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan)))
+        if (pendidikanSelectedText_.length > 0) {
+          this.pendidikanSelectedText = pendidikanSelectedText_[0].nama
+        } else {
+          this.pendidikanSelectedText = "-- Pendidikan Tidak Tersedia --"
+        }
+        $("#dokumenTranskrip").empty()
         if (this.dataPendidikan.dokumenTranskrip !== "") {
-          $("#dokumenTranskrip").empty()
           $("#dokumenTranskrip").append(`<iframe src="${this.dataPendidikan.dokumenTranskrip}" frameborder="0" style="width: 100%; height: 600px;"></iframe>`)
         }
-      })
-    },
-    getDaftarPendidikan() {
-      if(!this.afterCreated) {
-        this.dataPendidikan.idDaftarPendidikan = 0
-      }
-      this.isShowDaftarPendidikan = false
-      if (this.dataPendidikan.idTingkatPendidikan !== 0) {
-        this.pendidikan = []
-        this.pendidikanSelectedText = "-- Sedang Diproses --"
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        axios({
-          url: `${env.VITE_BACKEND_URL}/pendidikan/${this.dataPendidikan.idTingkatPendidikan}`,
-          method: "GET",
-          headers: {
-            "Authorization": localStorage.getItem("token")
-          }
-        }).then(res => {
-          let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-          let pendidikan = data.message
-          if(this.$store.getters.getModalMethod === "UPDATE" && this.afterCreated) {
-            let getPendidikan = pendidikan.find(el => parseInt(el.id) == parseInt(this.dataPendidikan.idDaftarPendidikan))
-            this.pendidikanSelectedText = getPendidikan.nama
-          } else {
-            this.pendidikanSelectedText = "-- Pilih Pendidikan --"
-          }
-          if (pendidikan.length > 500) {
-            let tempPendidikan = []
-            for(let i=0; i<pendidikan.length; i++) {
-              tempPendidikan.push(pendidikan.splice(0,500))
-            }
-            for(let i=0; i<tempPendidikan.length; i++) {
-              setTimeout(() => {
-                for(let j=0; j<tempPendidikan[i].length; j++) {
-                  this.pendidikan.push(tempPendidikan[i][j])
-                }
-              }, 1)
-            }
-          } else {
-            this.pendidikan = pendidikan
-          }
-          this.afterCreated = false
-        })
-      }
-    },
-    getMaxFileSize() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/dokumen-kategori/pendidikan`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.fileCategory = data.message[0]
       })
     },
     async onChangeFile(item) {
@@ -442,15 +366,29 @@ export default {
         }
       }
     },
+    getDataPendidikanCreated() {
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      axios({
+        url: `${env.VITE_BACKEND_URL}/data-pendidikan/created`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        },
+      }).then(res => {
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.fileCategory = data.message.dokumenKategori
+        this.dataJenisPendidikan = data.message.jenisPendidikan
+        this.dataTingkatPendidikan = data.message.tingkatPendidikan
+        this.pendidikan = data.message.daftarPendidikan
+      })
+    }
   },
   created() {
     if(this.$store.getters.getModalMethod === "UPDATE") {
-      this.getDataPendidikan()
+      this.getDataPendidikanDetail()
+    } else {
+      this.getDataPendidikanCreated()
     }
-    this.getMaxFileSize()
-    this.getDataJenisPendidikan()
-    this.getDataTingkatPendidikan()
-    this.getDaftarPendidikan()
   },
   destroyed() {
     this.$destroy()
