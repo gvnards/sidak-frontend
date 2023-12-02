@@ -246,31 +246,20 @@ export default {
         })
       })
     },
-    getDataPasangan() {
+    getDataPasanganDetail() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
-        url: `${env.VITE_BACKEND_URL}/data-pasangan/${idPegawai}/${this.$store.getters.getModalData.id}`,
+        url: `${env.VITE_BACKEND_URL}/data-pasangan/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataPasangan = data.message[0]
-      })
-    },
-    getMaxFileSize() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/dokumen-kategori/perkawinan`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.fileCategory = data.message[0]
+        this.dataPasangan = data.message.dataPasangan[0]
+        this.statusPerkawinan = data.message.dataStatusPerkawinan
+        this.fileCategory = data.message.dokumenKategori
       })
     },
     async onChangeFile(item) {
@@ -291,25 +280,26 @@ export default {
         }
       }
     },
-    getStatusPerkawinan() {
+    getDataPasanganCreated () {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
-        url: `${env.VITE_BACKEND_URL}/status-perkawinan`,
+        url: `${env.VITE_BACKEND_URL}/data-pasangan/created/${this.$store.getters.getIdPegawai}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.statusPerkawinan = data.message
+        this.statusPerkawinan = data.message.dataStatusPerkawinan
+        this.fileCategory = data.message.dokumenKategori
       })
     }
   },
   created() {
-    this.getMaxFileSize()
-    this.getStatusPerkawinan()
     if(this.$store.getters.getModalMethod === "UPDATE") {
-      this.getDataPasangan()
+      this.getDataPasanganDetail()
+    } else {
+      this.getDataPasanganCreated()
     }
   },
   destroyed() {

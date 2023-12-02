@@ -12,7 +12,7 @@ node_modules
 dist
 dist-ssr
 *.local
-dist.zip
+*.zip
 
 /cypress/videos/
 /cypress/screenshots/
