@@ -28,7 +28,7 @@
       <div class="col-8">
         <div class="form-group text-left">
           <label for="fieldPangkat">Pangkat</label>
-          <input type="text" id="fieldPangkat" class="form-control" disabled :value="stringPangkat">
+          <input type="text" id="fieldPangkat" class="form-control" disabled :value="textPangkat">
         </div>
       </div>
     </div>
@@ -113,12 +113,6 @@ const env = import.meta.env
 import mixins from "@/mixins/index.js"
 export default {
   mixins: [mixins],
-  watch: {
-    "dataPangkatGolongan.idDaftarPangkat"(val) {
-      this.dataPangkatGolongan.idDaftarPangkat = val
-      this.textPangkat(val)
-    }
-  },
   data() {
     return {
       fileCategory: {},
@@ -184,6 +178,12 @@ export default {
   computed: {
     isFulfilled() {
       return this.dataPangkatGolongan.idJenisPangkat !== 0 && this.dataPangkatGolongan.idDaftarPangkat !== 0 && this.dataPangkatGolongan.nomorDokumen !== "" && this.dataPangkatGolongan.tanggalDokumen !== "" && this.dataPangkatGolongan.tmt !== "" && this.dataPangkatGolongan.nomorBkn !== "" && this.dataPangkatGolongan.tanggalBkn !== "" && this.dataPangkatGolongan.dokumen !== ""
+    },
+    textPangkat() {
+      if (this.daftarGolongan.length <= 0) return ""
+      if (this.dataPangkatGolongan.idDaftarPangkat === undefined) return ""
+      return (this.daftarGolongan.filter(el => parseInt(el.id) === parseInt(this.dataPangkatGolongan.idDaftarPangkat)))[0].pangkat
+      // dataPangkatGolongan
     }
   },
   methods: {
@@ -205,19 +205,6 @@ export default {
       this.inputError.dokumenSk.status = this.dataPangkatGolongan.dokumen === ""
       this.inputError.dokumenSk.description = this.dataPangkatGolongan.dokumen === "" ? "Dokumen SK harus diisi" : ""
     },
-    getMaxFileSize() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/dokumen-kategori/pangkat`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.fileCategory = data.message[0]
-      })
-    },
     async onChangeFile(item) {
       if (item.target.files.length !== 0) {
         if (item.target.files[0].size > (1024000 * this.fileCategory.ukuran)) {
@@ -236,21 +223,21 @@ export default {
         }
       }
     },
-    textPangkat(val) {
-      this.stringPangkat = this.daftarGolongan.filter(item => item.id === val)[0].pangkat
-    },
-    getDataPangkatGolongan() {
+    getDataPangkatGolonganDetail() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
-        url: `${env.VITE_BACKEND_URL}/data-golpang/${idPegawai}/${this.$store.getters.getModalData.id}`,
+        url: `${env.VITE_BACKEND_URL}/data-golpang/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataPangkatGolongan = data.message[0]
+        this.daftarGolongan = data.message.daftarGolonganPangkat
+        this.jenisKepangkatan = data.message.jenisGolonganPangkat
+        this.fileCategory = data.message.dokumenKategori
+        this.dataPangkatGolongan = data.message.dataGolonganPangkat
       })
     },
     onUsulkan() {
@@ -287,40 +274,28 @@ export default {
         })
       })
     },
-    getDaftarGolongan() {
+    getDataPangkatGolonganCreated() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
-        url: `${env.VITE_BACKEND_URL}/daftar-golpang`,
+        url: `${env.VITE_BACKEND_URL}/data-golpang/created`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.daftarGolongan = data.message
-      })
-    },
-    getJenisKepangkatan() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/jenis-golpang`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.jenisKepangkatan = data.message
+        this.daftarGolongan = data.message.daftarGolonganPangkat
+        this.jenisKepangkatan = data.message.jenisGolonganPangkat
+        this.fileCategory = data.message.dokumenKategori
       })
     }
   },
   created() {
-    this.getDaftarGolongan()
     if(this.$store.getters.getModalMethod === "UPDATE") {
-      this.getDataPangkatGolongan()
+      this.getDataPangkatGolonganDetail()
+    } else {
+      this.getDataPangkatGolonganCreated()
     }
-    this.getJenisKepangkatan()
-    this.getMaxFileSize()
   },
   destroyed() {
     this.$destroy()
