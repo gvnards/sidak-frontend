@@ -137,36 +137,34 @@ export default {
         })
       })
     },
-    getDaftarJenisPenghargaan() {
-      return axios({
-        url: `${env.VITE_BACKEND_URL}/jenis-penghargaan`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      })
-    },
-    getDataPenghargaan() {
-      let idPegawai = this.$store.getters.getIdPegawai
-      return axios({
-        url: `${env.VITE_BACKEND_URL}/data-penghargaan/${idPegawai}/${this.$store.getters.getModalData.id}`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      })
-    },
-    getMaxFileSize() {
+    getDataPenghargaanCreated() {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
-        url: `${env.VITE_BACKEND_URL}/dokumen-kategori/penghargaan`,
+        url: `${env.VITE_BACKEND_URL}/data-penghargaan/created`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
-        },
+        }
       }).then(res => {
         let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.fileCategory = data.message[0]
+        this.daftarJenisPenghargaan = data.message.jenisPenghargaan
+        this.fileCategory = data.message.dokumenKategori
+      })
+    },
+    getDataPenghargaanDetail() {
+      let idPegawai = this.$store.getters.getIdPegawai
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      axios({
+        url: `${env.VITE_BACKEND_URL}/data-penghargaan/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      }).then(res => {
+        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.daftarJenisPenghargaan = data.message.jenisPenghargaan
+        this.fileCategory = data.message.dokumenKategori
+        this.dataPenghargaan = data.message.dataPenghargaan[0]
       })
     },
     async onChangeFile(item) {
@@ -188,20 +186,12 @@ export default {
       }
     },
   },
-  async created() {
+  created() {
     if(this.$store.getters.getModalMethod === "UPDATE") {
-      this.getDataPenghargaan().then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataPenghargaan = data.message[0]
-      })
+      this.getDataPenghargaanDetail()
+    } else {
+      this.getDataPenghargaanCreated()
     }
-    this.getMaxFileSize()
-    this.getDaftarJenisPenghargaan().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-      this.daftarJenisPenghargaan = data.message
-    })
   }
 }
 </script>
