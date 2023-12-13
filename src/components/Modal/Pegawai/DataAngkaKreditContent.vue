@@ -1,118 +1,121 @@
 <template>
   <ModalHeaderFooter :header-title="'Angka Kredit'" :header-subtitle="'angka kredit'" :illustration="'IllustrationDataAngkaKredit'" @onUsulkan="onUsulkan()">
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldJenisAngkaKredit">Jenis Angka Kredit</label>
-          <select class="custom-select" id="fieldJenisAngkaKredit" :class="inputError.jenisAngkaKredit.status ? 'form-error' : ''" v-model="dataAngkaKredit.idDaftarJenisAngkaKredit">
-            <option value="0" selected disabled>{{ '-- Pilih Daftar Jenis Angka Kredit --' }}</option>
-            <option :selected="item.id === dataAngkaKredit.idDaftarJenisAngkaKredit" v-for="item in jenisAngkaKredit" :key="item.id" :value="item.id">
-              {{ item.jenisAngkaKredit }}
-            </option>
-          </select>
-          <small class="text-red" v-if="inputError.jenisAngkaKredit.status"><b>*{{ inputError.jenisAngkaKredit.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldJabatan">Jabatan pada Angka Kredit</label>
-          <select class="custom-select" id="fieldJabatan" :class="inputError.jabatan.status ? 'form-error' : ''" v-model="dataAngkaKredit.idDataJabatan">
-            <option value="0" selected disabled>{{ '-- Pilih Daftar Jabatan --' }}</option>
-            <option :selected="item.id === dataAngkaKredit.idDataJabatan" v-for="item in jabatan" :key="item.id" :value="item.idDataJabatan">
-              {{ item.jabatan }}
-            </option>
-          </select>
-          <small class="text-red" v-if="inputError.jabatan.status"><b>*{{ inputError.jabatan.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 3">
-      <div class="col-12">
-        <div class="form-group">
-          <label for="fieldTahun">Tahun Penilaian Angka Kredit</label>
-          <input type="number" min="1900" placeholder="2010" id="fieldTahun" v-model="dataAngkaKredit.tahun" class="form-control">
-          <small class="text-red" v-if="inputError.tahun.status"><b>*{{ inputError.tahun.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <p class="text-primary" style="margin: 0; padding: 0; font-weight: 600;">Periode Penilaian</p>
-      </div>
-      <div class="col-6">
-        <div class="form-group">
-          <label for="fieldperiodePenilaianMulai">Mulai</label>
-          <input type="date" id="fieldperiodePenilaianMulai" v-model="dataAngkaKredit.periodePenilaianMulai" class="form-control">
-          <small class="text-red" v-if="inputError.periodePenilaianMulai.status"><b>*{{ inputError.periodePenilaianMulai.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group">
-          <label for="fieldperiodePenilaianSelesai">Selesai</label>
-          <input type="date" id="fieldperiodePenilaianSelesai" v-model="dataAngkaKredit.periodePenilaianSelesai" class="form-control">
-          <small class="text-red" v-if="inputError.periodePenilaianSelesai.status"><b>*{{ inputError.periodePenilaianSelesai.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <p class="text-primary" style="margin: 0; padding: 0; font-weight: 600;">Penilaian Angka Kredit</p>
-      </div>
-      <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1 || parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 4">
-        <div class="form-group">
-          <label for="fieldKreditUtama">Utama</label>
-          <input type="number" min="0" step="0.001" id="fieldKreditUtama" v-model="dataAngkaKredit.angkaKreditUtama" class="form-control">
-          <small class="text-red" v-if="inputError.angkaKreditUtama.status"><b>*{{ inputError.angkaKreditUtama.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1 || parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 4">
-        <div class="form-group">
-          <label for="fieldKreditPenunjang">Penunjang</label>
-          <input type="number" min="0" step="0.001" id="fieldKreditPenunjang" v-model="dataAngkaKredit.angkaKreditPenunjang" class="form-control">
-          <small class="text-red" v-if="inputError.angkaKreditPenunjang.status"><b>*{{ inputError.angkaKreditPenunjang.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-12">
-        <div class="form-group">
-          <label for="fieldKreditTotal">Total</label>
-          <input type="number" min="0" step="0.001" id="fieldKreditTotal" v-model="dataAngkaKredit.angkaKreditTotal" class="form-control">
-          <small class="text-red" v-if="inputError.angkaKreditTotal.status"><b>*{{ inputError.angkaKreditTotal.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12 col-sm-6">
-        <div class="form-group">
-          <label for="fieldNomorDokumen">Nomor Dokumen</label>
-          <input type="text" placeholder="XXX/XXX/XXX" id="fieldNomorDokumen" v-model="dataAngkaKredit.nomorDokumen" class="form-control">
-          <small class="text-red" v-if="inputError.nomorDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6">
-        <div class="form-group">
-          <label for="fieldTanggalDokumen">Tanggal Dokumen</label>
-          <input type="date" id="fieldTanggalDokumen" v-model="dataAngkaKredit.tanggalDokumen" class="form-control">
-          <small class="text-red" v-if="inputError.tanggalDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldDokumenAngkaKredit">Dokumen Angka Kredit</label>
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenAngkaKredit" @change="onChangeFile">
-            <label class="custom-file-label" for="fieldDokumenAngkaKredit" :class="inputError.dokumenAngkaKredit.status ? 'form-error' : ''">Cari dokumen</label>
+    <ShimmeringItem v-if="loading" :layouts="[12,12,6,6,12,6,6,12]" />
+    <div v-else>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldJenisAngkaKredit">Jenis Angka Kredit</label>
+            <select class="custom-select" id="fieldJenisAngkaKredit" :class="inputError.jenisAngkaKredit.status ? 'form-error' : ''" v-model="dataAngkaKredit.idDaftarJenisAngkaKredit">
+              <option value="0" selected disabled>{{ '-- Pilih Daftar Jenis Angka Kredit --' }}</option>
+              <option :selected="item.id === dataAngkaKredit.idDaftarJenisAngkaKredit" v-for="item in jenisAngkaKredit" :key="item.id" :value="item.id">
+                {{ item.jenisAngkaKredit }}
+              </option>
+            </select>
+            <small class="text-red" v-if="inputError.jenisAngkaKredit.status"><b>*{{ inputError.jenisAngkaKredit.description }}</b></small>
           </div>
-          <small :class="inputError.dokumenAngkaKredit.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenAngkaKredit.status ? inputError.dokumenAngkaKredit.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
         </div>
       </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <iframe v-if="dataAngkaKredit.dokumen !== '' && dataAngkaKredit.dokumen !== null" :src="dataAngkaKredit.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldJabatan">Jabatan pada Angka Kredit</label>
+            <select class="custom-select" id="fieldJabatan" :class="inputError.jabatan.status ? 'form-error' : ''" v-model="dataAngkaKredit.idDataJabatan">
+              <option value="0" selected disabled>{{ '-- Pilih Daftar Jabatan --' }}</option>
+              <option :selected="item.id === dataAngkaKredit.idDataJabatan" v-for="item in jabatan" :key="item.id" :value="item.idDataJabatan">
+                {{ item.jabatan }}
+              </option>
+            </select>
+            <small class="text-red" v-if="inputError.jabatan.status"><b>*{{ inputError.jabatan.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 3">
+        <div class="col-12">
+          <div class="form-group">
+            <label for="fieldTahun">Tahun Penilaian Angka Kredit</label>
+            <input type="number" min="1900" placeholder="2010" id="fieldTahun" v-model="dataAngkaKredit.tahun" class="form-control">
+            <small class="text-red" v-if="inputError.tahun.status"><b>*{{ inputError.tahun.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <p class="text-primary" style="margin: 0; padding: 0; font-weight: 600;">Periode Penilaian</p>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <label for="fieldperiodePenilaianMulai">Mulai</label>
+            <input type="date" id="fieldperiodePenilaianMulai" v-model="dataAngkaKredit.periodePenilaianMulai" class="form-control">
+            <small class="text-red" v-if="inputError.periodePenilaianMulai.status"><b>*{{ inputError.periodePenilaianMulai.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <label for="fieldperiodePenilaianSelesai">Selesai</label>
+            <input type="date" id="fieldperiodePenilaianSelesai" v-model="dataAngkaKredit.periodePenilaianSelesai" class="form-control">
+            <small class="text-red" v-if="inputError.periodePenilaianSelesai.status"><b>*{{ inputError.periodePenilaianSelesai.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <p class="text-primary" style="margin: 0; padding: 0; font-weight: 600;">Penilaian Angka Kredit</p>
+        </div>
+        <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1 || parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 4">
+          <div class="form-group">
+            <label for="fieldKreditUtama">Utama</label>
+            <input type="number" min="0" step="0.001" id="fieldKreditUtama" v-model="dataAngkaKredit.angkaKreditUtama" class="form-control">
+            <small class="text-red" v-if="inputError.angkaKreditUtama.status"><b>*{{ inputError.angkaKreditUtama.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-6" v-if="parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 1 || parseInt(dataAngkaKredit.idDaftarJenisAngkaKredit) === 4">
+          <div class="form-group">
+            <label for="fieldKreditPenunjang">Penunjang</label>
+            <input type="number" min="0" step="0.001" id="fieldKreditPenunjang" v-model="dataAngkaKredit.angkaKreditPenunjang" class="form-control">
+            <small class="text-red" v-if="inputError.angkaKreditPenunjang.status"><b>*{{ inputError.angkaKreditPenunjang.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <label for="fieldKreditTotal">Total</label>
+            <input type="number" min="0" step="0.001" id="fieldKreditTotal" v-model="dataAngkaKredit.angkaKreditTotal" class="form-control">
+            <small class="text-red" v-if="inputError.angkaKreditTotal.status"><b>*{{ inputError.angkaKreditTotal.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12 col-sm-6">
+          <div class="form-group">
+            <label for="fieldNomorDokumen">Nomor Dokumen</label>
+            <input type="text" placeholder="XXX/XXX/XXX" id="fieldNomorDokumen" v-model="dataAngkaKredit.nomorDokumen" class="form-control">
+            <small class="text-red" v-if="inputError.nomorDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="form-group">
+            <label for="fieldTanggalDokumen">Tanggal Dokumen</label>
+            <input type="date" id="fieldTanggalDokumen" v-model="dataAngkaKredit.tanggalDokumen" class="form-control">
+            <small class="text-red" v-if="inputError.tanggalDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldDokumenAngkaKredit">Dokumen Angka Kredit</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenAngkaKredit" @change="onChangeFile">
+              <label class="custom-file-label" for="fieldDokumenAngkaKredit" :class="inputError.dokumenAngkaKredit.status ? 'form-error' : ''">Cari dokumen</label>
+            </div>
+            <small :class="inputError.dokumenAngkaKredit.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenAngkaKredit.status ? inputError.dokumenAngkaKredit.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <iframe v-if="dataAngkaKredit.dokumen !== '' && dataAngkaKredit.dokumen !== null" :src="dataAngkaKredit.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        </div>
       </div>
     </div>
   </ModalHeaderFooter>
@@ -122,10 +125,15 @@
 import axios from "axios"
 const env = import.meta.env
 import mixins from "@/mixins/index.js"
+import ShimmeringItem from "@/components/ShimmeringItem.vue"
 export default {
+  components: {
+    ShimmeringItem
+  },
   mixins: [mixins],
   data() {
     return {
+      loading: true,
       dataAngkaKredit: {
         idDaftarJenisAngkaKredit: 0,
         idDataJabatan: 0,
@@ -218,7 +226,7 @@ export default {
       this.inputError.dokumenAngkaKredit.status = this.dataAngkaKredit.dokumen === ""
     },
     getDataCreated() {
-      this.isLoading = true
+      this.loading = true
       let url = `/angka-kredit/created/${this.$store.getters.getIdPegawai}`
       return axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
@@ -227,8 +235,8 @@ export default {
         }
       })
     },
-    getDataUpdated() {
-      this.isLoading = true
+    getDataDetail() {
+      this.loading = true
       let url = `/angka-kredit/updated/${this.$store.getters.getIdPegawai}/${this.$store.getters.getModalData.id}`
       return axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
@@ -285,9 +293,9 @@ export default {
   },
   created() {
     if(this.$store.getters.getModalMethod === "UPDATE") {
-      this.getDataUpdated().then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      this.getDataDetail().then(res => {
+        this.loading = false
+        let data = res.data
         this.jabatan = data.message.jabatan
         this.jenisAngkaKredit = data.message.jenisAngkaKredit
         this.fileCategory = data.message.dokumenKategori
@@ -295,8 +303,8 @@ export default {
       })
     } else {
       this.getDataCreated().then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.jabatan = data.message.jabatan
         this.jenisAngkaKredit = data.message.jenisAngkaKredit
         this.fileCategory = data.message.dokumenKategori
