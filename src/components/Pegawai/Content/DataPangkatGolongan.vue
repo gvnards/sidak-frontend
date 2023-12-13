@@ -69,8 +69,7 @@ export default {
         })
         return this.getDataPangkatGolongan()
       }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.isLoading = false
         this.dataPangkatGolongan = data.message
       })
@@ -99,10 +98,9 @@ export default {
   },
   async created() {
     this.getDataPangkatGolongan().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      let data = res.data
       this.isLoading = false
-      if (data.status === 2) {
+      if (parseInt(data.status) === 2) {
         this.dataPangkatGolongan = data.message
       } else {
         localStorage.clear()

@@ -1,107 +1,110 @@
 <template>
   <ModalHeaderFooter :header-title="'Pangkat/Golongan'" :header-subtitle="'pangkat/golongan'" :illustration="'IllustrationDataPangkatGolongan'" @onUsulkan="onUsulkan()">
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldJenisKepangkatan">Jenis Kepangkatan</label>
-          <select id="fieldJenisKepangkatan" class="custom-select" :class="inputError.jenisKepangkatan.status ? 'form-error' : ''" v-model="dataPangkatGolongan.idJenisPangkat">
-            <option value="0" selected disabled>Pilih Jenis Kepangkatan</option>
-            <option :selected="item.id === dataPangkatGolongan.idJenisPangkat" :value="item.id" v-for="item in jenisKepangkatan" :key="item.id">
-              {{ item.nama }}
-            </option>
-          </select>
-          <small class="text-red" v-if="inputError.jenisKepangkatan.status"><b>*{{ inputError.jenisKepangkatan.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-4">
-        <div class="form-group text-left">
-          <label for="fieldGolongan">Golongan</label>
-          <select class="custom-select" id="fieldGolongan" :class="inputError.daftarGolongan.status ? 'form-error' : ''"  v-model="dataPangkatGolongan.idDaftarPangkat">
-            <option value="0" selected disabled>Pilih Golongan</option>
-            <option :selected="item.id === dataPangkatGolongan.idDaftarPangkat" v-for="item in daftarGolongan" :value="item.id" :key="item.id">{{ item.golongan }}</option>
-          </select>
-          <small class="text-red" v-if="inputError.daftarGolongan.status"><b>*{{ inputError.daftarGolongan.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-8">
-        <div class="form-group text-left">
-          <label for="fieldPangkat">Pangkat</label>
-          <input type="text" id="fieldPangkat" class="form-control" disabled :value="textPangkat">
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-6">
-        <div class="form-group text-left">
-          <label for="fieldMasaKerjaTahun">Masa Kerja (Tahun)</label>
-          <input type="number" min="0" id="fieldMasaKerjaTahun" class="form-control" v-model="dataPangkatGolongan.masaKerjaTahun" :class="inputError.masaKerjaTahun.status ? 'form-error' : ''" placeholder="0">
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group text-left">
-          <label for="fieldMasaKerjaBulan">Masa Kerja (Bulan)</label>
-          <input type="number" min="0" id="fieldMasaKerjaBulan" class="form-control" v-model="dataPangkatGolongan.masaKerjaBulan" :class="inputError.masaKerjaBulan.status ? 'form-error' : ''" placeholder="0">
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldNomorDokumen">Nomor SK</label>
-          <input type="text" id="fieldNomorDokumen" class="form-control" v-model="dataPangkatGolongan.nomorDokumen" :class="inputError.nomorSk.status ? 'form-error' : ''" placeholder="Nomor SK">
-          <small class="text-red" v-if="inputError.nomorSk.status"><b>*{{ inputError.nomorSk.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-6">
-        <div class="form-group text-left">
-          <label for="fieldTanggalSk">Tanggal SK</label>
-          <input type="date" id="fieldTanggalSk" class="form-control asd" v-model="dataPangkatGolongan.tanggalDokumen" :class="inputError.tanggalSk.status ? 'form-error' : ''">
-          <small class="text-red" v-if="inputError.tanggalSk.status"><b>*{{ inputError.tanggalSk.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group text-left">
-          <label for="fieldTmtGolongan">TMT Golongan</label>
-          <input type="date" id="fieldTmtGolongan" class="form-control" v-model="dataPangkatGolongan.tmt" :class="inputError.tmtGolongan.status ? 'form-error' : ''">
-          <small class="text-red" v-if="inputError.tmtGolongan.status"><b>*{{ inputError.tmtGolongan.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-6">
-        <div class="form-group text-left">
-          <label for="fieldNomorBkn">Nomor BKN</label>
-          <input type="text" id="fieldNomorBkn" class="form-control" v-model="dataPangkatGolongan.nomorBkn" :class="inputError.nomorBkn.status ? 'form-error' : ''" placeholder="Nomor BKN SK Golongan">
-          <small class="text-red" v-if="inputError.nomorBkn.status"><b>*{{ inputError.nomorBkn.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group text-left">
-          <label for="fieldTanggalBkn">Tanggal BKN</label>
-          <input type="date" id="fieldTanggalBkn" class="form-control" v-model="dataPangkatGolongan.tanggalBkn" :class="inputError.tanggalBkn.status ? 'form-error' : ''">
-          <small class="text-red" v-if="inputError.tanggalBkn.status"><b>*{{ inputError.tanggalBkn.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldDokumenSk">Dokumen SK Pangkat/Golongan</label>
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSk" @change="onChangeFile">
-            <label class="custom-file-label" for="fieldDokumenSk" :class="inputError.dokumenSk.status ? 'form-error' : ''">Cari dokumen</label>
+    <ShimmeringItem v-if="loading" :layouts="[12,4,8,6,6,12,6,6,6,6,12]" />
+    <div v-else>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldJenisKepangkatan">Jenis Kepangkatan</label>
+            <select id="fieldJenisKepangkatan" class="custom-select" :class="inputError.jenisKepangkatan.status ? 'form-error' : ''" v-model="dataPangkatGolongan.idJenisPangkat">
+              <option value="0" selected disabled>Pilih Jenis Kepangkatan</option>
+              <option :selected="item.id === dataPangkatGolongan.idJenisPangkat" :value="item.id" v-for="item in jenisKepangkatan" :key="item.id">
+                {{ item.nama }}
+              </option>
+            </select>
+            <small class="text-red" v-if="inputError.jenisKepangkatan.status"><b>*{{ inputError.jenisKepangkatan.description }}</b></small>
           </div>
-          <small :class="inputError.dokumenSk.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenSk.status ? inputError.dokumenSk.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
         </div>
       </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <iframe v-if="dataPangkatGolongan.dokumen !== '' && dataPangkatGolongan.dokumen !== null" :src="dataPangkatGolongan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+      <div class="row row-form">
+        <div class="col-4">
+          <div class="form-group text-left">
+            <label for="fieldGolongan">Golongan</label>
+            <select class="custom-select" id="fieldGolongan" :class="inputError.daftarGolongan.status ? 'form-error' : ''"  v-model="dataPangkatGolongan.idDaftarPangkat">
+              <option value="0" selected disabled>Pilih Golongan</option>
+              <option :selected="item.id === dataPangkatGolongan.idDaftarPangkat" v-for="item in daftarGolongan" :value="item.id" :key="item.id">{{ item.golongan }}</option>
+            </select>
+            <small class="text-red" v-if="inputError.daftarGolongan.status"><b>*{{ inputError.daftarGolongan.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-8">
+          <div class="form-group text-left">
+            <label for="fieldPangkat">Pangkat</label>
+            <input type="text" id="fieldPangkat" class="form-control" disabled :value="textPangkat">
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-6">
+          <div class="form-group text-left">
+            <label for="fieldMasaKerjaTahun">Masa Kerja (Tahun)</label>
+            <input type="number" min="0" id="fieldMasaKerjaTahun" class="form-control" v-model="dataPangkatGolongan.masaKerjaTahun" :class="inputError.masaKerjaTahun.status ? 'form-error' : ''" placeholder="0">
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group text-left">
+            <label for="fieldMasaKerjaBulan">Masa Kerja (Bulan)</label>
+            <input type="number" min="0" id="fieldMasaKerjaBulan" class="form-control" v-model="dataPangkatGolongan.masaKerjaBulan" :class="inputError.masaKerjaBulan.status ? 'form-error' : ''" placeholder="0">
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldNomorDokumen">Nomor SK</label>
+            <input type="text" id="fieldNomorDokumen" class="form-control" v-model="dataPangkatGolongan.nomorDokumen" :class="inputError.nomorSk.status ? 'form-error' : ''" placeholder="Nomor SK">
+            <small class="text-red" v-if="inputError.nomorSk.status"><b>*{{ inputError.nomorSk.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-6">
+          <div class="form-group text-left">
+            <label for="fieldTanggalSk">Tanggal SK</label>
+            <input type="date" id="fieldTanggalSk" class="form-control asd" v-model="dataPangkatGolongan.tanggalDokumen" :class="inputError.tanggalSk.status ? 'form-error' : ''">
+            <small class="text-red" v-if="inputError.tanggalSk.status"><b>*{{ inputError.tanggalSk.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group text-left">
+            <label for="fieldTmtGolongan">TMT Golongan</label>
+            <input type="date" id="fieldTmtGolongan" class="form-control" v-model="dataPangkatGolongan.tmt" :class="inputError.tmtGolongan.status ? 'form-error' : ''">
+            <small class="text-red" v-if="inputError.tmtGolongan.status"><b>*{{ inputError.tmtGolongan.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-6">
+          <div class="form-group text-left">
+            <label for="fieldNomorBkn">Nomor BKN</label>
+            <input type="text" id="fieldNomorBkn" class="form-control" v-model="dataPangkatGolongan.nomorBkn" :class="inputError.nomorBkn.status ? 'form-error' : ''" placeholder="Nomor BKN SK Golongan">
+            <small class="text-red" v-if="inputError.nomorBkn.status"><b>*{{ inputError.nomorBkn.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group text-left">
+            <label for="fieldTanggalBkn">Tanggal BKN</label>
+            <input type="date" id="fieldTanggalBkn" class="form-control" v-model="dataPangkatGolongan.tanggalBkn" :class="inputError.tanggalBkn.status ? 'form-error' : ''">
+            <small class="text-red" v-if="inputError.tanggalBkn.status"><b>*{{ inputError.tanggalBkn.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldDokumenSk">Dokumen SK Pangkat/Golongan</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSk" @change="onChangeFile">
+              <label class="custom-file-label" for="fieldDokumenSk" :class="inputError.dokumenSk.status ? 'form-error' : ''">Cari dokumen</label>
+            </div>
+            <small :class="inputError.dokumenSk.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenSk.status ? inputError.dokumenSk.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <iframe v-if="dataPangkatGolongan.dokumen !== '' && dataPangkatGolongan.dokumen !== null" :src="dataPangkatGolongan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        </div>
       </div>
     </div>
   </ModalHeaderFooter>
@@ -111,10 +114,15 @@
 import axios from "axios"
 const env = import.meta.env
 import mixins from "@/mixins/index.js"
+import ShimmeringItem from "@/components/ShimmeringItem.vue"
 export default {
+  components: {
+    ShimmeringItem
+  },
   mixins: [mixins],
   data() {
     return {
+      loading: true,
       fileCategory: {},
       dataPangkatGolongan: {
         idJenisPangkat: 0,
@@ -224,7 +232,7 @@ export default {
       }
     },
     getDataPangkatGolonganDetail() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      this.loading = true
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
         url: `${env.VITE_BACKEND_URL}/data-golpang/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
@@ -233,7 +241,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.daftarGolongan = data.message.daftarGolonganPangkat
         this.jenisKepangkatan = data.message.jenisGolonganPangkat
         this.fileCategory = data.message.dokumenKategori
@@ -275,7 +284,7 @@ export default {
       })
     },
     getDataPangkatGolonganCreated() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      this.loading = true
       axios({
         url: `${env.VITE_BACKEND_URL}/data-golpang/created`,
         method: "GET",
@@ -283,7 +292,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.daftarGolongan = data.message.daftarGolonganPangkat
         this.jenisKepangkatan = data.message.jenisGolonganPangkat
         this.fileCategory = data.message.dokumenKategori
