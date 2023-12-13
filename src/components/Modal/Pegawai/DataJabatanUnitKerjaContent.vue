@@ -5,192 +5,195 @@
     :illustration="'IllustrationdataJabatanUnitOrganisasi'"
     @onUsulkan="onUsulkan()"
   >
-    <div style="margin-bottom: 8px;" v-if="dataInvalid">
-      <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">*Data Unit Organisasi dan Data Jabatan TIDAK SESUAI dengan Daftar Data di MySAPK/MyASN.</div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldUnor">Unit Organisasi</label>
-          <div style="margin-bottom: 8px;" v-if="dataInvalid">
-            <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitOrganisasi.unitOrganisasi }}</div>
-            <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data unit organisasi.</small>
-          </div>
-          <div class="row" v-for="(itemDaftarUnor, idx) in daftarUnor.listUnorActive" :key="idx">
-            <div :class="idx === 0 ? 'col-12' : 'col-11'">
-              <select class="custom-select" id="fieldUnor" @click="daftarJabatan.showJabatan = false">
-                <option value="0" :selected="daftarUnor.listUnorSelected[idx] === undefined" disabled>Pilih Unit Organisasi</option>
-                <option :selected="daftarUnor.listUnorSelected[idx] === itemUnor.kodeKomponen" @click="unorSelected(idx, itemUnor)" v-for="itemUnor in itemDaftarUnor" :key="parseInt(itemUnor.id)">
-                  {{ itemUnor.nama }}
-                </option>
-              </select>
-            </div>
-            <div class="col-1" v-if="idx !== 0" @click="unorDeleted(idx)" style="cursor: pointer;">
-              <i class="fa-solid fa-trash-can text-red" style="width: 80%; height: 80%; margin-right: 50%; margin-top: 4px; transform: translateX(-50%);"></i>
-            </div>
-          </div>
-        </div>
+    <ShimmeringItem v-if="loading" :layouts="[12,12,12,6,6,6,6,12]" />
+    <div v-else>
+      <div style="margin-bottom: 8px;" v-if="dataInvalid">
+        <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">*Data Unit Organisasi dan Data Jabatan TIDAK SESUAI dengan Daftar Data di MySAPK/MyASN.</div>
       </div>
-      <div class="col-12">
-        <div class="form-group my-form-group">
-          <label>Jabatan</label>
-          <div style="margin-bottom: 8px;" v-if="dataInvalid">
-            <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitOrganisasi.jabatan }}</div>
-            <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data jabatan.</small>
-          </div>
-          <div class="my-custom-input-wrapper my-custom-input" @click="daftarJabatan.showJabatan = !daftarJabatan.showJabatan; daftarJabatan.search = '';">{{ jabatanText }}</div>
-          <div class="my-custom-input-item-wrapper-outside" v-show="daftarJabatan.showJabatan">
-            <input type="text" class="form-control" placeholder="Cari jabatan (minimal 5 karakter)" v-model="daftarJabatan.search">
-            <div class="my-custom-input-item-wrapper-inside">
-              <div class="my-custom-input-item" @click="jabatanSelected(item)" v-for="(item, idx) in daftarJabatan.listJabatanActive" :key="parseInt(idx)" v-show="daftarJabatan.search.length < 5 ? true : item.nama.toLowerCase().includes(daftarJabatan.search.toLowerCase())" :style="item.kodeKomponen === dataJabatanUnitOrganisasi.kodeKomponen ? '' : 'color: #EC392F;'">
-                {{ `${item.nama} | terisi: ${item.jabatanTerisi} | kebutuhan: ${item.kebutuhan}` }}
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldUnor">Unit Organisasi</label>
+            <div style="margin-bottom: 8px;" v-if="dataInvalid">
+              <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitOrganisasi.unitOrganisasi }}</div>
+              <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data unit organisasi.</small>
+            </div>
+            <div class="row" v-for="(itemDaftarUnor, idx) in daftarUnor.listUnorActive" :key="idx">
+              <div :class="idx === 0 ? 'col-12' : 'col-11'">
+                <select class="custom-select" id="fieldUnor" @click="daftarJabatan.showJabatan = false">
+                  <option value="0" :selected="daftarUnor.listUnorSelected[idx] === undefined" disabled>Pilih Unit Organisasi</option>
+                  <option :selected="daftarUnor.listUnorSelected[idx] === itemUnor.kodeKomponen" @click="unorSelected(idx, itemUnor)" v-for="itemUnor in itemDaftarUnor" :key="parseInt(itemUnor.id)">
+                    {{ itemUnor.nama }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-1" v-if="idx !== 0" @click="unorDeleted(idx)" style="cursor: pointer;">
+                <i class="fa-solid fa-trash-can text-red" style="width: 80%; height: 80%; margin-right: 50%; margin-top: 4px; transform: translateX(-50%);"></i>
               </div>
             </div>
           </div>
-          <small class="text-red" v-if="inputError.jabatan.status"><b>*{{ inputError.jabatan.description }}</b></small>
         </div>
-      </div>
-      <div class="col-12">
-        <div class="form-group">
-          <div class="custom-control custom-checkbox">
-            <input
-              type="checkbox"
-              v-model="dataJabatanUnitOrganisasi.isPltPlh"
-              class="custom-control-input"
-              id="fieldIsPltPlh"
+        <div class="col-12">
+          <div class="form-group my-form-group">
+            <label>Jabatan</label>
+            <div style="margin-bottom: 8px;" v-if="dataInvalid">
+              <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitOrganisasi.jabatan }}</div>
+              <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data jabatan.</small>
+            </div>
+            <div class="my-custom-input-wrapper my-custom-input" @click="daftarJabatan.showJabatan = !daftarJabatan.showJabatan; daftarJabatan.search = '';">{{ jabatanText }}</div>
+            <div class="my-custom-input-item-wrapper-outside" v-show="daftarJabatan.showJabatan">
+              <input type="text" class="form-control" placeholder="Cari jabatan (minimal 5 karakter)" v-model="daftarJabatan.search">
+              <div class="my-custom-input-item-wrapper-inside">
+                <div class="my-custom-input-item" @click="jabatanSelected(item)" v-for="(item, idx) in daftarJabatan.listJabatanActive" :key="parseInt(idx)" v-show="daftarJabatan.search.length < 5 ? true : item.nama.toLowerCase().includes(daftarJabatan.search.toLowerCase())" :style="item.kodeKomponen === dataJabatanUnitOrganisasi.kodeKomponen ? '' : 'color: #EC392F;'">
+                  {{ `${item.nama} | terisi: ${item.jabatanTerisi} | kebutuhan: ${item.kebutuhan}` }}
+                </div>
+              </div>
+            </div>
+            <small class="text-red" v-if="inputError.jabatan.status"><b>*{{ inputError.jabatan.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <div class="custom-control custom-checkbox">
+              <input
+                type="checkbox"
+                v-model="dataJabatanUnitOrganisasi.isPltPlh"
+                class="custom-control-input"
+                id="fieldIsPltPlh"
+              />
+              <label class="custom-control-label" for="fieldIsPltPlh"
+                >Centang jika jabatan yang akan diusulkan adalah jabatan
+                Plt./Plh.</label
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <label for="fieldTugasTambahan">Tugas Tambahan</label>
+            <select
+              id="fieldTugasTambahan"
+              class="custom-select"
+              v-model="dataJabatanUnitOrganisasi.idJabatanTugasTambahan"
+            >
+              <option disabled>-- Pilih Tugas Tambahan --</option>
+              <option
+                value="null"
+                :selected="dataJabatanUnitOrganisasi.idJabatanTugasTambahan == null"
+              >
+                Tidak memiliki tugas tambahan
+              </option>
+              <option :value="item.id" v-for="item in daftarTugasTambahan" :key="item.id">{{ item.nama }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <label for="fieldTmt">TMT</label>
+            <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitOrganisasi.tmt }}</div>
+            <input v-else
+              :class="inputError.tmt.status ? 'form-error' : ''"
+              type="date"
+              v-model="dataJabatanUnitOrganisasi.tmt"
+              id="fieldTmt"
+              class="form-control"
             />
-            <label class="custom-control-label" for="fieldIsPltPlh"
-              >Centang jika jabatan yang akan diusulkan adalah jabatan
-              Plt./Plh.</label
+            <small class="text-red" v-if="inputError.tmt.status"
+              ><b>*{{ inputError.tmt.description }}</b></small
             >
           </div>
         </div>
-      </div>
-      <div class="col-12">
-        <div class="form-group">
-          <label for="fieldTugasTambahan">Tugas Tambahan</label>
-          <select
-            id="fieldTugasTambahan"
-            class="custom-select"
-            v-model="dataJabatanUnitOrganisasi.idJabatanTugasTambahan"
-          >
-            <option disabled>-- Pilih Tugas Tambahan --</option>
-            <option
-              value="null"
-              :selected="dataJabatanUnitOrganisasi.idJabatanTugasTambahan == null"
-            >
-              Tidak memiliki tugas tambahan
-            </option>
-            <option :value="item.id" v-for="item in daftarTugasTambahan" :key="item.id">{{ item.nama }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group">
-          <label for="fieldTmt">TMT</label>
-          <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitOrganisasi.tmt }}</div>
-          <input v-else
-            :class="inputError.tmt.status ? 'form-error' : ''"
-            type="date"
-            v-model="dataJabatanUnitOrganisasi.tmt"
-            id="fieldTmt"
-            class="form-control"
-          />
-          <small class="text-red" v-if="inputError.tmt.status"
-            ><b>*{{ inputError.tmt.description }}</b></small
-          >
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group">
-          <label for="fieldSpmt">SPMT</label>
-          <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitOrganisasi.spmt }}</div>
-          <input v-else
-            :class="inputError.spmt.status ? 'form-error' : ''"
-            type="date"
-            v-model="dataJabatanUnitOrganisasi.spmt"
-            id="fieldSpmt"
-            class="form-control"
-          />
-          <small class="text-red" v-if="inputError.spmt.status"
-            ><b>*{{ inputError.spmt.description }}</b></small
-          >
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group">
-          <label for="fieldNomorDokumen">Nomor SK</label>
-          <input
-            :class="inputError.nomorDokumen.status ? 'form-error' : ''"
-            type="text"
-            placeholder="Nomor SK Jabatan Anda"
-            v-model="dataJabatanUnitOrganisasi.nomorDokumen"
-            id="fieldNomorDokumen"
-            class="form-control"
-          />
-          <small class="text-red" v-if="inputError.nomorDokumen.status"
-            ><b>*{{ inputError.nomorDokumen.description }}</b></small
-          >
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group">
-          <label for="fieldTglDokumen">Tanggal SK</label>
-          <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitOrganisasi.tanggalDokumen }}</div>
-          <input v-else
-            :class="inputError.tanggalDokumen.status ? 'form-error' : ''"
-            type="date"
-            v-model="dataJabatanUnitOrganisasi.tanggalDokumen"
-            id="fieldTglDokumen"
-            class="form-control"
-          />
-          <small class="text-red" v-if="inputError.tanggalDokumen.status"
-            ><b>*{{ inputError.tanggalDokumen.description }}</b></small
-          >
-        </div>
-      </div>
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldDokumenSk">Dokumen SK Jabatan</label>
-          <div class="custom-file">
-            <input
-              type="file"
-              class="custom-file-input"
-              accept="application/pdf"
-              id="fieldDokumenSk"
-              @change="onChangeFile"
+        <div class="col-6">
+          <div class="form-group">
+            <label for="fieldSpmt">SPMT</label>
+            <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitOrganisasi.spmt }}</div>
+            <input v-else
+              :class="inputError.spmt.status ? 'form-error' : ''"
+              type="date"
+              v-model="dataJabatanUnitOrganisasi.spmt"
+              id="fieldSpmt"
+              class="form-control"
             />
-            <label
-              class="custom-file-label"
-              for="fieldDokumenSk"
-              :class="inputError.dokumenSk.status ? 'form-error' : ''"
-              >Cari dokumen</label
+            <small class="text-red" v-if="inputError.spmt.status"
+              ><b>*{{ inputError.spmt.description }}</b></small
             >
           </div>
-          <small
-            :class="inputError.dokumenSk.status ? 'text-red' : 'text-primary'"
-            ><b
-              >*{{
-                inputError.dokumenSk.status
-                  ? inputError.dokumenSk.description
-                  : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${
-                      fileCategory.ukuran * 1024
-                    }KB).`
-              }}</b
-            ></small
-          >
         </div>
-      </div>
-      <div class="col-12">
-        <iframe
-          v-if="
-            dataJabatanUnitOrganisasi.dokumen !== '' &&
-            dataJabatanUnitOrganisasi.dokumen !== null
-          "
-          :src="dataJabatanUnitOrganisasi.dokumen"
-          frameborder="0"
-          style="width: 100%; height: 600px"
-        ></iframe>
+        <div class="col-6">
+          <div class="form-group">
+            <label for="fieldNomorDokumen">Nomor SK</label>
+            <input
+              :class="inputError.nomorDokumen.status ? 'form-error' : ''"
+              type="text"
+              placeholder="Nomor SK Jabatan Anda"
+              v-model="dataJabatanUnitOrganisasi.nomorDokumen"
+              id="fieldNomorDokumen"
+              class="form-control"
+            />
+            <small class="text-red" v-if="inputError.nomorDokumen.status"
+              ><b>*{{ inputError.nomorDokumen.description }}</b></small
+            >
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <label for="fieldTglDokumen">Tanggal SK</label>
+            <div v-if="isMethodUpdate" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitOrganisasi.tanggalDokumen }}</div>
+            <input v-else
+              :class="inputError.tanggalDokumen.status ? 'form-error' : ''"
+              type="date"
+              v-model="dataJabatanUnitOrganisasi.tanggalDokumen"
+              id="fieldTglDokumen"
+              class="form-control"
+            />
+            <small class="text-red" v-if="inputError.tanggalDokumen.status"
+              ><b>*{{ inputError.tanggalDokumen.description }}</b></small
+            >
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldDokumenSk">Dokumen SK Jabatan</label>
+            <div class="custom-file">
+              <input
+                type="file"
+                class="custom-file-input"
+                accept="application/pdf"
+                id="fieldDokumenSk"
+                @change="onChangeFile"
+              />
+              <label
+                class="custom-file-label"
+                for="fieldDokumenSk"
+                :class="inputError.dokumenSk.status ? 'form-error' : ''"
+                >Cari dokumen</label
+              >
+            </div>
+            <small
+              :class="inputError.dokumenSk.status ? 'text-red' : 'text-primary'"
+              ><b
+                >*{{
+                  inputError.dokumenSk.status
+                    ? inputError.dokumenSk.description
+                    : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${
+                        fileCategory.ukuran * 1024
+                      }KB).`
+                }}</b
+              ></small
+            >
+          </div>
+        </div>
+        <div class="col-12">
+          <iframe
+            v-if="
+              dataJabatanUnitOrganisasi.dokumen !== '' &&
+              dataJabatanUnitOrganisasi.dokumen !== null
+            "
+            :src="dataJabatanUnitOrganisasi.dokumen"
+            frameborder="0"
+            style="width: 100%; height: 600px"
+          ></iframe>
+        </div>
       </div>
     </div>
   </ModalHeaderFooter>
@@ -200,10 +203,15 @@
 import axios from "axios"
 const env = import.meta.env
 import mixins from "@/mixins/index.js"
+import ShimmeringItem from "@/components/ShimmeringItem.vue"
 export default {
+  components: {
+    ShimmeringItem
+  },
   mixins: [mixins],
   data() {
     return {
+      loading: true,
       dataInvalid: false,
       jabatanText: "-- Pilih Unit Organisasi Dahulu --",
       dataJabatanUnitOrganisasi: {
@@ -381,6 +389,7 @@ export default {
       })
     },
     getDataJabatanCreated() {
+      this.loading = true
       axios({
         url: `${env.VITE_BACKEND_URL}/data-jabatan/created`,
         method: "GET",
@@ -388,8 +397,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.fileCategory = data.message.dokumenKategori
         this.daftarTugasTambahan = data.message.tugasTambahan
         this.daftarUnor.listAllUnor = data.message.unitOrganisasi
@@ -399,6 +408,7 @@ export default {
       })
     },
     getDataJabatanDetail() {
+      this.loading = true
       axios({
         url: `${env.VITE_BACKEND_URL}/data-jabatan/detail/${this.$store.getters.getIdPegawai}/${this.$store.getters.getModalData.id}`,
         method: "GET",
@@ -406,8 +416,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.fileCategory = data.message.dokumenKategori
         this.daftarTugasTambahan = data.message.tugasTambahan
         this.daftarUnor.listAllUnor = data.message.unitOrganisasi

@@ -42,7 +42,7 @@ const env = import.meta.env
 export default {
   data() {
     return {
-      isLoading: false,
+      isLoading: true,
       dataJabatan: [],
       btnDisabled: {
         sync: false
@@ -105,10 +105,9 @@ export default {
   },
   async created() {
     await this.getDataJabatan().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      let data = res.data
       this.isLoading = false
-      if (data.status === 2) {
+      if (parseInt(data.status) === 2) {
         this.dataJabatan = data.message
       } else {
         localStorage.clear()
