@@ -153,6 +153,7 @@ export default {
   methods: {
     getData() {
       this.dataPribadi = {}
+      this.isLoading = true
       try {
         let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
         let url = `/data-pribadi/${this.$store.getters.getIdPegawai}`
@@ -164,9 +165,8 @@ export default {
           }
         }).then((res) => {
           this.isLoading = false
-          let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-          if (data.status === 2) {
-            this.dataPribadi = data.message[0]
+          if (parseInt(res.data.status) === 2) {
+            this.dataPribadi = res.data.message[0]
           } else {
             localStorage.clear()
             this.$router.push({
@@ -204,12 +204,12 @@ export default {
           }), p)
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
+        let data = res.data
         this.$store.commit("onModalMethod", "UPDATE")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
         $("#showModal").trigger("click")

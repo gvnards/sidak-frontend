@@ -1,5 +1,7 @@
 <template>
   <ModalHeaderFooter :header-title="'Pasangan'" :header-subtitle="'pasangan'" :illustration="'IllustrationDataKeluarga'" @onUsulkan="onUsulkan()">
+    <ShimmeringItem v-if="loading" :layouts="[12,6,6,6,6,12]" />
+    <div v-else>
       <div class="row row-form">
         <div class="col-12">
           <div class="form-group text-left">
@@ -121,6 +123,7 @@
           <iframe v-if="dataPasangan.dokumen !== '' && dataPasangan.dokumen !== null" :src="dataPasangan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
       </div>
+    </div>
   </ModalHeaderFooter>
 </template>
 
@@ -128,10 +131,15 @@
 import axios from "axios"
 const env = import.meta.env
 import mixins from "@/mixins/index.js"
+import ShimmeringItem from "@/components/ShimmeringItem.vue"
 export default {
+  components: {
+    ShimmeringItem
+  },
   mixins: [mixins],
   data() {
     return {
+      loading: true,
       inputError: {
         nama: {
           status: false,
@@ -247,7 +255,7 @@ export default {
       })
     },
     getDataPasanganDetail() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      this.loading = true
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
         url: `${env.VITE_BACKEND_URL}/data-pasangan/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
@@ -256,7 +264,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.dataPasangan = data.message.dataPasangan[0]
         this.statusPerkawinan = data.message.dataStatusPerkawinan
         this.fileCategory = data.message.dokumenKategori
@@ -281,7 +290,7 @@ export default {
       }
     },
     getDataPasanganCreated () {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      this.loading = true
       axios({
         url: `${env.VITE_BACKEND_URL}/data-pasangan/created/${this.$store.getters.getIdPegawai}`,
         method: "GET",
@@ -289,7 +298,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.statusPerkawinan = data.message.dataStatusPerkawinan
         this.fileCategory = data.message.dokumenKategori
       })

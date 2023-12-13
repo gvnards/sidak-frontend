@@ -124,7 +124,6 @@ export default {
     },
     getDataKeluargaPasangan() {
       this.isLoading = true
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let url = `/data-pasangan/${this.$store.getters.getIdPegawai}`
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
@@ -132,9 +131,9 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.isLoading = false
-        if (data.status === 2) {
+        if (parseInt(data.status) === 2) {
           this.dataKeluarga.dataPasangan = data.message
         } else {
           localStorage.clear()
@@ -151,7 +150,6 @@ export default {
     },
     getDataKeluargaAnak() {
       this.isLoading = true
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let url = `/data-anak/${this.$store.getters.getIdPegawai}`
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
@@ -159,7 +157,7 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.isLoading = false
         if (data.status === 2) {
           this.dataKeluarga.dataAnak = data.message
