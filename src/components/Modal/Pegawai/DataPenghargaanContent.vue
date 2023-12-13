@@ -1,57 +1,60 @@
 <template>
   <ModalHeaderFooter :header-title="'Penghargaan'" :header-subtitle="'penghargaan'" :illustration="'IllustrationDataPenghargaan'" @onUsulkan="onUsulkan()">
-    <div class="row row-form">
-      <div class="col-12 col-sm-6">
-        <div class="form-group text-left">
-          <label for="fieldJenisPenghargaan">Jenis Penghargaan</label>
-          <select class="custom-select" id="fieldJenisPenghargaan" :class="inputError.jenisPenghargaan.status ? 'form-error' : ''" v-model="dataPenghargaan.idDaftarJenisPenghargaan">
-            <option value="0" selected disabled>Pilih Jenis Penghargaan</option>
-            <option :selected="item.id === dataPenghargaan.idDaftarJenisPenghargaan" v-for="item in daftarJenisPenghargaan" :key="item.id" :value="item.id">
-              {{ item.jenisPenghargaan }}
-            </option>
-          </select>
-          <small class="text-red" v-if="inputError.jenisPenghargaan.status"><b>*{{ inputError.jenisPenghargaan.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6">
-        <div class="form-group text-left">
-          <label for="fieldTahunPenghargaan">Tahun Perolehan</label>
-          <input  :class="inputError.tahunPenghargaan.status ? 'form-error' : ''" id="fieldTahunPenghargaan" type="number" min="0" class="form-control" placeholder="2000" v-model="dataPenghargaan.tahunPenghargaan">
-          <small class="text-red" v-if="inputError.tahunPenghargaan.status"><b>*{{ inputError.tahunPenghargaan.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12 col-sm-6">
-        <div class="form-group">
-          <label for="fieldNomorSk">Nomor Dokumen</label>
-          <input  :class="inputError.nomorDokumen.status ? 'form-error' : ''" type="text" id="fieldNomorSk" class="form-control" placeholder="XXXX/XXXX/XXXX" v-model="dataPenghargaan.nomorDokumen">
-          <small class="text-red" v-if="inputError.nomorDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6">
-        <div class="form-group">
-          <label for="fieldTanggalSk">Tanggal Dokumen</label>
-          <input  :class="inputError.tanggalDokumen.status ? 'form-error' : ''" type="date" id="fieldTanggalSk" class="form-control" v-model="dataPenghargaan.tanggalDokumen">
-          <small class="text-red" v-if="inputError.tanggalDokumen.status"><b>*{{ inputError.tanggalDokumen.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldDokumenSk">Dokumen Penghargaan</label>
-          <div class="custom-file">
-            <input  :class="inputError.dokumen.status ? 'form-error' : ''" type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSk" @change="onChangeFile">
-            <label class="custom-file-label" for="fieldDokumenSk" :class="inputError.dokumen.status ? 'form-error' : ''">Cari dokumen</label>
+    <ShimmeringItem v-if="loading" :layouts="[6,6,6,6,12]" />
+    <div v-else>
+      <div class="row row-form">
+        <div class="col-12 col-sm-6">
+          <div class="form-group text-left">
+            <label for="fieldJenisPenghargaan">Jenis Penghargaan</label>
+            <select class="custom-select" id="fieldJenisPenghargaan" :class="inputError.jenisPenghargaan.status ? 'form-error' : ''" v-model="dataPenghargaan.idDaftarJenisPenghargaan">
+              <option value="0" selected disabled>Pilih Jenis Penghargaan</option>
+              <option :selected="item.id === dataPenghargaan.idDaftarJenisPenghargaan" v-for="item in daftarJenisPenghargaan" :key="item.id" :value="item.id">
+                {{ item.jenisPenghargaan }}
+              </option>
+            </select>
+            <small class="text-red" v-if="inputError.jenisPenghargaan.status"><b>*{{ inputError.jenisPenghargaan.description }}</b></small>
           </div>
-          <small :class="inputError.dokumen.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumen.status ? inputError.dokumen.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="form-group text-left">
+            <label for="fieldTahunPenghargaan">Tahun Perolehan</label>
+            <input  :class="inputError.tahunPenghargaan.status ? 'form-error' : ''" id="fieldTahunPenghargaan" type="number" min="0" class="form-control" placeholder="2000" v-model="dataPenghargaan.tahunPenghargaan">
+            <small class="text-red" v-if="inputError.tahunPenghargaan.status"><b>*{{ inputError.tahunPenghargaan.description }}</b></small>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <iframe v-if="dataPenghargaan.dokumen !== '' && dataPenghargaan.dokumen !== null" :src="dataPenghargaan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+      <div class="row row-form">
+        <div class="col-12 col-sm-6">
+          <div class="form-group">
+            <label for="fieldNomorSk">Nomor Dokumen</label>
+            <input  :class="inputError.nomorDokumen.status ? 'form-error' : ''" type="text" id="fieldNomorSk" class="form-control" placeholder="XXXX/XXXX/XXXX" v-model="dataPenghargaan.nomorDokumen">
+            <small class="text-red" v-if="inputError.nomorDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="form-group">
+            <label for="fieldTanggalSk">Tanggal Dokumen</label>
+            <input  :class="inputError.tanggalDokumen.status ? 'form-error' : ''" type="date" id="fieldTanggalSk" class="form-control" v-model="dataPenghargaan.tanggalDokumen">
+            <small class="text-red" v-if="inputError.tanggalDokumen.status"><b>*{{ inputError.tanggalDokumen.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldDokumenSk">Dokumen Penghargaan</label>
+            <div class="custom-file">
+              <input  :class="inputError.dokumen.status ? 'form-error' : ''" type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSk" @change="onChangeFile">
+              <label class="custom-file-label" for="fieldDokumenSk" :class="inputError.dokumen.status ? 'form-error' : ''">Cari dokumen</label>
+            </div>
+            <small :class="inputError.dokumen.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumen.status ? inputError.dokumen.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <iframe v-if="dataPenghargaan.dokumen !== '' && dataPenghargaan.dokumen !== null" :src="dataPenghargaan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        </div>
       </div>
     </div>
   </ModalHeaderFooter>
@@ -61,10 +64,15 @@
 import axios from "axios"
 const env = import.meta.env
 import mixins from "@/mixins/index.js"
+import ShimmeringItem from "@/components/ShimmeringItem.vue"
 export default {
+  components: {
+    ShimmeringItem
+  },
   mixins: [mixins],
   data() {
     return {
+      loading: true,
       dataPenghargaan: {
         idDaftarJenisPenghargaan: 0,
         tahunPenghargaan: 0,
@@ -138,7 +146,7 @@ export default {
       })
     },
     getDataPenghargaanCreated() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      this.loading = true
       axios({
         url: `${env.VITE_BACKEND_URL}/data-penghargaan/created`,
         method: "GET",
@@ -146,14 +154,15 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.daftarJenisPenghargaan = data.message.jenisPenghargaan
         this.fileCategory = data.message.dokumenKategori
       })
     },
     getDataPenghargaanDetail() {
+      this.loading = true
       let idPegawai = this.$store.getters.getIdPegawai
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}/data-penghargaan/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
         method: "GET",
@@ -161,7 +170,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.daftarJenisPenghargaan = data.message.jenisPenghargaan
         this.fileCategory = data.message.dokumenKategori
         this.dataPenghargaan = data.message.dataPenghargaan[0]
