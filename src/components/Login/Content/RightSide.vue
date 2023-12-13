@@ -130,15 +130,17 @@ export default {
         }
       }).then(res => {
         this.isLoading = false
-        let getData = this.$store.getters.getDecrypt(JSON.stringify(res.data), "sidak.bkpsdmsitubondokab")
-        if(getData.status === 2) {
+        let getData = res.data
+        if(parseInt(getData.status) === 2) {
+          let tkn = this.$store.getters.getDecrypt(getData.message, "sidak.bkpsdmsitubondokab")
           localStorage.setItem("token", this.$store.getters.getEncrypt(JSON.stringify({
-            id: getData.id,
-            username: getData.username,
-            password: getData.password,
-            idAppRoleUser: parseInt(getData.idAppRoleUser),
-            appRoleUser: getData.appRoleUser
+            id: tkn.tkn.id,
+            username: tkn.tkn.username,
+            password: tkn.tkn.password,
+            idAppRoleUser: parseInt(tkn.tkn.idAppRoleUser),
+            appRoleUser: tkn.tkn.appRoleUser
           }), "sidak.bkpsdmsitubondokab"))
+          getData.message = tkn.text
         }
         $("#modal-login").click()
         this.$store.commit("onModalMethod", "LOGIN")
