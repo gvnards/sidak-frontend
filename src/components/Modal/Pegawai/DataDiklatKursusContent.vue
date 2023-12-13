@@ -1,121 +1,124 @@
 <template>
   <ModalHeaderFooter :header-title="'Diklat/Kursus'" :header-subtitle="'diklat/kursus'" :illustration="'IllustrationDataDiklatKursus'" @onUsulkan="onUsulkan()">
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldJenisDiklatKursus">Jenis Diklat/Kursus</label>
-          <select class="custom-select" id="fieldJenisDiklatKursus" :class="inputError.jenisDiklatKursus.status ? 'form-error' : ''" v-model="dataDiklatKursus.idJenisDiklat">
-            <option value="0" selected disabled>Pilih Jenis Diklat/Kursus</option>
-            <option :selected="item.id === dataDiklatKursus.idJenisDiklat" v-for="item in jenisDiklatKursus" :key="item.id" :value="item.id">
-              {{ item.nama }}
-            </option>
-          </select>
-          <small class="text-red" v-if="inputError.jenisDiklatKursus.status"><b>*{{ inputError.jenisDiklatKursus.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldDaftarDiklatKursus">Daftar Diklat/Kursus</label>
-          <select :disabled="dataDiklatKursus.idJenisDiklat == 0" class="custom-select" id="fieldDaftarDiklatKursus" :class="inputError.daftarDiklatKursus.status ? 'form-error' : ''" v-model="dataDiklatKursus.idDaftarDiklat">
-            <option value="0" selected disabled>{{ dataDiklatKursus.idJenisDiklat == 0 ? '-- Jenis Diklat/Kursus Belum Dipilih --' : '-- Pilih Daftar Diklat/Kursus --' }}</option>
-            <option v-show="dataDiklatKursus.idJenisDiklat > 2 ? item.idJenisDiklat > 2 : dataDiklatKursus.idJenisDiklat == item.idJenisDiklat" :selected="item.id === dataDiklatKursus.idDaftarDiklat" v-for="item in daftarDiklatKursus" :key="item.id" :value="item.id">
-              {{ item.nama }}
-            </option>
-          </select>
-          <small class="text-red" v-if="inputError.daftarDiklatKursus.status"><b>*{{ inputError.daftarDiklatKursus.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group">
-          <label for="fieldNamaDiklatKursus">Nama Diklat/Kursus</label>
-          <input type="text" class="form-control" :class="inputError.namaDiklatKursus.status ? 'form-error' : ''" v-model="dataDiklatKursus.namaDiklat" placeholder="Nama Diklat/Kursus Anda">
-          <small class="text-red" v-if="inputError.namaDiklatKursus.status"><b>*{{ inputError.namaDiklatKursus.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group">
-          <label for="fieldLamaJamDiklatKursus">Lama Diklat/Kursus(jam)</label>
-          <input type="number" min="0" id="fieldLamaJamDiklatKursus" :class="inputError.lamaJamDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.lamaDiklat" placeholder="40">
-          <small class="text-red" v-if="inputError.lamaJamDiklatKursus.status"><b>*{{ inputError.lamaJamDiklatKursus.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12 col-sm-6">
-        <div class="form-group">
-          <label for="fieldTanggalDiklatKursus">Tanggal Mulai Diklat/Kursus</label>
-          <input type="date" id="fieldTanggalDiklatKursus" :class="inputError.tanggalDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.tanggalDiklat">
-          <small class="text-red" v-if="inputError.tanggalDiklatKursus.status"><b>*{{ inputError.tanggalDiklatKursus.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6">
-        <div class="form-group">
-          <label for="fieldTanggalSelesaiDiklatKursus">Tanggal Selesai Diklat/Kursus</label>
-          <input type="date" id="fieldTanggalSelesaiDiklatKursus" :class="inputError.tanggalSelesaiDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.tanggalSelesaiDiklat">
-          <small class="text-red" v-if="inputError.tanggalSelesaiDiklatKursus.status"><b>*{{ inputError.tanggalSelesaiDiklatKursus.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldInstansi">Instansi</label>
-          <select class="custom-select" id="fieldInstansi" :class="inputError.instansi.status ? 'form-error' : ''" v-model="dataDiklatKursus.idDaftarInstansiDiklat">
-            <option value="0" selected disabled>Pilih Instansi</option>
-            <option :selected="item.id === dataDiklatKursus.idDaftarInstansiDiklat" v-for="item in daftarInstansi" :key="item.id" :value="item.id">
-              {{ item.nama }}
-            </option>
-          </select>
-          <small class="text-red" v-if="inputError.instansi.status"><b>*{{ inputError.instansi.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group">
-          <label for="fieldInstitusiPenyelenggara">Institusi Penyelenggara</label>
-          <input type="text" id="fieldInstitusiPenyelenggara" :class="inputError.institusiPenyelenggara.status ? 'form-error' : ''" v-model="dataDiklatKursus.institusiPenyelenggara" class="form-control">
-          <small class="text-red" v-if="inputError.institusiPenyelenggara.status"><b>*{{ inputError.institusiPenyelenggara.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
+    <ShimmeringItem v-if="loading" :layouts="[12,12,12,12,6,6,12,12,12,12]" />
+    <div v-else>
+      <div class="row row-form">
+        <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldNomorDokumen">Nomor Dokumen Diklat/Kursus</label>
-            <input
-              :class="inputError.nomorDokumen.status ? 'form-error' : ''"
-              type="text"
-              class="form-control"
-              id="fieldNomorDokumen"
-              placeholder="Nomor Dokumen Diklat/Kursus"
-              v-model="dataDiklatKursus.nomorDokumen"
-            />
-            <small class="text-red" v-if="inputError.nomorDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
+            <label for="fieldJenisDiklatKursus">Jenis Diklat/Kursus</label>
+            <select class="custom-select" id="fieldJenisDiklatKursus" :class="inputError.jenisDiklatKursus.status ? 'form-error' : ''" v-model="dataDiklatKursus.idJenisDiklat">
+              <option value="0" selected disabled>Pilih Jenis Diklat/Kursus</option>
+              <option :selected="item.id === dataDiklatKursus.idJenisDiklat" v-for="item in jenisDiklatKursus" :key="item.id" :value="item.id">
+                {{ item.nama }}
+              </option>
+            </select>
+            <small class="text-red" v-if="inputError.jenisDiklatKursus.status"><b>*{{ inputError.jenisDiklatKursus.description }}</b></small>
           </div>
-        </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldDokumenDiklat">Dokumen Diklat</label>
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenDiklat" @change="onChangeFile">
-            <label class="custom-file-label" for="fieldDokumenDiklat" :class="inputError.dokumenDiklat.status ? 'form-error' : ''">Cari dokumen</label>
-          </div>
-          <small :class="inputError.dokumenDiklat.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenDiklat.status ? inputError.dokumenDiklat.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
         </div>
       </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <iframe v-if="dataDiklatKursus.dokumen !== '' && dataDiklatKursus.dokumen !== null" :src="dataDiklatKursus.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldDaftarDiklatKursus">Daftar Diklat/Kursus</label>
+            <select :disabled="dataDiklatKursus.idJenisDiklat == 0" class="custom-select" id="fieldDaftarDiklatKursus" :class="inputError.daftarDiklatKursus.status ? 'form-error' : ''" v-model="dataDiklatKursus.idDaftarDiklat">
+              <option value="0" selected disabled>{{ dataDiklatKursus.idJenisDiklat == 0 ? '-- Jenis Diklat/Kursus Belum Dipilih --' : '-- Pilih Daftar Diklat/Kursus --' }}</option>
+              <option v-show="dataDiklatKursus.idJenisDiklat > 2 ? item.idJenisDiklat > 2 : dataDiklatKursus.idJenisDiklat == item.idJenisDiklat" :selected="item.id === dataDiklatKursus.idDaftarDiklat" v-for="item in daftarDiklatKursus" :key="item.id" :value="item.id">
+                {{ item.nama }}
+              </option>
+            </select>
+            <small class="text-red" v-if="inputError.daftarDiklatKursus.status"><b>*{{ inputError.daftarDiklatKursus.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group">
+            <label for="fieldNamaDiklatKursus">Nama Diklat/Kursus</label>
+            <input type="text" class="form-control" :class="inputError.namaDiklatKursus.status ? 'form-error' : ''" v-model="dataDiklatKursus.namaDiklat" placeholder="Nama Diklat/Kursus Anda">
+            <small class="text-red" v-if="inputError.namaDiklatKursus.status"><b>*{{ inputError.namaDiklatKursus.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group">
+            <label for="fieldLamaJamDiklatKursus">Lama Diklat/Kursus(jam)</label>
+            <input type="number" min="0" id="fieldLamaJamDiklatKursus" :class="inputError.lamaJamDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.lamaDiklat" placeholder="40">
+            <small class="text-red" v-if="inputError.lamaJamDiklatKursus.status"><b>*{{ inputError.lamaJamDiklatKursus.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12 col-sm-6">
+          <div class="form-group">
+            <label for="fieldTanggalDiklatKursus">Tanggal Mulai Diklat/Kursus</label>
+            <input type="date" id="fieldTanggalDiklatKursus" :class="inputError.tanggalDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.tanggalDiklat">
+            <small class="text-red" v-if="inputError.tanggalDiklatKursus.status"><b>*{{ inputError.tanggalDiklatKursus.description }}</b></small>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="form-group">
+            <label for="fieldTanggalSelesaiDiklatKursus">Tanggal Selesai Diklat/Kursus</label>
+            <input type="date" id="fieldTanggalSelesaiDiklatKursus" :class="inputError.tanggalSelesaiDiklatKursus.status ? 'form-error' : ''" class="form-control" v-model="dataDiklatKursus.tanggalSelesaiDiklat">
+            <small class="text-red" v-if="inputError.tanggalSelesaiDiklatKursus.status"><b>*{{ inputError.tanggalSelesaiDiklatKursus.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldInstansi">Instansi</label>
+            <select class="custom-select" id="fieldInstansi" :class="inputError.instansi.status ? 'form-error' : ''" v-model="dataDiklatKursus.idDaftarInstansiDiklat">
+              <option value="0" selected disabled>Pilih Instansi</option>
+              <option :selected="item.id === dataDiklatKursus.idDaftarInstansiDiklat" v-for="item in daftarInstansi" :key="item.id" :value="item.id">
+                {{ item.nama }}
+              </option>
+            </select>
+            <small class="text-red" v-if="inputError.instansi.status"><b>*{{ inputError.instansi.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group">
+            <label for="fieldInstitusiPenyelenggara">Institusi Penyelenggara</label>
+            <input type="text" id="fieldInstitusiPenyelenggara" :class="inputError.institusiPenyelenggara.status ? 'form-error' : ''" v-model="dataDiklatKursus.institusiPenyelenggara" class="form-control">
+            <small class="text-red" v-if="inputError.institusiPenyelenggara.status"><b>*{{ inputError.institusiPenyelenggara.description }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+            <div class="form-group text-left">
+              <label for="fieldNomorDokumen">Nomor Dokumen Diklat/Kursus</label>
+              <input
+                :class="inputError.nomorDokumen.status ? 'form-error' : ''"
+                type="text"
+                class="form-control"
+                id="fieldNomorDokumen"
+                placeholder="Nomor Dokumen Diklat/Kursus"
+                v-model="dataDiklatKursus.nomorDokumen"
+              />
+              <small class="text-red" v-if="inputError.nomorDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
+            </div>
+          </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <div class="form-group text-left">
+            <label for="fieldDokumenDiklat">Dokumen Diklat</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenDiklat" @change="onChangeFile">
+              <label class="custom-file-label" for="fieldDokumenDiklat" :class="inputError.dokumenDiklat.status ? 'form-error' : ''">Cari dokumen</label>
+            </div>
+            <small :class="inputError.dokumenDiklat.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenDiklat.status ? inputError.dokumenDiklat.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form">
+        <div class="col-12">
+          <iframe v-if="dataDiklatKursus.dokumen !== '' && dataDiklatKursus.dokumen !== null" :src="dataDiklatKursus.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        </div>
       </div>
     </div>
   </ModalHeaderFooter>
@@ -125,10 +128,15 @@
 import axios from "axios"
 const env = import.meta.env
 import mixins from "@/mixins/index.js"
+import ShimmeringItem from "@/components/ShimmeringItem.vue"
 export default {
+  components: {
+    ShimmeringItem
+  },
   mixins: [mixins],
   data() {
     return {
+      loading: true,
       dataDiklatKursus: {
         idJenisDiklat: 0,
         idDaftarDiklat: 0,
@@ -248,7 +256,7 @@ export default {
       })
     },
     getDataDiklatKursusDetail() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      this.loading = true
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
         url: `${env.VITE_BACKEND_URL}/data-diklat/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
@@ -257,7 +265,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.dataDiklatKursus = data.message.dataDiklat[0]
         this.daftarDiklatKursus = data.message.daftarDiklat
         this.jenisDiklatKursus = data.message.jenisDiklat
@@ -266,7 +275,7 @@ export default {
       })
     },
     getDataDiklatCreated() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      this.loading = true
       axios({
         url: `${env.VITE_BACKEND_URL}/data-diklat/created`,
         method: "GET",
@@ -274,7 +283,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        this.loading = false
+        let data = res.data
         this.daftarDiklatKursus = data.message.daftarDiklat
         this.jenisDiklatKursus = data.message.jenisDiklat
         this.daftarInstansi = data.message.daftarInstansiDiklat
