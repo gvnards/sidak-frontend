@@ -135,12 +135,12 @@ export default {
           message: this.$store.getters.getEncrypt(JSON.stringify(this.dataPenghargaan), u)
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
       })

@@ -146,7 +146,9 @@
         </div>
       </div>
       <div class="row row-form">
-        <div class="col-12" id="dokumenTranskrip"></div>
+        <div class="col-12" id="dokumenTranskrip">
+          <iframe v-if="dataPendidikan.dokumenTranskrip !== '' && dataPendidikan.dokumenTranskrip !== null" :src="dataPendidikan.dokumenTranskrip" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        </div>
       </div>
     </div>
   </ModalHeaderFooter>
@@ -300,23 +302,24 @@ export default {
           message: this.$store.getters.getEncrypt(JSON.stringify(this.dataPendidikan), u)
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-      }).catch(() => {
-        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
-        this.$store.commit("onModalFolder", "StatusCallback")
-        this.$store.commit("onModalContent", "StatusCallback")
-        this.$store.commit("onModalStatusCallback", {
-          status: "Failed",
-          message: "Terjadi kesalahan server. Silahkan menghubungi penyedia layanan Sidak."
-        })
       })
+      // .catch(() => {
+      //   this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+      //   this.$store.commit("onModalFolder", "StatusCallback")
+      //   this.$store.commit("onModalContent", "StatusCallback")
+      //   this.$store.commit("onModalStatusCallback", {
+      //     status: "Failed",
+      //     message: "Terjadi kesalahan server. Silahkan menghubungi penyedia layanan Sidak."
+      //   })
+      // })
     },
     getDataPendidikanDetail() {
       this.loading = true
