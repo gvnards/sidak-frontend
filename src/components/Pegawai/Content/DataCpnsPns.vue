@@ -216,6 +216,7 @@ export default {
     },
     updateDataCpnsPns() {
       this.isLoading = true
+      let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         baseURL: `${env.VITE_BACKEND_URL}/data-cpns-pns/${this.dataCpnsPns.id}`,
         method: "PUT",
