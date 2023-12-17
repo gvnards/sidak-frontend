@@ -169,7 +169,7 @@ export default {
         method: "GET"
       }).then(res => {
         this.isLoading = false
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.dataUsulan = data.message
         this.page.total = Math.ceil(data.message.length / this.page.maxDataPerPage)
       })
