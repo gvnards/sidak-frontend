@@ -168,56 +168,10 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        this.pegawai = data.message
-        // let pegawai = data.message
-        // if (pegawai.length > 100) {
-        //   let tempPegawai = []
-        //   for(let i=0; i<pegawai.length; i++) {
-        //     tempPegawai.push(pegawai.splice(0,100))
-        //   }
-        //   for(let i=0; i<tempPegawai.length; i++) {
-        //     setTimeout(() => {
-        //       for(let j=0; j<tempPegawai[i].length; j++) {
-        //         this.pegawai.push(tempPegawai[i][j])
-        //       }
-        //       this.totalPegawaiLoaded += tempPegawai[i].length
-        //     }, 200)
-        //   }
-        // } else {
-        //   this.pegawai = pegawai
-        // }
-      })
-    },
-    getTotalPegawai() {
-      axios({
-        url: `${env.VITE_BACKEND_URL}/total-pegawai`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 2) {
-          this.totalPegawai = data.message
-        }
-      })
-    },
-    getNamaUnitOrganisasi() {
-      axios({
-        url: `${env.VITE_BACKEND_URL}/nama-unit-organisasi`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 2) {
-          this.namaUnitOrganisasi = data.message
-        }
+        let data = res.data
+        this.pegawai = data.message.pegawai
+        this.totalPegawai = data.message.pegawai.length
+        this.namaUnitOrganisasi = data.message.unitOrganisasi
       })
     },
     pushDataPegawai() {
@@ -230,9 +184,7 @@ export default {
     }
   },
   created() {
-    this.getTotalPegawai()
     this.getDataPegawai()
-    this.getNamaUnitOrganisasi()
   }
 }
 </script>
