@@ -13,24 +13,21 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataSkp.length == 0"
         >
-          <DataEmpty @addData="addDataSkp()" />
+          <DataEmpty @addData="() => {}" :addData="false" />
+          <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;"></p>
+          <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronSkpSiasn()">Sinkron SKP dari MySAPK</button>
         </div>
         <div v-else-if="!isLoading && dataSkp.length > 0">
-          <div v-for="item in dataSkp" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataSkp(item)">
-            <data-found :icon="'fa-solid fa-graduation-cap'" :primaryBrief="`${item.tahun}`" :secondaryBrief="`${item.nilaiPrestasiKerja} | ${gradeNilaiSkp(item.nilaiPrestasiKerja)}`"></data-found>
+          <div style="padding-left: 20px; padding-right: 20px; padding-top: 16px;">
+            <span style="margin: 0 10px; font-weight: 600;"></span>
+            <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronSkpSiasn()">Sinkron SKP dari MySAPK</button>
           </div>
-          <div
-            class="btn my-btn-primary btn-circle"
-            data-toggle="modal"
-            data-target="#modal"
-            data-backdrop="static"
-            data-keyboard="false"
-            @click="addDataSkp()"
-          >
-            <i class="fa-solid fa-plus icon-plus"></i>
+          <div v-for="(item, idx) in dataSkp" :key="idx" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataSkp(item)">
+            <data-found :icon="'fa-solid fa-graduation-cap'" :primaryBrief="`${item.tahun}`" :secondaryBrief="`Nilai: ${item.nilai}`"></data-found>
           </div>
         </div>
     </div>
+    <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>
   </div>
 </template>
 
@@ -41,39 +38,46 @@ export default {
   data() {
     return {
       isLoading: false,
-      dataSkp: []
+      dataSkp: [],
+      btnDisabled: {
+        sync: false
+      }
     }
   },
   methods: {
-    addDataSkp() {
-      this.$store.commit("onModalMethod", "CREATE")
-      this.$store.commit("onModalFolder", "Pegawai")
-      this.$store.commit("onModalContent", "DataSkp")
+    sinkronSkpSiasn() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/siasn/skp/riwayat/sync/${this.$store.getters.getIdPegawai}`,
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
+    async btnSinkronSkpSiasn() {
+      this.isLoading = true
+      this.btnDisabled.sync = true
+      await this.sinkronSkpSiasn().then(res => {
+        this.btnDisabled.sync = false
+        let data = res.data
+        $("#modal-sync").click()
+        this.$store.commit("onModalMethod", "SYNC")
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusCallback")
+        this.$store.commit("onModalStatusCallback", {
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
+          message: data.message
+        })
+        return this.getDataSkp()
+      })
     },
     editDataSkp(item) {
       this.$store.commit("onModalMethod", "UPDATE")
       this.$store.commit("onModalFolder", "Pegawai")
-      this.$store.commit("onModalContent", "DataSkp")
+      this.$store.commit("onModalContent", parseInt(item.tahun) === 2022 ? "DataSkp2022" : "DataSkp")
       this.$store.commit("onModalData", item)
-    },
-    gradeNilaiSkp(value) {
-      if (!value) return ""
-      let val_ = parseInt(value)
-      if(val_ >= 91) {
-        return "Sangat Baik"
-      } else if(val_ >= 76 && val_ <= 90) {
-        return "Baik"
-      } else if(val_ >= 61 && val_ <= 75) {
-        return "Cukup"
-      } else if(val_ >= 51 && val_ <= 60) {
-        return "Kurang"
-      } else {
-        return "Buruk"
-      }
     },
     getDataSkp() {
       this.isLoading = true
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let url = `/data-skp/${this.$store.getters.getIdPegawai}`
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
@@ -81,24 +85,12 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.isLoading = false
-        if (data.status === 2) {
+        if (parseInt(data.status) === 2) {
           this.dataSkp = data.message
         }
-        // else {
-        //   localStorage.clear()
-        //   this.$router.push({
-        //     name: "login"
-        //   })
-        // }
       })
-      // .catch(() => {
-      //   localStorage.clear()
-      //   this.$router.push({
-      //     name: "login"
-      //   })
-      // })
     }
   },
   created() {
