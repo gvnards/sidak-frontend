@@ -313,6 +313,7 @@ export default {
     },
     jabatanSelected(item) {
       this.dataJabatanUnitOrganisasi.idJabatan = parseInt(item.id)
+      this.dataJabatanUnitOrganisasi.kodeKomponenJabatan = item.kodeKomponen
       this.jabatanText = item.nama
       this.daftarJabatan.showJabatan = false
     },
@@ -432,6 +433,8 @@ export default {
           this.dataInvalid = true
         } else {
           let kodeKomponen = this.dataJabatanUnitOrganisasi.kodeKomponen
+          let jbtn = this.daftarJabatan.listAllJabatan.filter(el => parseInt(el.id) === parseInt(this.dataJabatanUnitOrganisasi.idJabatan))
+          this.dataJabatanUnitOrganisasi.kodeKomponenJabatan = jbtn.length > 0 ? jbtn[0].kodeKomponen : ""
           let kodeKomponenSplitLength = this.dataJabatanUnitOrganisasi.kodeKomponen.split(".").length
           for (let i=0; i<kodeKomponenSplitLength; i++) {
             if (kodeKomponen !== "431") {
