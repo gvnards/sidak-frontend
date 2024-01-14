@@ -73,7 +73,7 @@ export default {
     editDataSkp(item) {
       this.$store.commit("onModalMethod", "UPDATE")
       this.$store.commit("onModalFolder", "Pegawai")
-      this.$store.commit("onModalContent", parseInt(item.tahun) === 2022 ? "DataSkp2022" : "DataSkp")
+      this.$store.commit("onModalContent", parseInt(item.tahun) >= 2022 ? "DataSkp2022" : "DataSkp")
       this.$store.commit("onModalData", item)
     },
     getDataSkp() {
