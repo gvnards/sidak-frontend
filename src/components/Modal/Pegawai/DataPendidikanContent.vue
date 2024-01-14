@@ -116,10 +116,22 @@
           </div>
         </div>
       </div>
-      <div class="row row-form">
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenIjazah">Dokumen Ijazah</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataPendidikan.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen('ijazah')" style="font-weight: 500;">{{ dataPendidikan.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.ijazah.show" :src="streamDokumen.ijazah.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen.ijazah">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen.ijazah = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen.ijazah || (getModalMethod === 'Ubah' && dataPendidikan.idDokumen === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenIjazah">Dokumen Ijazah</label>
             <div class="custom-file">
               <input @click="documentType = 'ijazah'" type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenIjazah" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenIjazah" :class="inputError.dokumen.status ? 'form-error' : ''">Cari dokumen</label>
@@ -127,16 +139,27 @@
             <small :class="inputError.dokumen.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumen.status ? inputError.dokumen.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-      </div>
-      <div class="row row-form">
-        <div class="col-12">
-          <iframe v-if="dataPendidikan.dokumen !== '' && dataPendidikan.dokumen !== null" :src="dataPendidikan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        <div class="col-12" v-if="dataPendidikan.dokumen !== '' && dataPendidikan.dokumen !== null">
+          <iframe :src="dataPendidikan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
       </div>
-      <div class="row row-form">
+      <!-- DASDASDASD -->
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenTranskripNilai">Dokumen Transkrip Nilai</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataPendidikan.idDokumenTranskrip !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen('transkrip')" style="font-weight: 500;">{{ dataPendidikan.idDokumenTranskrip === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.transkrip.show" :src="streamDokumen.transkrip.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen.transkrip">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen.transkrip = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen.transkrip || (getModalMethod === 'Ubah' && dataPendidikan.idDokumenTranskrip === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenTranskripNilai">Dokumen Transkrip Nilai</label>
             <div class="custom-file">
               <input @click="documentType = 'transkrip'" type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenTranskripNilai" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenTranskripNilai" :class="inputError.dokumenTranskrip.status ? 'form-error' : ''">Cari dokumen</label>
@@ -144,10 +167,8 @@
             <small :class="inputError.dokumenTranskrip.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenTranskrip.status ? inputError.dokumenTranskrip.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-      </div>
-      <div class="row row-form">
-        <div class="col-12" id="dokumenTranskrip">
-          <iframe v-if="dataPendidikan.dokumenTranskrip !== '' && dataPendidikan.dokumenTranskrip !== null" :src="dataPendidikan.dokumenTranskrip" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        <div class="col-12" id="dokumenTranskrip" v-if="dataPendidikan.dokumenTranskrip !== '' && dataPendidikan.dokumenTranskrip !== null">
+          <iframe :src="dataPendidikan.dokumenTranskrip" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
       </div>
     </div>
@@ -239,7 +260,21 @@ export default {
       pendidikanSelectedText: "-- Pilih Tingkat Pendidikan Dahulu --",
       searchValue: "",
       isShowDaftarPendidikan: false,
-      afterCreated: true
+      afterCreated: true,
+      changeDokumen: {
+        ijazah: false,
+        transkrip: false
+      },
+      streamDokumen: {
+        ijazah: {
+          show: false,
+          dokumen: ""
+        },
+        transkrip: {
+          show: false,
+          dokumen: ""
+        },
+      },
     }
   },
   computed: {
@@ -255,10 +290,40 @@ export default {
       return modalMethod
     },
     isFulfilled() {
-      return this.dataPendidikan.idJenisPendidikan !== 0 && this.dataPendidikan.idTingkatPendidikan !== 0 && this.dataPendidikan.idDaftarPendidikan !== 0 && (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length > 0 && this.dataPendidikan.namaSekolah !== "" && this.dataPendidikan.tanggalLulus !== "" && this.dataPendidikan.tahunLulus !== "" && this.dataPendidikan.nomorDokumen !== "" && this.dataPendidikan.tanggalDokumen !== "" && this.dataPendidikan.dokumen !== "" && this.dataPendidikan.dokumenTranskrip !== ""
+      let dok = {
+        ijazah: true,
+        transkrip: true
+      }
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPendidikan.dokumen === "") dok.ijazah = false
+        if (this.dataPendidikan.dokumenTranskrip === "")  dok.transkrip = false
+      } else {
+        if (this.dataPendidikan.idDokumen === null && this.dataPendidikan.dokumen === "") dok.ijazah = false
+        else dok.ijazah = !(this.dataPendidikan.dokumen !== "" ^ this.changeDokumen.ijazah)
+        if (this.dataPendidikan.idDokumenTranskrip === null && this.dataPendidikan.dokumenTranskrip === "") dok.transkrip = false
+        else dok.transkrip = !(this.dataPendidikan.dokumenTranskrip !== "" ^ this.changeDokumen.transkrip)
+      }
+      return this.dataPendidikan.idJenisPendidikan !== 0 && this.dataPendidikan.idTingkatPendidikan !== 0 && this.dataPendidikan.idDaftarPendidikan !== 0 && (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length > 0 && this.dataPendidikan.namaSekolah !== "" && this.dataPendidikan.tanggalLulus !== "" && this.dataPendidikan.tahunLulus !== "" && this.dataPendidikan.nomorDokumen !== "" && this.dataPendidikan.tanggalDokumen !== "" && dok.ijazah && dok.transkrip
     }
   },
   methods: {
+    btnGetStreamDokumen(dokumenName) {
+      this.streamDokumen[dokumenName].show = !this.streamDokumen[dokumenName].show
+      if (this.streamDokumen[dokumenName].dokumen !== "") return
+      this.getStreamDokumen(dokumenName).then(res => {
+        this.streamDokumen[dokumenName].dokumen = res.data
+      })
+    },
+    async getStreamDokumen(dokumenName) {
+      let idDokumen = dokumenName === "transkrip" ? this.dataPendidikan.idDokumenTranskrip : this.dataPendidikan.idDokumen
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     whereError() {
       this.inputError.jenisPendidikan.status = this.dataPendidikan.idJenisPendidikan === 0
       this.inputError.jenisPendidikan.description = this.dataPendidikan.idJenisPendidikan === 0 ? "Jenis pendidikan harus dipilih" : ""
@@ -276,18 +341,54 @@ export default {
       this.inputError.nomorDokumenIjazah.description = this.dataPendidikan.nomorDokumen === "" ? "Nomor dokumen harus diisi" : ""
       this.inputError.tanggalDokumenIjazah.status = this.dataPendidikan.tanggalDokumen === ""
       this.inputError.tanggalDokumenIjazah.description = this.dataPendidikan.tanggalDokumen === "" ? "Tanggal dokumen harus diisi" : ""
-      this.inputError.dokumen.status = this.dataPendidikan.dokumen === ""
-      this.inputError.dokumen.description = this.dataPendidikan.dokumen === "" ? "Dokumen Ijazah harus diisi" : ""
-      this.inputError.dokumenTranskrip.status = this.dataPendidikan.dokumenTranskrip === ""
-      this.inputError.dokumenTranskrip.description = this.dataPendidikan.dokumenTranskrip === "" ? "Dokumen Transkrip harus diisi" : ""
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPendidikan.dokumen === "") {
+          this.inputError.dokumen.status = true
+          this.inputError.dokumen.description = this.inputError.dokumen.status ? "Dokumen Ijazah harus diisi" : ""
+        }
+      } else {
+        if (this.dataPendidikan.idDokumen === null && this.dataPendidikan.dokumen === "") {
+          this.inputError.dokumen.status = true
+          this.inputError.dokumen.description = this.inputError.dokumen.status ? "Dokumen Ijazah harus diisi" : ""
+        } else {
+          this.inputError.dokumen.status = !!(this.dataPendidikan.dokumen !== "" ^ this.changeDokumen.ijazah)
+          this.inputError.dokumen.description = this.inputError.dokumen.status ? "Dokumen Ijazah harus diisi" : ""
+        }
+      }
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPendidikan.dokumenTranskrip === "") {
+          this.inputError.dokumenTranskrip.status = true
+          this.inputError.dokumenTranskrip.description = this.inputError.dokumenTranskrip.status ? "Dokumen Transkrip harus diisi" : ""
+        }
+      } else {
+        if (this.dataPendidikan.idDokumenTranskrip === null && this.dataPendidikan.dokumenTranskrip === "") {
+          this.inputError.dokumenTranskrip.status = true
+          this.inputError.dokumenTranskrip.description = this.inputError.dokumenTranskrip.status ? "Dokumen Transkrip harus diisi" : ""
+        } else {
+          this.inputError.dokumenTranskrip.status = !!(this.dataPendidikan.dokumenTranskrip !== "" ^ this.changeDokumen.transkrip)
+          this.inputError.dokumenTranskrip.description = this.inputError.dokumenTranskrip.status ? "Dokumen Transkrip harus diisi" : ""
+        }
+      }
     },
     onPendidikanSelected(item) {
       this.pendidikanSelectedText = item.nama
       this.dataPendidikan.idDaftarPendidikan = item.id
       this.isShowDaftarPendidikan = false
     },
-    onUsulkan() {
+    async onUsulkan() {
       if (!this.isFulfilled) return this.whereError()
+      if (!this.changeDokumen.ijazah) {
+        if (this.streamDokumen.ijazah.dokumen !== "") this.dataPendidikan.dokumen = this.streamDokumen.ijazah.dokumen
+        else await this.getStreamDokumen("ijazah").then(res => {
+          this.dataPendidikan.dokumen = res.data
+        })
+      }
+      if (!this.changeDokumen.transkrip) {
+        if (this.streamDokumen.transkrip.dokumen !== "") this.dataPendidikan.dokumenTranskrip = this.streamDokumen.transkrip.dokumen
+        else await this.getStreamDokumen("transkrip").then(res => {
+          this.dataPendidikan.dokumenTranskrip = res.data
+        })
+      }
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataPendidikan.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-pendidikan" : `/data-pendidikan/${this.dataPendidikan.id}`
@@ -371,6 +472,7 @@ export default {
         } else {
           this.inputError[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"]["status"] = false
           this.dataPendidikan[this.documentType === "ijazah" ? "dokumen" : "dokumenTranskrip"] = await this.getBase64(item.target.files[0])
+          this.documentType === "transkrip" ? this.changeDokumen.transkrip = true : this.changeDokumen.ijazah = true
           if (this.documentType === "transkrip") {
             $("#dokumenTranskrip").empty()
             $("#dokumenTranskrip").append(`<iframe src="${this.dataPendidikan.dokumenTranskrip}" frameborder="0" style="width: 100%; height: 600px;"></iframe>`)

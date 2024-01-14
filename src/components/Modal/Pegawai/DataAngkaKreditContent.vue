@@ -96,14 +96,26 @@
           <div class="form-group">
             <label for="fieldTanggalDokumen">Tanggal Dokumen</label>
             <input type="date" id="fieldTanggalDokumen" v-model="dataAngkaKredit.tanggalDokumen" class="form-control">
-            <small class="text-red" v-if="inputError.tanggalDokumen.status"><b>*{{ inputError.nomorDokumen.description }}</b></small>
+            <small class="text-red" v-if="inputError.tanggalDokumen.status"><b>*{{ inputError.tanggalDokumen.description }}</b></small>
           </div>
         </div>
       </div>
-      <div class="row row-form">
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenAngkaKredit">Dokumen Angka Kredit</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataAngkaKredit.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataAngkaKredit.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataAngkaKredit.idDokumen === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenAngkaKredit">Dokumen Angka Kredit</label>
             <div class="custom-file">
               <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenAngkaKredit" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenAngkaKredit" :class="inputError.dokumenAngkaKredit.status ? 'form-error' : ''">Cari dokumen</label>
@@ -111,8 +123,6 @@
             <small :class="inputError.dokumenAngkaKredit.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenAngkaKredit.status ? inputError.dokumenAngkaKredit.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-      </div>
-      <div class="row row-form">
         <div class="col-12">
           <iframe v-if="dataAngkaKredit.dokumen !== '' && dataAngkaKredit.dokumen !== null" :src="dataAngkaKredit.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
@@ -195,16 +205,45 @@ export default {
           status: false
         }
       },
-      fileCategory: {}
+      fileCategory: {},
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
   computed: {
-    isFullfilled() {
+    getModalMethod() {
+      let modalMethod = ""
+      let getModalMethod = this.$store.getters.getModalMethod
+      if (getModalMethod === "CREATE") modalMethod = "Tambah"
+      else if (getModalMethod === "UPDATE") modalMethod = "Ubah"
+      else if (getModalMethod === "DELETE") modalMethod = "Hapus"
+      return modalMethod
+    },
+    isFulfilled() {
       return !(this.inputError.jenisAngkaKredit.status || this.inputError.jabatan.status || this.inputError.tahun.status || this.inputError.nomorDokumen.status || this.inputError.tanggalDokumen.status || this.inputError.periodePenilaianMulai.status || this.inputError.periodePenilaianSelesai.status || this.inputError.angkaKreditTotal.status || this.inputError.dokumenAngkaKredit.status)
       // return this.dataAngkaKredit.idDaftarJenisAngkaKredit === 0 && this.dataAngkaKredit.idDataJabatan === 0 && (parseInt(this.dataAngkaKredit.idDaftarJenisAngkaKredit) === 3 && this.dataAngkaKredit.tahun === "") && this.dataAngkaKredit.nomorDokumen === "" && this.dataAngkaKredit.tanggalDokumen === "" && this.dataAngkaKredit.periodePenilaianMulai === "" && this.dataAngkaKredit.periodePenilaianSelesai === "" && this.dataAngkaKredit.angkaKreditTotal === 0.00 && this.dataAngkaKredit.dokumen === ""
     }
   },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataAngkaKredit.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     whereError() {
       this.inputError.jenisAngkaKredit.description = this.dataAngkaKredit.idDaftarJenisAngkaKredit === 0 ? "Jenis angka kredit harus dipilih" : ""
       this.inputError.jenisAngkaKredit.status = this.dataAngkaKredit.idDaftarJenisAngkaKredit === 0
@@ -223,7 +262,20 @@ export default {
       this.inputError.angkaKreditTotal.description = this.dataAngkaKredit.angkaKreditTotal === 0.00 ? "Total penilaian angka kredit harus diisi" : ""
       this.inputError.angkaKreditTotal.status = this.dataAngkaKredit.angkaKreditTotal === 0.00
       this.inputError.dokumenAngkaKredit.description = this.dataAngkaKredit.dokumen === "" ? "Dokumen harus diisi" : ""
-      this.inputError.dokumenAngkaKredit.status = this.dataAngkaKredit.dokumen === ""
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataAngkaKredit.dokumen === "") {
+          this.inputError.dokumenAngkaKredit.status = true
+          this.inputError.dokumenAngkaKredit.description = this.inputError.dokumenAngkaKredit.status ? "Dokumen harus diisi" : ""
+        }
+      } else {
+        if (this.dataAngkaKredit.idDokumen === null && this.dataAngkaKredit.dokumen === "") {
+          this.inputError.dokumenAngkaKredit.status = true
+          this.inputError.dokumenAngkaKredit.description = this.inputError.dokumenAngkaKredit.status ? "Dokumen harus diisi" : ""
+        } else {
+          this.inputError.dokumenAngkaKredit.status = !!(this.dataAngkaKredit.dokumen !== "" ^ this.changeDokumen)
+          this.inputError.dokumenAngkaKredit.description = this.inputError.dokumenAngkaKredit.status ? "Dokumen diklat harus diunggah" : ""
+        }
+      }
     },
     getDataCreated() {
       this.loading = true
@@ -260,12 +312,21 @@ export default {
         } else {
           this.inputError.dokumenAngkaKredit.status = false
           this.dataAngkaKredit.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },
-    onUsulkan() {
+    async onUsulkan() {
       this.whereError()
-      if (!this.isFullfilled) return
+      if (!this.isFulfilled) return
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataAngkaKredit.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataAngkaKredit.dokumen = res.data
+          })
+        }
+      }
       this.dataAngkaKredit.idPegawai = this.$store.getters.getIdPegawai
       this.dataAngkaKredit.date = Date.now()
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username

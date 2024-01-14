@@ -152,8 +152,24 @@
           </div>
         </div>
         <div class="col-12">
-          <div class="form-group text-left">
+          <div class="form-group text-left" style="margin-bottom: -4px;">
             <label for="fieldDokumenSk">Dokumen SK Jabatan</label>
+          </div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataJabatanUnitOrganisasi.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataJabatanUnitOrganisasi.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-for">
+        <div class="col-12" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataJabatanUnitOrganisasi.idDokumen === null)">
+          <div class="form-group text-left">
             <div class="custom-file">
               <input
                 type="file"
@@ -183,15 +199,8 @@
             >
           </div>
         </div>
-        <div class="col-12">
-          <iframe
-            v-if="
-              dataJabatanUnitOrganisasi.dokumen !== '' &&
-              dataJabatanUnitOrganisasi.dokumen !== null
-            "
-            :src="dataJabatanUnitOrganisasi.dokumen"
-            frameborder="0"
-            style="width: 100%; height: 600px"
+        <div class="col-12" v-if="dataJabatanUnitOrganisasi.dokumen !== '' && dataJabatanUnitOrganisasi.dokumen !== null">
+          <iframe :src="dataJabatanUnitOrganisasi.dokumen" frameborder="0" style="width: 100%; height: 600px"
           ></iframe>
         </div>
       </div>
@@ -265,14 +274,50 @@ export default {
           description: ""
         },
       },
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
   computed: {
-    isFullfilled() {
-      return this.dataJabatanUnitOrganisasi.idJabatan !== 0 && this.dataJabatanUnitOrganisasi.tmt !== "" && this.dataJabatanUnitOrganisasi.spmt !== "" && this.dataJabatanUnitOrganisasi.nomorDokumen !== "" && this.dataJabatanUnitOrganisasi.tanggalDokumen !== "" && this.dataJabatanUnitOrganisasi.dokumen !== ""
+    getModalMethod() {
+      let modalMethod = ""
+      let getModalMethod = this.$store.getters.getModalMethod
+      if (getModalMethod === "CREATE") modalMethod = "Tambah"
+      else if (getModalMethod === "UPDATE") modalMethod = "Ubah"
+      else if (getModalMethod === "DELETE") modalMethod = "Hapus"
+      return modalMethod
+    },
+    isFulFilled() {
+      let dok = true
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataJabatanUnitOrganisasi.dokumen === "") dok = false
+      } else {
+        if (this.dataJabatanUnitOrganisasi.idDokumen === null && this.dataJabatanUnitOrganisasi.dokumen === "") dok = false
+        else dok = !(this.dataJabatanUnitOrganisasi.dokumen !== "" ^ this.changeDokumen)
+      }
+      return this.dataJabatanUnitOrganisasi.idJabatan !== 0 && this.dataJabatanUnitOrganisasi.tmt !== "" && this.dataJabatanUnitOrganisasi.spmt !== "" && this.dataJabatanUnitOrganisasi.nomorDokumen !== "" && this.dataJabatanUnitOrganisasi.tanggalDokumen !== "" && dok
     },
   },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataJabatanUnitOrganisasi.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     whereError() {
       this.inputError.jabatan.status = this.dataJabatanUnitOrganisasi.idJabatan === 0
       this.inputError.jabatan.description = this.dataJabatanUnitOrganisasi.idJabatan === 0 ? "Jabatan harus pilih" : ""
@@ -284,8 +329,20 @@ export default {
       this.inputError.nomorDokumen.description = this.dataJabatanUnitOrganisasi.nomorDokumen === "" ? "Nomor SK harus diisi" : ""
       this.inputError.tanggalDokumen.status = this.dataJabatanUnitOrganisasi.tanggalDokumen === ""
       this.inputError.tanggalDokumen.description = this.dataJabatanUnitOrganisasi.tanggalDokumen === "" ? "Tanggal SK harus diisi" : ""
-      this.inputError.dokumenSk.status = this.dataJabatanUnitOrganisasi.dokumen === ""
-      this.inputError.dokumenSk.description = this.dataJabatanUnitOrganisasi.dokumen === "" ? "Dokumen harus diisi" : ""
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataJabatanUnitOrganisasi.dokumen === "") {
+          this.inputError.dokumenSk.status = true
+          this.inputError.dokumenSk.description = this.inputError.dokumenSk.status ? "Dokumen harus diisi" : ""
+        }
+      } else {
+        if (this.dataJabatanUnitOrganisasi.idDokumen === null && this.dataJabatanUnitOrganisasi.dokumen === "") {
+          this.inputError.dokumenSk.status = true
+          this.inputError.dokumenSk.description = this.inputError.dokumenSk.status ? "Dokumen harus diisi" : ""
+        } else {
+          this.inputError.dokumenSk.status = !!(this.dataJabatanUnitOrganisasi.dokumen !== "" ^ this.changeDokumen)
+          this.inputError.dokumenSk.description = this.inputError.dokumenSk.status ? "Dokumen harus diisi" : ""
+        }
+      }
     },
     async onChangeFile(item) {
       if (item.target.files.length !== 0) {
@@ -298,10 +355,11 @@ export default {
           this.inputError.dokumenSk.status = true
           this.inputError.dokumenSk.description = "Dokumen harus berjenis PDF."
           item.target.value = null
-          this.dataPasangan.dokumen = ""
+          this.dataJabatanUnitOrganisasi.dokumen = ""
         } else {
           this.inputError.dokumenSk.status = false
           this.dataJabatanUnitOrganisasi.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },
@@ -354,8 +412,16 @@ export default {
       let kodeKomponenSplit = kodeKomponen.split(".")
       return this.daftarUnor.listAllUnor.filter(el => el.kodeKomponen.includes(kodeKomponen) && el.kodeKomponen.split(".").length === (kodeKomponenSplit.length + 1))
     },
-    onUsulkan() {
-      if (!this.isFullfilled) return this.whereError()
+    async onUsulkan() {
+      if (!this.isFulFilled) return this.whereError()
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataJabatanUnitOrganisasi.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataJabatanUnitOrganisasi.dokumen = res.data
+          })
+        }
+      }
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataJabatanUnitOrganisasi.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-jabatan" : `/data-jabatan/${this.dataJabatanUnitOrganisasi.id}`

@@ -106,10 +106,22 @@
           </div>
         </div>
       </div>
-      <div class="row row-form">
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenStatusPerkawinan">Dokumen Akta Nikah/Cerai/Meninggal</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataPasangan.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataPasangan.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataPasangan.idDokumen === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenStatusPerkawinan">Dokumen Akta Nikah/Cerai/Meninggal</label>
             <div class="custom-file">
               <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenStatusPerkawinan" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenStatusPerkawinan" :class="inputError.dokumenAkta.status ? 'form-error' : ''">Cari dokumen</label>
@@ -117,10 +129,8 @@
             <small :class="inputError.dokumenAkta.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenAkta.status ? inputError.dokumenAkta.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-      </div>
-      <div class="row row-form">
-        <div class="col-12">
-          <iframe v-if="dataPasangan.dokumen !== '' && dataPasangan.dokumen !== null" :src="dataPasangan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        <div class="col-12" v-if="dataPasangan.dokumen !== '' && dataPasangan.dokumen !== null">
+          <iframe :src="dataPasangan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
       </div>
     </div>
@@ -186,6 +196,11 @@ export default {
       },
       statusPerkawinan: [],
       fileCategory: {},
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
   computed: {
@@ -198,10 +213,33 @@ export default {
       return modalMethod
     },
     isFulfilled() {
-      return this.dataPasangan.nama !== "" && this.dataPasangan.tempatLahir !== "" && this.dataPasangan.tanggalLahir !== "" && this.dataPasangan.idStatusPerkawinan !== 0 && this.dataPasangan.tanggalStatusPerkawinan !== "" && this.dataPasangan.nomorDokumen !== "" && this.dataPasangan.tanggalDokumen !== "" && this.dataPasangan.dokumen !== ""
+      let dok = true
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPasangan.dokumen === "") dok = false
+      } else {
+        if (this.dataPasangan.idDokumen === null && this.dataPasangan.dokumen === "") dok = false
+        else dok = !(this.dataPasangan.dokumen !== "" ^ this.changeDokumen)
+      }
+      return this.dataPasangan.nama !== "" && this.dataPasangan.tempatLahir !== "" && this.dataPasangan.tanggalLahir !== "" && this.dataPasangan.idStatusPerkawinan !== 0 && this.dataPasangan.tanggalStatusPerkawinan !== "" && this.dataPasangan.nomorDokumen !== "" && this.dataPasangan.tanggalDokumen !== "" && dok
     }
   },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataPasangan.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     whereError() {
       this.inputError.nama.status = this.dataPasangan.nama === ""
       this.inputError.nama.description = this.dataPasangan.nama === "" ? "Nama harus diisi" : ""
@@ -217,11 +255,31 @@ export default {
       this.inputError.nomorDokumenAkta.description = this.dataPasangan.nomorDokumen === "" ? "Nomor dokumen harus diisi" : ""
       this.inputError.tanggalDokumenAkta.status = this.dataPasangan.tanggalDokumen === ""
       this.inputError.tanggalDokumenAkta.description = this.dataPasangan.tanggalDokumen === "" ? "Tanggal dokumen harus diisi" : ""
-      this.inputError.dokumenAkta.status = this.dataPasangan.dokumen === ""
-      this.inputError.dokumenAkta.description = this.dataPasangan.dokumen === "" ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPasangan.dokumen === "") {
+          this.inputError.dokumenAkta.status = true
+          this.inputError.dokumenAkta.description = this.inputError.dokumenAkta.status ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
+        }
+      } else {
+        if (this.dataPasangan.idDokumen === null && this.dataPasangan.dokumen === "") {
+          this.inputError.dokumenAkta.status = true
+          this.inputError.dokumenAkta.description = this.inputError.dokumenAkta.status ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
+        } else {
+          this.inputError.dokumenAkta.status = !!(this.dataPasangan.dokumen !== "" ^ this.changeDokumen)
+          this.inputError.dokumenAkta.description = this.inputError.dokumenAkta.status ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
+        }
+      }
     },
-    onUsulkan() {
+    async onUsulkan() {
       if (!this.isFulfilled) return this.whereError()
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataPasangan.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataPasangan.dokumen = res.data
+          })
+        }
+      }
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataPasangan.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-pasangan" : `/data-pasangan/${this.dataPasangan.id}`
@@ -286,6 +344,7 @@ export default {
         } else {
           this.inputError.dokumenAkta.status = false
           this.dataPasangan.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },
@@ -317,3 +376,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.btn-show-document {
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.4s;
+}
+</style>

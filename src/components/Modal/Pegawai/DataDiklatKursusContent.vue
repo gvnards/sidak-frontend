@@ -103,10 +103,22 @@
             </div>
           </div>
       </div>
-      <div class="row row-form">
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenDiklat">Dokumen Diklat</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataDiklatKursus.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataDiklatKursus.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataDiklatKursus.idDokumen === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenDiklat">Dokumen Diklat</label>
             <div class="custom-file">
               <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenDiklat" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenDiklat" :class="inputError.dokumenDiklat.status ? 'form-error' : ''">Cari dokumen</label>
@@ -114,8 +126,6 @@
             <small :class="inputError.dokumenDiklat.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenDiklat.status ? inputError.dokumenDiklat.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-      </div>
-      <div class="row row-form">
         <div class="col-12">
           <iframe v-if="dataDiklatKursus.dokumen !== '' && dataDiklatKursus.dokumen !== null" :src="dataDiklatKursus.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
@@ -194,10 +204,31 @@ export default {
       fileCategory: {},
       jenisDiklatKursus: [],
       daftarDiklatKursus: [],
-      daftarInstansi: []
+      daftarInstansi: [],
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataDiklatKursus.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     whereError() {
       let jenisAndDaftarIsCorect = this.daftarDiklatKursus.filter(el => { return parseInt(el.idJenisDiklat > 2) ? parseInt(el.idJenisDiklat > 2) : parseInt(el.idJenisDiklat) === parseInt(this.dataDiklatKursus.idJenisDiklat) && parseInt(el.id) === parseInt(this.dataDiklatKursus.idDaftarDiklat) })
       this.inputError.jenisDiklatKursus.status = this.dataDiklatKursus.idJenisDiklat === 0 || jenisAndDaftarIsCorect.length <= 0
@@ -218,11 +249,31 @@ export default {
       this.inputError.institusiPenyelenggara.description = this.dataDiklatKursus.institusiPenyelenggara === "" ? "Institusi penyelenggara harus diisi" : ""
       this.inputError.nomorDokumen.status = this.dataDiklatKursus.nomorDokumen === ""
       this.inputError.nomorDokumen.description = this.dataDiklatKursus.nomorDokumen === "" ? "Nomor dokumen diklat/kursus harus diisi" : ""
-      this.inputError.dokumenDiklat.status = this.dataDiklatKursus.dokumen === ""
-      this.inputError.dokumenDiklat.description = this.dataDiklatKursus.dokumen === "" ? "Dokumen diklat harus diunggah" : ""
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataDiklatKursus.dokumen === "") {
+          this.inputError.dokumenDiklat.status = true
+          this.inputError.dokumenDiklat.description = this.inputError.dokumenDiklat.status ? "Dokumen harus diisi" : ""
+        }
+      } else {
+        if (this.dataDiklatKursus.idDokumen === null && this.dataDiklatKursus.dokumen === "") {
+          this.inputError.dokumenDiklat.status = true
+          this.inputError.dokumenDiklat.description = this.inputError.dokumenDiklat.status ? "Dokumen harus diisi" : ""
+        } else {
+          this.inputError.dokumenDiklat.status = !!(this.dataDiklatKursus.dokumen !== "" ^ this.changeDokumen)
+          this.inputError.dokumenDiklat.description = this.inputError.dokumenDiklat.status ? "Dokumen diklat harus diunggah" : ""
+        }
+      }
     },
-    onUsulkan() {
+    async onUsulkan() {
       if (!this.isFulfilled) return this.whereError()
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataDiklatKursus.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataDiklatKursus.dokumen = res.data
+          })
+        }
+      }
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataDiklatKursus.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-diklat" : `/data-diklat/${this.dataDiklatKursus.id}`
@@ -306,14 +357,30 @@ export default {
         } else {
           this.inputError.dokumenDiklat.status = false
           this.dataDiklatKursus.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },
   },
   computed: {
+    getModalMethod() {
+      let modalMethod = ""
+      let getModalMethod = this.$store.getters.getModalMethod
+      if (getModalMethod === "CREATE") modalMethod = "Tambah"
+      else if (getModalMethod === "UPDATE") modalMethod = "Ubah"
+      else if (getModalMethod === "DELETE") modalMethod = "Hapus"
+      return modalMethod
+    },
     isFulfilled() {
+      let dok = true
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataDiklatKursus.dokumen === "") dok = false
+      } else {
+        if (this.dataDiklatKursus.idDokumen === null && this.dataDiklatKursus.dokumen === "") dok = false
+        else dok = !(this.dataDiklatKursus.dokumen !== "" ^ this.changeDokumen)
+      }
       let jenisAndDaftarIsCorect = this.daftarDiklatKursus.filter(el => { return parseInt(el.idJenisDiklat > 2) ? parseInt(el.idJenisDiklat > 2) : parseInt(el.idJenisDiklat) === parseInt(this.dataDiklatKursus.idJenisDiklat) && parseInt(el.id) === parseInt(this.dataDiklatKursus.idDaftarDiklat) })
-      return this.dataDiklatKursus.idJenisDiklat !== 0 && this.dataDiklatKursus.idDaftarDiklat !== 0 && jenisAndDaftarIsCorect.length > 0 && this.dataDiklatKursus.namaDiklat !== "" && this.dataDiklatKursus.lamaDiklat !== 0 && this.dataDiklatKursus.tanggalDiklat !== 0 && this.dataDiklatKursus.idDaftarInstansiDiklat !== 0 && this.dataDiklatKursus.institusiPenyelenggara !== "" && this.dataDiklatKursus.dokumen !== ""
+      return this.dataDiklatKursus.idJenisDiklat !== 0 && this.dataDiklatKursus.idDaftarDiklat !== 0 && jenisAndDaftarIsCorect.length > 0 && this.dataDiklatKursus.namaDiklat !== "" && this.dataDiklatKursus.lamaDiklat !== 0 && this.dataDiklatKursus.tanggalDiklat !== 0 && this.dataDiklatKursus.idDaftarInstansiDiklat !== 0 && this.dataDiklatKursus.institusiPenyelenggara !== "" && dok
     }
   },
   created() {

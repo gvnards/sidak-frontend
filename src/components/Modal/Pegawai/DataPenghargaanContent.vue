@@ -39,10 +39,22 @@
           </div>
         </div>
       </div>
-      <div class="row row-form">
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenSk">Dokumen Penghargaan</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataPenghargaan.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataPenghargaan.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataPenghargaan.idDokumen === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenSk">Dokumen Penghargaan</label>
             <div class="custom-file">
               <input  :class="inputError.dokumen.status ? 'form-error' : ''" type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSk" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenSk" :class="inputError.dokumen.status ? 'form-error' : ''">Cari dokumen</label>
@@ -50,8 +62,6 @@
             <small :class="inputError.dokumen.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumen.status ? inputError.dokumen.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-      </div>
-      <div class="row row-form">
         <div class="col-12">
           <iframe v-if="dataPenghargaan.dokumen !== '' && dataPenghargaan.dokumen !== null" :src="dataPenghargaan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
@@ -104,23 +114,80 @@ export default {
       },
       fileCategory: {},
       daftarJenisPenghargaan: [],
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
   computed: {
-    isFullfilled() {
-      return this.dataPenghargaan.idDaftarJenisPenghargaan !== 0 && this.dataPenghargaan.tahunPenghargaan !== 0 && this.dataPenghargaan.nomorDokumen !== "" && this.dataPenghargaan.tanggalDokumen !== "" && this.dataPenghargaan.dokumen !== ""
+    getModalMethod() {
+      let modalMethod = ""
+      let getModalMethod = this.$store.getters.getModalMethod
+      if (getModalMethod === "CREATE") modalMethod = "Tambah"
+      else if (getModalMethod === "UPDATE") modalMethod = "Ubah"
+      else if (getModalMethod === "DELETE") modalMethod = "Hapus"
+      return modalMethod
+    },
+    isFullfiled() {
+      let dok = true
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPenghargaan.dokumen === "") dok = false
+      } else {
+        if (this.dataPenghargaan.idDokumen === null && this.dataPenghargaan.dokumen === "") dok = false
+        else dok = !(this.dataPenghargaan.dokumen !== "" ^ this.changeDokumen)
+      }
+      return this.dataPenghargaan.idDaftarJenisPenghargaan !== 0 && this.dataPenghargaan.tahunPenghargaan !== 0 && this.dataPenghargaan.nomorDokumen !== "" && this.dataPenghargaan.tanggalDokumen !== "" && dok
     }
   },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataPenghargaan.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     whereError() {
       this.inputError.jenisPenghargaan.status = this.dataPenghargaan.idDaftarJenisPenghargaan === 0
       this.inputError.tahunPenghargaan.status = this.dataPenghargaan.tahunPenghargaan === 0
       this.inputError.nomorDokumen.status = this.dataPenghargaan.nomorDokumen === ""
       this.inputError.tanggalDokumen.status = this.dataPenghargaan.tanggalDokumen === ""
-      this.inputError.dokumen.status = this.dataPenghargaan.dokumen === ""
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPenghargaan.dokumen === "") {
+          this.inputError.dokumen.status = true
+          this.inputError.dokumen.description = this.inputError.dokumen.status ? "Dokumen harus diisi" : ""
+        }
+      } else {
+        if (this.dataPenghargaan.idDokumen === null && this.dataPenghargaan.dokumen === "") {
+          this.inputError.dokumen.status = true
+          this.inputError.dokumen.description = this.inputError.dokumen.status ? "Dokumen harus diisi" : ""
+        } else {
+          this.inputError.dokumen.status = !!(this.dataPenghargaan.dokumen !== "" ^ this.changeDokumen)
+          this.inputError.dokumen.description = this.inputError.dokumen.status ? "Dokumen harus diisi" : ""
+        }
+      }
     },
-    onUsulkan() {
-      if (!this.isFullfilled) return this.whereError()
+    async onUsulkan() {
+      if (!this.isFullfiled) return this.whereError()
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataPenghargaan.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataPenghargaan.dokumen = res.data
+          })
+        }
+      }
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataPenghargaan.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-penghargaan" : `/data-penghargaan/${this.dataPenghargaan.id}`
@@ -192,6 +259,7 @@ export default {
         } else {
           this.inputError.dokumen.status = false
           this.dataPenghargaan.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },

@@ -55,9 +55,23 @@
             <input disabled id="unitOrganisasiPejabatPenilai" style="cursor: not-allowed;" type="text" class="form-control" :value="dataSkp.unitOrganisasiPejabatPenilai">
           </div>
         </div>
+      </div>
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenSkp2022">Dokumen SKP</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataSkp.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataSkp.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataSkp.idDokumen === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenSkp2022">Dokumen SKP</label>
             <div class="custom-file">
               <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSkp2022" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenSkp2022" :class="inputError.dokumen.status ? 'form-error' : ''">Cari dokumen</label>
@@ -65,8 +79,8 @@
             <small :class="inputError.dokumen.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumen.status ? inputError.dokumen.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-        <div class="col-12">
-          <iframe v-if="dataSkp.dokumen !== '' && dataSkp.dokumen !== null" :src="dataSkp.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        <div class="col-12" v-if="dataSkp.dokumen !== '' && dataSkp.dokumen !== null">
+          <iframe :src="dataSkp.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
       </div>
     </div>
@@ -93,12 +107,51 @@ export default {
           status: false
         }
       },
-      fileCategory: {}
+      fileCategory: {},
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
+  computed: {
+    getModalMethod() {
+      let modalMethod = ""
+      let getModalMethod = this.$store.getters.getModalMethod
+      if (getModalMethod === "CREATE") modalMethod = "Tambah"
+      else if (getModalMethod === "UPDATE") modalMethod = "Ubah"
+      else if (getModalMethod === "DELETE") modalMethod = "Hapus"
+      return modalMethod
+    },
+  },
   methods: {
-    onUsulkan() {
-      if (this.dataSkp.dokumen === "") {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataSkp.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
+    async onUsulkan() {
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataSkp.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataSkp.dokumen = res.data
+          })
+        }
+      }
+      if ((this.dataSkp.dokumen === "" && this.changeDokumen) || this.dataSkp.dokumen === "") {
         this.inputError.dokumen.status = true
         this.inputError.dokumen.description = "Dokumen harus diisi"
         return
@@ -159,6 +212,7 @@ export default {
         } else {
           this.inputError.dokumen.status = false
           this.dataSkp.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },

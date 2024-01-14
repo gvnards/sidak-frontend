@@ -89,10 +89,22 @@
           </div>
         </div>
       </div>
-      <div class="row row-form">
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenSk">Dokumen SK Pangkat/Golongan</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataPangkatGolongan.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataPangkatGolongan.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataPangkatGolongan.idDokumen === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenSk">Dokumen SK Pangkat/Golongan</label>
             <div class="custom-file">
               <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSk" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenSk" :class="inputError.dokumenSk.status ? 'form-error' : ''">Cari dokumen</label>
@@ -100,10 +112,8 @@
             <small :class="inputError.dokumenSk.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenSk.status ? inputError.dokumenSk.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-      </div>
-      <div class="row row-form">
-        <div class="col-12">
-          <iframe v-if="dataPangkatGolongan.dokumen !== '' && dataPangkatGolongan.dokumen !== null" :src="dataPangkatGolongan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        <div class="col-12" v-if="dataPangkatGolongan.dokumen !== '' && dataPangkatGolongan.dokumen !== null">
+          <iframe :src="dataPangkatGolongan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
       </div>
     </div>
@@ -180,12 +190,32 @@ export default {
         }
       },
       jenisKepangkatan: [],
-      daftarGolongan: []
+      daftarGolongan: [],
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
   computed: {
+    getModalMethod() {
+      let modalMethod = ""
+      let getModalMethod = this.$store.getters.getModalMethod
+      if (getModalMethod === "CREATE") modalMethod = "Tambah"
+      else if (getModalMethod === "UPDATE") modalMethod = "Ubah"
+      else if (getModalMethod === "DELETE") modalMethod = "Hapus"
+      return modalMethod
+    },
     isFulfilled() {
-      return this.dataPangkatGolongan.idJenisPangkat !== 0 && this.dataPangkatGolongan.idDaftarPangkat !== 0 && this.dataPangkatGolongan.nomorDokumen !== "" && this.dataPangkatGolongan.tanggalDokumen !== "" && this.dataPangkatGolongan.tmt !== "" && this.dataPangkatGolongan.nomorBkn !== "" && this.dataPangkatGolongan.tanggalBkn !== "" && this.dataPangkatGolongan.dokumen !== ""
+      let dok = true
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPangkatGolongan.dokumen === "") dok = false
+      } else {
+        if (this.dataPangkatGolongan.idDokumen === null && this.dataPangkatGolongan.dokumen === "") dok = false
+        else dok = !(this.dataPangkatGolongan.dokumen !== "" ^ this.changeDokumen)
+      }
+      return this.dataPangkatGolongan.idJenisPangkat !== 0 && this.dataPangkatGolongan.idDaftarPangkat !== 0 && this.dataPangkatGolongan.nomorDokumen !== "" && this.dataPangkatGolongan.tanggalDokumen !== "" && this.dataPangkatGolongan.tmt !== "" && this.dataPangkatGolongan.nomorBkn !== "" && this.dataPangkatGolongan.tanggalBkn !== "" && dok
     },
     textPangkat() {
       if (this.daftarGolongan.length <= 0) return ""
@@ -195,6 +225,22 @@ export default {
     }
   },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataPangkatGolongan.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     whereError() {
       this.inputError.jenisKepangkatan.status = this.dataPangkatGolongan.idJenisPangkat === 0
       this.inputError.jenisKepangkatan.description = this.dataPangkatGolongan.idJenisPangkat === 0 ? "Jenis kepangkatan harus dipilih" : ""
@@ -210,8 +256,20 @@ export default {
       this.inputError.nomorBkn.description = this.dataPangkatGolongan.nomorBkn === "" ? "Nomor BKN harus diisi" : ""
       this.inputError.tanggalBkn.status = this.dataPangkatGolongan.tanggalBkn === ""
       this.inputError.tanggalBkn.description = this.dataPangkatGolongan.tanggalBkn === "" ? "Tanggal BKN harus diisi" : ""
-      this.inputError.dokumenSk.status = this.dataPangkatGolongan.dokumen === ""
-      this.inputError.dokumenSk.description = this.dataPangkatGolongan.dokumen === "" ? "Dokumen SK harus diisi" : ""
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPangkatGolongan.dokumen === "") {
+          this.inputError.dokumenSk.status = true
+          this.inputError.dokumenSk.description = this.inputError.dokumenSk.status ? "Dokumen SK harus diisi" : ""
+        }
+      } else {
+        if (this.dataPangkatGolongan.idDokumen === null && this.dataPangkatGolongan.dokumen === "") {
+          this.inputError.dokumenSk.status = true
+          this.inputError.dokumenSk.description = this.inputError.dokumenSk.status ? "Dokumen SK harus diisi" : ""
+        } else {
+          this.inputError.dokumenSk.status = !!(this.dataPangkatGolongan.dokumen !== "" ^ this.changeDokumen)
+          this.inputError.dokumenSk.description = this.inputError.dokumenSk.status ? "Dokumen SK harus diisi" : ""
+        }
+      }
     },
     async onChangeFile(item) {
       if (item.target.files.length !== 0) {
@@ -228,6 +286,7 @@ export default {
         } else {
           this.inputError.dokumenSk.status = false
           this.dataPangkatGolongan.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },
@@ -249,8 +308,16 @@ export default {
         this.dataPangkatGolongan = data.message.dataGolonganPangkat
       })
     },
-    onUsulkan() {
+    async onUsulkan() {
       if (!this.isFulfilled) return this.whereError()
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataPangkatGolongan.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataPangkatGolongan.dokumen = res.data
+          })
+        }
+      }
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataPangkatGolongan.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-golpang" : `/data-golpang/${this.dataPangkatGolongan.id}`

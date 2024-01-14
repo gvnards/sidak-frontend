@@ -250,17 +250,31 @@
           </div>
         </div>
         <div v-else-if="step === 4">
-          <div class="form-group text-left">
+          <div class="form-group text-left" style="margin-bottom: -4px;">
             <label for="fieldDokumenIjazah">Dokumen SKP</label>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSkp" @change="onChangeFile">
-              <label class="custom-file-label" for="fieldDokumenSkp" :class="inputError.dokumenSkp.status ? 'form-error' : ''">Cari dokumen</label>
-            </div>
-            <small :class="inputError.dokumenSkp.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenSkp.status ? inputError.dokumenSkp.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
-          <div class="row row-form">
+          <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataSkp.idDokumen !== null)">
             <div class="col-12">
-              <iframe v-if="dataSkp.dokumen !== '' && dataSkp.dokumen !== null" :src="dataSkp.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+              <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataSkp.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+              <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+            </div>
+            <div class="col-12" v-if="!changeDokumen">
+              <p class="text-center" style="margin: 6px 0px;">atau</p>
+              <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+            </div>
+          </div>
+          <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataSkp.idDokumen === null)">
+            <div class="col-12">
+              <div class="form-group text-left">
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenSkp" @change="onChangeFile">
+                  <label class="custom-file-label" for="fieldDokumenSkp" :class="inputError.dokumenSkp.status ? 'form-error' : ''">Cari dokumen</label>
+                </div>
+                <small :class="inputError.dokumenSkp.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenSkp.status ? inputError.dokumenSkp.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
+              </div>
+            </div>
+            <div class="col-12" v-if="dataSkp.dokumen !== '' && dataSkp.dokumen !== null">
+              <iframe :src="dataSkp.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
             </div>
           </div>
         </div>
@@ -333,10 +347,41 @@ export default {
       daftarJenisJabatan: [],
       fileCategory: {},
       statusPejabatPenilai: [],
-      statusAtasanPejabatPenilai: []
+      statusAtasanPejabatPenilai: [],
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
+  computed: {
+    getModalMethod() {
+      let modalMethod = ""
+      let getModalMethod = this.$store.getters.getModalMethod
+      if (getModalMethod === "CREATE") modalMethod = "Tambah"
+      else if (getModalMethod === "UPDATE") modalMethod = "Ubah"
+      else if (getModalMethod === "DELETE") modalMethod = "Hapus"
+      return modalMethod
+    },
+  },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataSkp.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     onNext() {
       if(this.step !== 4) this.step++
     },
@@ -358,11 +403,20 @@ export default {
         } else {
           this.inputError.dokumenSkp.status = false
           this.dataSkp.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },
-    onUsulkan() {
-      if (this.dataSkp.dokumen === "") {
+    async onUsulkan() {
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataSkp.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataSkp.dokumen = res.data
+          })
+        }
+      }
+      if ((this.dataSkp.dokumen === "" && this.changeDokumen) || this.dataSkp.dokumen === "") {
         this.inputError.dokumenSkp.status = true
         this.inputError.dokumenSkp.description = "Dokumen harus diisi"
         return
