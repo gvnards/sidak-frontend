@@ -2,7 +2,7 @@
   <ModalHeaderFooter
     :header-title="'Jabatan/Unit Kerja'"
     :header-subtitle="'jabatan/unit kerja'"
-    :illustration="'IllustrationdataJabatanUnitOrganisasi'"
+    :illustration="'IllustrationDataJabatanUnitKerja'"
     @onUsulkan="onUsulkan()"
   >
     <ShimmeringItem v-if="loading" :layouts="[12,12,12,6,6,6,6,12]" />
@@ -18,17 +18,13 @@
               <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitOrganisasi.unitOrganisasi }}</div>
               <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data unit organisasi.</small>
             </div>
-            <div class="row" v-for="(itemDaftarUnor, idx) in daftarUnor.listUnorActive" :key="idx">
-              <div :class="idx === 0 ? 'col-12' : 'col-11'">
-                <select class="custom-select" id="fieldUnor" @click="daftarJabatan.showJabatan = false">
-                  <option value="0" :selected="daftarUnor.listUnorSelected[idx] === undefined" disabled>Pilih Unit Organisasi</option>
-                  <option :selected="daftarUnor.listUnorSelected[idx] === itemUnor.kodeKomponen" @click="unorSelected(idx, itemUnor)" v-for="itemUnor in itemDaftarUnor" :key="parseInt(itemUnor.id)">
-                    {{ itemUnor.nama }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-1" v-if="idx !== 0" @click="unorDeleted(idx)" style="cursor: pointer;">
-                <i class="fa-solid fa-trash-can text-red" style="width: 80%; height: 80%; margin-right: 50%; margin-top: 4px; transform: translateX(-50%);"></i>
+            <div class="my-custom-input-wrapper my-custom-input" @click="daftarUnor.showUnor = !daftarUnor.showUnor; daftarUnor.search = '';" style="">{{ unorText }}</div>
+            <div class="my-custom-input-item-wrapper-outside" v-show="daftarUnor.showUnor">
+              <input type="text" class="form-control" placeholder="Cari Unit Organisasi (minimal 5 karakter)" v-model="daftarUnor.search">
+              <div class="my-custom-input-item-wrapper-inside">
+                <div class="my-custom-input-item" @click="unorSelected(item)" v-for="(item, idx) in daftarUnor.listAllUnor" :key="parseInt(idx)" v-show="daftarUnor.search.length < 5 ? true : item.nama.toLowerCase().includes(daftarUnor.search.toLowerCase())">
+                  {{ item.nama }}
+                </div>
               </div>
             </div>
           </div>
@@ -223,6 +219,7 @@ export default {
       loading: true,
       dataInvalid: false,
       jabatanText: "-- Pilih Unit Organisasi Dahulu --",
+      unorText: "-- Unit Organisasi Belum Dipilih --",
       dataJabatanUnitOrganisasi: {
         kodeKomponen: "",
         idJabatan: 0,
@@ -237,7 +234,9 @@ export default {
       daftarUnor: {
         listAllUnor: [],
         listUnorActive: [],
-        listUnorSelected: []
+        listUnorSelected: [],
+        showUnor: false,
+        search: ""
       },
       daftarJabatan: {
         listAllJabatan: [],
@@ -289,6 +288,9 @@ export default {
       else if (getModalMethod === "UPDATE") modalMethod = "Ubah"
       else if (getModalMethod === "DELETE") modalMethod = "Hapus"
       return modalMethod
+    },
+    isMethodUpdate() {
+      return this.getModalMethod === "Ubah"
     },
     isFulFilled() {
       let dok = true
@@ -363,12 +365,6 @@ export default {
         }
       }
     },
-    unorDeleted(idx) {
-      this.daftarUnor.listUnorActive = this.daftarUnor.listUnorActive.slice(0,idx)
-      this.daftarUnor.listUnorSelected = this.daftarUnor.listUnorSelected.slice(0,idx)
-      this.dataJabatanUnitOrganisasi.kodeKomponen = this.daftarUnor.listUnorSelected[this.daftarUnor.listUnorSelected.length-1]
-      this.listJabatanActive(this.dataJabatanUnitOrganisasi.kodeKomponen)
-    },
     jabatanSelected(item) {
       this.dataJabatanUnitOrganisasi.idJabatan = parseInt(item.id)
       this.dataJabatanUnitOrganisasi.kodeKomponenJabatan = item.kodeKomponen
@@ -390,27 +386,11 @@ export default {
       }
       if (!isUpdated) this.dataJabatanUnitOrganisasi.idJabatan = 0
     },
-    unorSelected(idx, item) {
-      if (idx+1 > this.daftarUnor.listUnorSelected.length) {
-        this.daftarUnor.listUnorSelected.push(item.kodeKomponen)
-      } else {
-        let listUnorActiveTemp = [...this.daftarUnor.listUnorActive]
-        let listUnorSelectedTemp = [...this.daftarUnor.listUnorSelected]
-        this.daftarUnor.listUnorActive = []
-        this.daftarUnor.listUnorSelected = []
-        for (let i = 0; i < idx+1; i++) {
-          this.daftarUnor.listUnorActive.push(listUnorActiveTemp[i])
-          this.daftarUnor.listUnorSelected.push(listUnorSelectedTemp[i])
-        }
-      }
+    unorSelected(item) {
       this.dataJabatanUnitOrganisasi.kodeKomponen = item.kodeKomponen
-      let nextUnor = this.findNextUnor(item.kodeKomponen)
-      if (nextUnor.length > 0) this.daftarUnor.listUnorActive.push(nextUnor)
       this.listJabatanActive(item.kodeKomponen)
-    },
-    findNextUnor(kodeKomponen) {
-      let kodeKomponenSplit = kodeKomponen.split(".")
-      return this.daftarUnor.listAllUnor.filter(el => el.kodeKomponen.includes(kodeKomponen) && el.kodeKomponen.split(".").length === (kodeKomponenSplit.length + 1))
+      this.daftarUnor.showUnor = false
+      this.unorText = item.nama
     },
     async onUsulkan() {
       if (!this.isFulFilled) return this.whereError()
@@ -426,7 +406,6 @@ export default {
       this.dataJabatanUnitOrganisasi.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-jabatan" : `/data-jabatan/${this.dataJabatanUnitOrganisasi.id}`
       this.dataJabatanUnitOrganisasi.date = Date.now()
-      // this.dataJabatanUnitOrganisasi.kodeKomponen = this.daftarUnor.listUnorSelected[this.daftarUnor.listUnorSelected.length-1]
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         method: "POST",
@@ -469,7 +448,6 @@ export default {
         this.fileCategory = data.message.dokumenKategori
         this.daftarTugasTambahan = data.message.tugasTambahan
         this.daftarUnor.listAllUnor = data.message.unitOrganisasi
-        this.daftarUnor.listUnorActive.push(this.findNextUnor("431"))
         this.daftarJabatan.listAllJabatan = data.message.jabatan.jabatan
         this.daftarJabatan.listGroupJabatan = data.message.jabatan.jabatanGroup
       })
@@ -493,34 +471,16 @@ export default {
         this.dataJabatanUnitOrganisasi = data.message.dataJabatanUnitOrganisasi[0]
         this.dataJabatanUnitOrganisasi.isPltPlh = parseInt(this.dataJabatanUnitOrganisasi.isPltPlh) === 1
         if (this.dataJabatanUnitOrganisasi.kodeKomponen.includes("-")) {
-          this.daftarUnor.listUnorActive.push(this.findNextUnor("431"))
           this.dataJabatanUnitOrganisasi.idJabatan = 0
           this.dataJabatanUnitOrganisasi.kodeKomponen = ""
           this.dataInvalid = true
         } else {
-          let kodeKomponen = this.dataJabatanUnitOrganisasi.kodeKomponen
+          let unor = this.daftarUnor.listAllUnor.filter(el => el.kodeKomponen === this.dataJabatanUnitOrganisasi.kodeKomponen)
+          this.unorText = unor.length > 0 ? unor[0].nama : "-- Unit Organisasi Belum Dipilih --"
           let jbtn = this.daftarJabatan.listAllJabatan.filter(el => parseInt(el.id) === parseInt(this.dataJabatanUnitOrganisasi.idJabatan))
           this.dataJabatanUnitOrganisasi.kodeKomponenJabatan = jbtn.length > 0 ? jbtn[0].kodeKomponen : ""
-          let kodeKomponenSplitLength = this.dataJabatanUnitOrganisasi.kodeKomponen.split(".").length
-          for (let i=0; i<kodeKomponenSplitLength; i++) {
-            if (kodeKomponen !== "431") {
-              this.daftarUnor.listUnorSelected.unshift(kodeKomponen)
-            }
-            let nextUnor = this.findNextUnor(kodeKomponen)
-            if (nextUnor.length > 0) {
-              this.daftarUnor.listUnorActive.unshift(nextUnor)
-            }
-            let kodeKomponenSplit = kodeKomponen.split(".")
-            kodeKomponenSplit.pop()
-            kodeKomponen = kodeKomponenSplit.join(".")
-          }
-          this.listJabatanActive(this.daftarUnor.listUnorSelected[this.daftarUnor.listUnorSelected.length-1], true)
-          this.daftarJabatan.listJabatanActive.forEach(el => {
-            if (parseInt(el.id) === parseInt(this.dataJabatanUnitOrganisasi.idJabatan)) {
-              this.jabatanText = el.nama
-              return
-            }
-          })
+          this.listJabatanActive(this.dataJabatanUnitOrganisasi.kodeKomponen, true)
+          this.jabatanText = jbtn.length > 0 ? jbtn[0].nama : "-- Unit Organisasi Belum Dipilih --"
         }
       })
     }
@@ -546,14 +506,16 @@ export default {
   border: 1px solid #477b79;
   background-color: rgba(255, 255, 255, 0.3);
   white-space: nowrap;
+  // overflow: hidden;
   overflow: hidden;
+  overflow-x: auto;
   cursor: default;
   box-sizing: border-box;
-  text-overflow: ellipsis;
+  // text-overflow: ellipsis;
   &.my-custom-input {
     display: inline-block;
     width: 100%;
-    height: calc(2.25rem + 2px);
+    // height: calc(2.25rem + 2px);
     padding: 0.375rem 1.75rem 0.375rem 0.75rem;
     line-height: 1.5;
     vertical-align: middle;
@@ -573,13 +535,12 @@ export default {
   width: 100%;
   background-color: #fff;
   z-index: 2;
-  width: 100%;
   .my-custom-input-item-wrapper-inside {
     max-height: 200px;
     overflow: auto;
   }
   .my-custom-input-item {
-    white-space: nowrap;
+    border-bottom: 2px solid lightgray;
     max-width: 100%;
     display: block;
     min-height: 1.2em;
