@@ -95,7 +95,8 @@
         <div class="col-12 col-sm-6">
           <div class="form-group">
             <label for="fieldTanggalDokumen">Tanggal Dokumen</label>
-            <input type="date" id="fieldTanggalDokumen" v-model="dataAngkaKredit.tanggalDokumen" class="form-control">
+            <div v-if="getModalMethod === 'Ubah'" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataAngkaKredit.tanggalDokumen }}</div>
+            <input v-else type="date" id="fieldTanggalDokumen" v-model="dataAngkaKredit.tanggalDokumen" class="form-control">
             <small class="text-red" v-if="inputError.tanggalDokumen.status"><b>*{{ inputError.tanggalDokumen.description }}</b></small>
           </div>
         </div>
