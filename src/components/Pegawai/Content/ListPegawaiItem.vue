@@ -1,97 +1,65 @@
 <template>
-  <div id="list-pegawai-item-wrapper">
-    <!-- <div class="foto-wrapper" v-if="pegawai.nip.charAt(14) === '1'">
-      <IllustrationProfilePictureMan class="foto" />
-    </div>
-    <div class="foto-wrapper" v-else>
-      <IllustrationProfilePictureWoman class="foto" />
-    </div> -->
-    <div style="height: 8px;"></div>
-    <h6 :title="pegawai.nama" class="text-primary text-center" style="margin: 0;">{{ pegawai.nama }}</h6>
-    <p class="text-center" style="font-size: 12px; padding: 0; margin: 0;">{{ pegawai.nip }}</p>
-    <div class="bottom-wrapper">
-      <p class="text-center" style="font-size: 12px; padding: 0; margin: 0;">Jabatan</p>
-      <p class="text-center text-primary" style="font-size: 12px; padding: 0; margin: 0; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" :title="pegawai.jabatan">{{ pegawai.jabatan }}</p>
-      <p class="text-center" style="font-size: 12px; padding: 0; margin: 0;">Unit Organisasi</p>
-      <p class="text-center text-primary" style="font-size: 12px; padding: 0; margin: 0; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" :title="pegawai.unitOrganisasi">{{ pegawai.unitOrganisasi }}</p>
-      <p class="text-center" style="font-size: 12px; padding: 0; margin: 0;">Golongan/Pangkat</p>
-      <p class="text-center text-primary" style="font-size: 12px; padding: 0; margin: 0; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" :title="`${pegawai.golongan} (${pegawai.pangkat})`">{{ pegawai.golongan }} ({{ pegawai.pangkat }})</p>
-    </div>
-  </div>
+  <tr class="item">
+    <td style="max-width: 100px; padding-left: 10px;">
+      <p class="text-primary">{{ dataPegawai.nama }}</p>
+      <small class="text-black">{{ dataPegawai.nip }}</small>
+    </td>
+    <td style="max-width: 30px;">
+      <p class="text-center text-primary">{{ dataPegawai.golongan }}</p>
+    </td>
+    <td style="max-width: 100px;">
+      <p class="text-primary scrolled">{{ dataPegawai.jabatan }}</p>
+    </td>
+    <td style="max-width: 100px;">
+      <p class="text-primary scrolled">{{ dataPegawai.unitOrganisasi }}</p>
+    </td>
+    <td style="max-width: 20px; cursor: pointer;" @click="$emit('showPegawai')">
+      <p class="text-center text-primary scrolled"><i class="fa-solid fa-eye text-primary"></i></p>
+    </td>
+  </tr>
 </template>
 
 <script>
-import IllustrationProfilePictureMan from "../../icons/IllustrationProfilePictureMan.vue"
-import IllustrationProfilePictureWoman from "../../icons/IllustrationProfilePictureWoman.vue"
 export default {
-  components: {
-    IllustrationProfilePictureMan,
-    IllustrationProfilePictureWoman
-  },
   props: {
-    pegawai: {
-      default() {
-        return {}
+    dataPegawai: {
+      default: () => {
+        return {
+          nama: "Giovani Ardiansyah, S.Kom. Giovani Ardiansyah, S.Kom.",
+          nip: "199601162019031001",
+          golongan: "III/a",
+          jabatan: "Plt. Kepala Dinas Pemberdayaan Perempuan, Perlindungan Anak, Pengendalian Penduduk dan Keluarga Berencana",
+          unitOrganisasi: "Sub Bagian Umum dan Keuangan pada Sekretariat pada Dinas Pemberdayaan Perempuan, Perlindungan Anak, Pengendalian Penduduk dan Keluarga Berencana"
+        }
       },
-      type: Object,
+      type: Object
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-#list-pegawai-item-wrapper {
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  min-width: 200px;
-  min-height: 270px;
-  max-width: 200px;
-  max-height: 270px;
-  padding: 10px;
-  box-sizing: border-box;
-  position: relative;
-  border-radius: 12px;
-  box-shadow: 0px 10px 20px -2px rgba(71, 123, 121, 0.1);
-  overflow: hidden;
-  transition: all 0.4s;
-  &:hover {
-    transform: scale(1.02);
-    box-shadow: 0px 10px 20px -2px rgba(71, 123, 121, 0.25);
-  }
-  .foto-wrapper {
-    max-width: 60px;
-    max-height: 60px;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 100%;
-    overflow: hidden;
-    .foto {
-      width: 100%;
-      height: 100%;
-    }
-  }
-  h6 {
-    font-weight: 600;
-    height: 100%;
-    max-height: 40px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .bottom-wrapper {
-    min-height: 70px;
-    margin-top: 10px;
-    background-color: rgba(239, 245, 245, 1);
-    border-radius: 6px;
-    padding: 4px 8px;
-    box-sizing: border-box;
-  }
+td {
+  vertical-align: middle;
+  padding: 4px;
 }
-@media screen and (max-width: 460px) {
-  #list-pegawai-item-wrapper {
-    min-width: 160px;
-    max-width: 160px;
+.scrolled {
+  overflow: hidden;
+  overflow-x: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 100%;
+}
+.item {
+  font-size: 13px !important;
+  p {
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+  }
+  small {
+    padding: 0;
+    margin: 0;
   }
 }
 </style>

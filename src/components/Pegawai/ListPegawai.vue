@@ -60,22 +60,23 @@
     </div>
     <div id="list-pegawai-wrapper">
       <div id="list-pegawai">
-        <div @click="$emit('selectPegawai', item.id)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" style="margin: 10px;">
+        <!-- <div @click="$emit('selectPegawai', item.id)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" style="margin: 10px;">
           <ListPegawaiItem :pegawai="item" />
-        </div>
-        <!-- <table class="table">
+        </div> -->
+        <table class="table">
           <thead class="thead-dark">
             <tr style="font-size: 0.85rem;">
-              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Nama/NIP</th>
-              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Golongan</th>
-              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Jabatan</th>
-              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Unit Organisasi</th>
+              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5;">Nama/NIP</th>
+              <th scope="col" class="text-primary text-center" style="max-width: 30px; background-color: #eff5f5; border-color: #eff5f5;">Golongan</th>
+              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5;">Jabatan</th>
+              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5;">Unit Organisasi</th>
+              <th scope="col" class="text-primary text-center" style="max-width: 20px; background-color: #eff5f5; border-color: #eff5f5;">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            <ListPegawaiItemX />
+            <ListPegawaiItem class="item-pegawai" @showPegawai="showPegawai(item)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" :dataPegawai="item" />
           </tbody>
-        </table> -->
+        </table>
         <ul class="pagination-wrapper" style="margin-top: 24px;">
           <!-- <li class="pagination-item" v-for="i in (totalPage==0?totalPage:pagination)" :key="i" :class="i == pageActive ? 'active' : ''" @click="pageActive=i">{{ i }}</li>
           <li style="list-style-type: none; padding: 4px 8px;" v-if="pageActive < totalPage-7">...</li>
@@ -95,7 +96,7 @@ const env = import.meta.env
 import ListPegawaiItem from "./Content/ListPegawaiItem.vue"
 export default {
   components: {
-    ListPegawaiItem
+    ListPegawaiItem,
   },
   data() {
     return {
@@ -136,6 +137,9 @@ export default {
     }
   },
   methods: {
+    showPegawai(item) {
+      this.$emit("selectPegawai", item.id)
+    },
     onSyncAllASN() {
       this.accordionSync.visibility = !this.accordionSync.visibility
     },
@@ -190,6 +194,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.item-pegawai {
+  &:hover {
+    background-color: rgba(211,211,211,0.3);
+  }
+}
 #list-pegawai-header {
   margin-bottom: 20px;
   h5 {
