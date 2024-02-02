@@ -46,7 +46,6 @@ td {
 .scrolled {
   overflow: hidden;
   overflow-x: auto;
-  text-overflow: ellipsis;
   white-space: nowrap;
   height: 100%;
 }

@@ -281,6 +281,12 @@ export default {
     }
   },
   computed: {
+    isUnorHilang() {
+      /// ditujukan untuk cek unor ketika update, apakah unor itu di siasn ada/tidak (di sidak kodekomponennya ada tanda "-")
+      let hilang = false
+      hilang = this.dataJabatanUnitOrganisasi.kodeKomponen.includes("-")
+      return hilang
+    },
     getModalMethod() {
       let modalMethod = ""
       let getModalMethod = this.$store.getters.getModalMethod
