@@ -18,6 +18,7 @@
               <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitOrganisasi.unitOrganisasi }}</div>
               <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data unit organisasi.</small>
             </div>
+            <!-- <div v-if="dataInvalid" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitOrganisasi.unitOrganisasi }}</div> -->
             <div class="my-custom-input-wrapper my-custom-input" @click="daftarUnor.showUnor = !daftarUnor.showUnor; daftarUnor.search = '';" style="">{{ unorText }}</div>
             <div class="my-custom-input-item-wrapper-outside" v-show="daftarUnor.showUnor">
               <input type="text" class="form-control" placeholder="Cari Unit Organisasi (minimal 5 karakter)" v-model="daftarUnor.search">
@@ -36,6 +37,7 @@
               <div class="text-red" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; border-radius: 0.25rem; border: 1px solid #EC392F; font-size: 14px; font-weight: 600;">{{ dataJabatanUnitOrganisasi.jabatan }}</div>
               <small class="text-red" style="font-weight: 600;">*Silahkan sesuaikan data jabatan.</small>
             </div>
+            <!-- <div v-if="dataInvalid" class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataJabatanUnitOrganisasi.jabatan }}</div> -->
             <div class="my-custom-input-wrapper my-custom-input" @click="daftarJabatan.showJabatan = !daftarJabatan.showJabatan; daftarJabatan.search = '';">{{ jabatanText }}</div>
             <div class="my-custom-input-item-wrapper-outside" v-show="daftarJabatan.showJabatan">
               <input type="text" class="form-control" placeholder="Cari jabatan (minimal 5 karakter)" v-model="daftarJabatan.search">
@@ -281,12 +283,6 @@ export default {
     }
   },
   computed: {
-    isUnorHilang() {
-      /// ditujukan untuk cek unor ketika update, apakah unor itu di siasn ada/tidak (di sidak kodekomponennya ada tanda "-")
-      let hilang = false
-      hilang = this.dataJabatanUnitOrganisasi.kodeKomponen.includes("-")
-      return hilang
-    },
     getModalMethod() {
       let modalMethod = ""
       let getModalMethod = this.$store.getters.getModalMethod
@@ -477,8 +473,8 @@ export default {
         this.dataJabatanUnitOrganisasi = data.message.dataJabatanUnitOrganisasi[0]
         this.dataJabatanUnitOrganisasi.isPltPlh = parseInt(this.dataJabatanUnitOrganisasi.isPltPlh) === 1
         if (this.dataJabatanUnitOrganisasi.kodeKomponen.includes("-")) {
-          this.dataJabatanUnitOrganisasi.idJabatan = 0
-          this.dataJabatanUnitOrganisasi.kodeKomponen = ""
+          // this.dataJabatanUnitOrganisasi.idJabatan = 0
+          // this.dataJabatanUnitOrganisasi.kodeKomponen = ""
           this.dataInvalid = true
         } else {
           let unor = this.daftarUnor.listAllUnor.filter(el => el.kodeKomponen === this.dataJabatanUnitOrganisasi.kodeKomponen)

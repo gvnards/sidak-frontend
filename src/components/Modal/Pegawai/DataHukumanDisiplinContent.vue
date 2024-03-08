@@ -1,5 +1,5 @@
 <template>
-  <ModalHeaderFooter :header-title="'Hukuman Disiplin'" :header-subtitle="'hukuman disiplin'" :illustration="'IllustrationDataHukumanDisiplin'" @onUsulkan="onUsulkan()">
+  <ModalHeaderFooter :header-title="'Hukuman Disiplin'" :header-subtitle="'hukuman disiplin'" :illustration="'IllustrationDataHukumanDisiplin'" @onUsulkan="isAdmin ? onUsulkan() : () => {}">
     <div class="row row-form">
       <div class="col-12">
         <div class="form-group text-left">
@@ -226,7 +226,6 @@ export default {
       this.inputError.dokumenHukumanDisiplin.description = this.dataHukumanDisiplin.dokumen === "" ? "Dokumen hukuman disiplin harus diunggah" : ""
     },
     getDataHukumanDisiplin() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
         url: `${env.VITE_BACKEND_URL}/data-hukdis/${idPegawai}/${this.$store.getters.getModalData.id}`,
@@ -235,11 +234,12 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.dataHukumanDisiplin = data.message[0]
       })
     },
     onUsulkan() {
+      if (!this.isAdmin) return
       if (!this.isFulfilled) return this.whereError()
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataHukumanDisiplin.idPegawai = this.$store.getters.getIdPegawai
@@ -255,7 +255,7 @@ export default {
           message: this.$store.getters.getEncrypt(JSON.stringify(this.dataHukumanDisiplin), u)
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
@@ -274,7 +274,6 @@ export default {
       })
     },
     getDaftarJenisHukumanDisiplin() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}/jenis-hukdis`,
         method: "GET",
@@ -282,12 +281,11 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.daftarJenisHukumanDisiplin = data.message
       })
     },
     getDaftarHukumanDisiplin() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}/daftar-hukdis`,
         method: "GET",
@@ -295,12 +293,11 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.daftarHukumanDisiplin = data.message
       })
     },
     getDaftarDasarHukum() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}/dasar-hukum-hukdis`,
         method: "GET",
@@ -308,12 +305,11 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.dataa
         this.daftarDasarHukum = data.message
       })
     },
     getDaftarAlasanHukuman() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}/alasan-hukdis`,
         method: "GET",
@@ -321,7 +317,7 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.daftarAlasanHukuman = data.message
       })
     },
@@ -344,7 +340,6 @@ export default {
       }
     },
     getMaxFileSize() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}/dokumen-kategori/hukuman`,
         method: "GET",
@@ -352,12 +347,16 @@ export default {
           "Authorization": localStorage.getItem("token")
         },
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.fileCategory = data.message[0]
       })
     },
   },
   computed: {
+    isAdmin() {
+      let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      return parseInt(token.idAppRoleUser) === 1 && token.username === "super-admin"
+    },
     isFulfilled() {
       return this.dataHukumanDisiplin.idJenisHukumanDisiplin !== 0 && this.dataHukumanDisiplin.idDaftarHukumanDisiplin !== 0 && this.dataHukumanDisiplin.nomorDokumen !== "" && this.dataHukumanDisiplin.tanggalDokumen !== "" && this.dataHukumanDisiplin.tmtAwal !== "" && this.dataHukumanDisiplin.masaHukuman !== 0 && this.dataHukumanDisiplin.tmtAkhir !== "" && this.dataHukumanDisiplin.idDaftarDasarHukumHukdis !== 0 && this.dataHukumanDisiplin.idDaftarAlasanHukdis !== 0 && this.dataHukumanDisiplin.keteranganAlasanHukdis !== "" && this.dataHukumanDisiplin.dokumen !== ""
     }
