@@ -94,7 +94,6 @@ export default {
     getDataHukumanDisiplin() {
       this.isLoading = true
       let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
-      let u = token.username
       if (token.idAppRoleUser === 1 || token.idAppRoleUser === 2) {
         this.isVisibleButton = true
       }
@@ -105,7 +104,7 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.isLoading = false
         if (data.status === 2) {
           this.dataHukumanDisiplin = data.message
