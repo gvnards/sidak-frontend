@@ -28,7 +28,7 @@
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronJabatanSiasn()">Sinkron Jabatan dari MySAPK</button>
           </div>
           <div v-for="(item, idx) in dataJabatan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataJabatan(item)">
-            <data-found :icon="'fa-solid fa-briefcase'" :primaryBrief="item.kodeKomponen.includes('-') && idx === 0 ? `(Data jabatan tidak valid, hubungi BKPSDM)` : item.jabatan" :secondaryBrief="item.jenisJabatan" :style="item.kodeKomponen.includes('-') && idx === 0 ? 'border: 1px solid #EC392F; background-color: #EC392F07; ' : ''"></data-found>
+            <data-found :icon="'fa-solid fa-briefcase'" :primaryBrief="item.kodeKomponen.includes('-') && idx === 0 ? `(Data jabatan tidak valid, hubungi BKPSDM)` : item.jabatan" :secondaryBrief="item.unitOrganisasi" :style="item.kodeKomponen.includes('-') && idx === 0 ? 'border: 1px solid #EC392F; background-color: #EC392F07;' : ''"></data-found>
           </div>
         </div>
     </div>

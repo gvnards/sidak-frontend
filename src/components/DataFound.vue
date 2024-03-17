@@ -4,9 +4,9 @@
       <div class="circle">
         <i :class="`${icon} data-found-icon`"></i>
       </div>
-      <div class="short-brief">
-        <p class="primary-brief">{{ primaryBrief }}</p>
-        <p class="secondary-brief text-black">{{ secondaryBrief }}</p>
+      <div class="short-brief" ref="elOuter">
+        <p ref="elTextPrimary" :class="widthTextPrimary > widthOuter ? 'running-text' : ''" class="primary-brief">{{ primaryBrief }}</p>
+        <p ref="elTextSecondary" :class="widthTextSecondary > widthOuter ? 'running-text' : ''" class="secondary-brief text-black">{{ secondaryBrief }}</p>
       </div>
       <div class="love">
         <i class="fa-solid fa-leaf data-found-icon"></i>
@@ -16,7 +16,25 @@
 </template>
 
 <script>
+import { ref } from "vue"
+import { useElementSize } from "@vueuse/core"
 export default {
+  setup() {
+    const elOuter = ref(null)
+    const widthOuter = useElementSize(elOuter).width
+    const elTextPrimary = ref(null)
+    const widthTextPrimary = useElementSize(elTextPrimary).width
+    const elTextSecondary = ref(null)
+    const widthTextSecondary = useElementSize(elTextSecondary).width
+    return {
+      elOuter,
+      widthOuter,
+      elTextPrimary,
+      widthTextPrimary,
+      elTextSecondary,
+      widthTextSecondary,
+    }
+  },
   props: {
     icon: {
       default: "",
@@ -75,12 +93,14 @@ export default {
       min-width: 120px;
       box-sizing: border-box;
       margin: 0px 20px;
+      overflow: hidden;
       p {
         padding: 0;
         margin: 0;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+        width: fit-content;
         &.primary-brief {
           color: #477b79;
           font-weight: 600;
@@ -89,6 +109,11 @@ export default {
         &.secondary-brief {
           font-weight: 500;
           font-size: 14px;
+        }
+        &.running-text {
+          text-overflow: initial;
+          overflow: initial;
+          animation: running-text 8s linear infinite;
         }
       }
     }
@@ -109,6 +134,14 @@ export default {
   }
   #data-found {
     padding: 16px 20px;
+  }
+}
+@keyframes running-text {
+  0% {
+    transform: translateX(5%);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
 </style>
