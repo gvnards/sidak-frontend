@@ -78,7 +78,7 @@
         </div>
         <div class="col-12">
           <div class="form-group">
-            <label for="fieldKreditTotal">Total</label>
+            <label for="fieldKreditTotal">Nilai</label>
             <input type="number" min="0" step="0.001" id="fieldKreditTotal" v-model="dataAngkaKredit.angkaKreditTotal" class="form-control">
             <small class="text-red" v-if="inputError.angkaKreditTotal.status"><b>*{{ inputError.angkaKreditTotal.description }}</b></small>
           </div>
