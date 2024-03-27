@@ -239,4 +239,8 @@ ul.pagination-wrapper {
   // border-radius: 8px;
   border: transparent;
 }
+
+th, td {
+  vertical-align: middle !important;
+}
 </style>

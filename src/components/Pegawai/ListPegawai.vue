@@ -66,10 +66,8 @@
         <table class="table">
           <thead class="thead-dark">
             <tr style="font-size: 0.85rem;">
-              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5;">Nama/NIP</th>
-              <th scope="col" class="text-primary text-center" style="max-width: 30px; background-color: #eff5f5; border-color: #eff5f5;">Golongan</th>
-              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5;">Jabatan</th>
-              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5;">Unit Organisasi</th>
+              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white;">Nama<br>NIP</th>
+              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white;">Jabatan<br>Unit Organisasi</th>
               <th scope="col" class="text-primary text-center" style="max-width: 20px; background-color: #eff5f5; border-color: #eff5f5;">Aksi</th>
             </tr>
           </thead>
