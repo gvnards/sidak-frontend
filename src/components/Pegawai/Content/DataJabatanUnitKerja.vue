@@ -13,7 +13,7 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataJabatan.length == 0"
         >
-          <DataEmpty @addData="addDataJabatan()" />
+          <DataEmpty @addData="beforeAdd()" />
           <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p>
           <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronJabatanSiasn()">Sinkron Jabatan dari MySAPK</button>
         </div>
@@ -23,7 +23,7 @@
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false" @click="addDataJabatan()">Tambah Jabatan</button>
+            data-keyboard="false" @click="beforeAdd()">Tambah Jabatan</button>
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronJabatanSiasn()">Sinkron Jabatan dari MySAPK</button>
           </div>
@@ -40,6 +40,15 @@
 import axios from "axios"
 const env = import.meta.env
 export default {
+  watch: {
+    getModalBeforeAddUpdateDataStatus (val) {
+      if (val === "sync") {
+        this.btnSinkronJabatanSiasn()
+      } else if (val === "next") {
+        this.addDataJabatan()
+      }
+    }
+  },
   data() {
     return {
       isLoading: true,
@@ -49,7 +58,16 @@ export default {
       }
     }
   },
+  computed: {
+    getModalBeforeAddUpdateDataStatus() {
+      return this.$store.getters.getModalBeforeAddUpdateDataStatus
+    }
+  },
   methods: {
+    beforeAdd() {
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "BeforeAddData")
+    },
     addDataJabatan() {
       this.$store.commit("onModalMethod", "CREATE")
       this.$store.commit("onModalFolder", "Pegawai")

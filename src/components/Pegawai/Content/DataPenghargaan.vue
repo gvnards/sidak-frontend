@@ -13,7 +13,7 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataPenghargaan.length == 0"
         >
-          <DataEmpty @addData="addDataPenghargaan()" />
+          <DataEmpty @addData="beforeAdd()" />
           <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p>
           <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPenghargaanSiasn()">Sinkron Penghargaan dari MySAPK</button>
         </div>
@@ -23,7 +23,7 @@
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false" @click="addDataPenghargaan()">Tambah Penghargaan</button>
+            data-keyboard="false" @click="beforeAdd()">Tambah Penghargaan</button>
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPenghargaanSiasn()">Sinkron Penghargaan dari MySAPK</button>
           </div>
@@ -40,6 +40,15 @@
 import axios from "axios"
 const env = import.meta.env
 export default {
+  watch: {
+    getModalBeforeAddUpdateDataStatus (val) {
+      if (val === "sync") {
+        this.btnSinkronPenghargaanSiasn()
+      } else if (val === "next") {
+        this.addDataPenghargaan()
+      }
+    }
+  },
   data() {
     return {
       isLoading: false,
@@ -49,7 +58,16 @@ export default {
       }
     }
   },
+  computed: {
+    getModalBeforeAddUpdateDataStatus() {
+      return this.$store.getters.getModalBeforeAddUpdateDataStatus
+    }
+  },
   methods: {
+    beforeAdd() {
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "BeforeAddData")
+    },
     sinkronPenghargaanSiasn() {
       return axios({
         url: `${env.VITE_BACKEND_URL}/siasn/penghargaan/riwayat/sync/${this.$store.getters.getIdPegawai}`,

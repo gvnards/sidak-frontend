@@ -25,6 +25,7 @@ import UsulanMultipleVerificationContent from "@/components/Modal/Usulan/UsulanM
 import StatusChangePasswordContent from "@/components/Modal/StatusCallback/StatusChangePasswordContent.vue"
 import DataPegawaiContent from "@/components/Modal/Pegawai/DataPegawaiContent.vue"
 import AkunPenggunaContent from "@/components/Modal/AkunPengguna/AkunPenggunaContent.vue"
+import BeforeAddDataContent from "@/components/Modal/Pegawai/BeforeAddDataContent.vue"
 
 Vue.component("ModalWrapper", ModalWrapper)
 Vue.component("ModalHeaderFooter", ModalHeaderFooter)
@@ -51,3 +52,4 @@ Vue.component("DataPenghargaanContent", DataPenghargaanContent)
 Vue.component("UsulanMultipleVerificationContent", UsulanMultipleVerificationContent)
 Vue.component("DataAngkaKreditContent", DataAngkaKreditContent)
 Vue.component("DataEDocumentContent", DataEDocumentContent)
+Vue.component("BeforeAddDataContent", BeforeAddDataContent)
