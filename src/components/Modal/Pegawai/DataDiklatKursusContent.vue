@@ -230,7 +230,7 @@ export default {
       })
     },
     whereError() {
-      let jenisAndDaftarIsCorect = this.daftarDiklatKursus.filter(el => { return parseInt(el.idJenisDiklat > 2) ? parseInt(el.idJenisDiklat > 2) : parseInt(el.idJenisDiklat) === parseInt(this.dataDiklatKursus.idJenisDiklat) && parseInt(el.id) === parseInt(this.dataDiklatKursus.idDaftarDiklat) })
+      let jenisAndDaftarIsCorect = this.daftarDiklatKursus.filter(el => { return parseInt(el.idJenisDiklat) > 2 ? parseInt(el.idJenisDiklat) > 2 : parseInt(el.idJenisDiklat) === parseInt(this.dataDiklatKursus.idJenisDiklat) && parseInt(el.id) === parseInt(this.dataDiklatKursus.idDaftarDiklat) })
       this.inputError.jenisDiklatKursus.status = this.dataDiklatKursus.idJenisDiklat === 0 || jenisAndDaftarIsCorect.length <= 0
       this.inputError.jenisDiklatKursus.description = this.dataDiklatKursus.idJenisDiklat === 0 ? "Jenis diklat/kursus harus dipilih" : jenisAndDaftarIsCorect.length <= 0 ? "Jenis diklat/kursus atau daftar diklat tidak valid" : ""
       this.inputError.daftarDiklatKursus.status = this.dataDiklatKursus.idDaftarDiklat === 0 || jenisAndDaftarIsCorect.length <= 0
