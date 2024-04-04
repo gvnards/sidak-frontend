@@ -6,13 +6,7 @@
         <div class="col-12">
           <div class="form-group text-left">
             <label for="fieldJenisPendidikan">Jenis Pendidikan</label>
-            <select class="custom-select" id="fieldJenisPendidikan" :class="inputError.jenisPendidikan.status ? 'form-error' : ''" v-model="dataPendidikan.idJenisPendidikan">
-              <option value="0" selected disabled>Pilih Jenis Pendidikan</option>
-              <option :selected="item.id === dataPendidikan.idJenisPendidikan" v-for="item in dataJenisPendidikan" :key="item.id" :value="item.id">
-                {{ item.nama }}
-              </option>
-            </select>
-            <small class="text-red" v-if="inputError.jenisPendidikan.status"><b>*{{ inputError.jenisPendidikan.description }}</b></small>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ textJenisPendidikan }}</div>
           </div>
         </div>
       </div>
@@ -20,28 +14,13 @@
         <div class="col-12 col-sm-5">
           <div class="form-group text-left">
             <label for="fieldTingkatPendidikan">Tingkat Pendidikan</label>
-            <select class="custom-select" id="fieldTingkatPendidikan" :class="inputError.tingkatPendidikan.status ? 'form-error' : ''" v-model="dataPendidikan.idTingkatPendidikan">
-              <option value="0" selected disabled>Pilih Tingkat Pendidikan</option>
-              <option :selected="item.id === dataPendidikan.idTingkatPendidikan" v-for="item in dataTingkatPendidikan" :key="item.id" :value="item.id">
-                {{ item.nama }}
-              </option>
-            </select>
-            <small class="text-red" v-if="inputError.tingkatPendidikan.status"><b>*{{ inputError.tingkatPendidikan.description }}</b></small>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ textTingkatPendidikan }}</div>
           </div>
         </div>
         <div class="col-12 col-sm-7">
           <div class="form-group my-form-group">
             <label>Pendidikan</label>
-            <div :title="pendidikanSelectedText" class="my-custom-input-wrapper my-custom-input" @click="pendidikanSelectedText === '-- Pilih Tingkat Pendidikan Dahulu --' || pendidikanSelectedText === '-- Sedang Diproses --' ? '' : isShowDaftarPendidikan = !isShowDaftarPendidikan" :style="pendidikanSelectedText === '-- Pilih Tingkat Pendidikan Dahulu --' || pendidikanSelectedText === '-- Sedang Diproses --' ? 'background-color:#e9ecef; cursor: not-allowed;' : ''">{{ pendidikanSelectedText }}</div>
-            <div class="my-custom-input-item-wrapper-outside" v-show="isShowDaftarPendidikan">
-              <input type="text" class="form-control" placeholder="Cari pendidikan (minimal 5 karakter)" v-model="searchValue">
-              <div class="my-custom-input-item-wrapper-inside">
-                <div @click="onPendidikanSelected(item)" class="my-custom-input-item" v-for="item in daftarPendidikan" :key="item.id" v-show="searchValue.length < 5 ? true : item.nama.toLowerCase().includes(searchValue.toLowerCase())">
-                  {{ item.nama }}
-                </div>
-              </div>
-            </div>
-            <small class="text-red" v-if="inputError.pendidikan.status"><b>*{{ inputError.pendidikan.description }}</b></small>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ textPendidikan }}</div>
           </div>
         </div>
       </div>
@@ -58,15 +37,13 @@
         <div class="col-12 col-sm-6">
           <div class="form-group text-left">
             <label for="fieldGelarDepan">Gelar Depan</label>
-            <input type="text" id="fieldGelarDepan" placeholder="Gelar Depan Anda" class="form-control" :class="inputError.gelarDepan.status ? 'form-error' : ''" v-model="dataPendidikan.gelarDepan">
-            <small class="text-red" v-if="inputError.gelarDepan.status"><b>*{{ inputError.gelarDepan.description }}</b></small>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataPendidikan.gelarDepan === "" || dataPendidikan.gelarDepan === null ? "-" : dataPendidikan.gelarDepan }}</div>
           </div>
         </div>
         <div class="col-12 col-sm-6">
           <div class="form-group text-left">
             <label for="fieldGelarBelakang">Gelar Belakang</label>
-            <input type="text" id="fieldGelarBelakang" placeholder="Gelar Belakang Anda" class="form-control" :class="inputError.gelarBelakang.status ? 'form-error' : ''" v-model="dataPendidikan.gelarBelakang">
-            <small class="text-red" v-if="inputError.gelarBelakang.status"><b>*{{ inputError.gelarBelakang.description }}</b></small>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataPendidikan.gelarBelakang === "" || dataPendidikan.gelarBelakang === null ? "-" : dataPendidikan.gelarBelakang }}</div>
           </div>
         </div>
       </div>
@@ -74,15 +51,13 @@
         <div class="col-12 col-sm-6">
           <div class="form-group text-left">
             <label for="fieldTanggalLulus">Tanggal Lulus</label>
-            <input type="date" id="fieldTanggalLulus" placeholder="Tanggal Lulus Sekolah" class="form-control" :class="inputError.tanggalLulus.status ? 'form-error' : ''" v-model="dataPendidikan.tanggalLulus">
-            <small class="text-red" v-if="inputError.tanggalLulus.status"><b>*{{ inputError.tanggalLulus.description }}</b></small>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataPendidikan.tanggalLulus }}</div>
           </div>
         </div>
         <div class="col-12 col-sm-6">
           <div class="form-group">
             <label for="fieldTahunLulus">Tahun Lulus</label>
-            <input type="number" id="fieldTahunLulus" class="form-control" :class="inputError.tahunLulus.status ? 'form-error' : ''" placeholder="1990" v-model="dataPendidikan.tahunLulus">
-            <small class="text-red" v-if="inputError.tahunLulus.status"><b>*{{ inputError.tahunLulus.description }}</b></small>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataPendidikan.tahunLulus }}</div>
           </div>
         </div>
       </div>
@@ -104,15 +79,7 @@
         <div class="col-12 col-sm-6">
           <div class="form-group text-left">
             <label for="fieldTanggalDokumenIjazah">Tanggal Dokumen Ijazah</label>
-            <input
-              :class="inputError.tanggalDokumenIjazah.status ? 'form-error' : ''"
-              type="date"
-              class="form-control"
-              id="fieldTanggalDokumenIjazah"
-              placeholder="Tanggal Dokumen Ijazah"
-              v-model="dataPendidikan.tanggalDokumen"
-            />
-            <small class="text-red" v-if="inputError.tanggalDokumenIjazah.status"><b>*{{ inputError.tanggalDokumenIjazah.description }}</b></small>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ dataPendidikan.tanggalDokumen }}</div>
           </div>
         </div>
       </div>
@@ -278,6 +245,18 @@ export default {
     }
   },
   computed: {
+    textJenisPendidikan() {
+      let dt = this.dataJenisPendidikan.filter(el => parseInt(el.id) === parseInt(this.dataPendidikan.idJenisPendidikan))
+      return dt.length > 0 ? dt[0].nama : "-"
+    },
+    textTingkatPendidikan() {
+      let dt = this.dataTingkatPendidikan.filter(el => parseInt(el.id) === parseInt(this.dataPendidikan.idTingkatPendidikan))
+      return dt.length > 0 ? dt[0].nama : "-"
+    },
+    textPendidikan() {
+      let dt = this.pendidikan.filter(el => parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))
+      return dt.length > 0 ? dt[0].nama : "-"
+    },
     daftarPendidikan() {
       return this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan))
     },
@@ -303,7 +282,7 @@ export default {
         if (this.dataPendidikan.idDokumenTranskrip === null && this.dataPendidikan.dokumenTranskrip === "") dok.transkrip = false
         else dok.transkrip = !(this.dataPendidikan.dokumenTranskrip !== "" ^ this.changeDokumen.transkrip)
       }
-      return this.dataPendidikan.idJenisPendidikan !== 0 && this.dataPendidikan.idTingkatPendidikan !== 0 && this.dataPendidikan.idDaftarPendidikan !== 0 && (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length > 0 && this.dataPendidikan.namaSekolah !== "" && this.dataPendidikan.tanggalLulus !== "" && this.dataPendidikan.tahunLulus !== "" && this.dataPendidikan.nomorDokumen !== "" && this.dataPendidikan.tanggalDokumen !== "" && dok.ijazah && dok.transkrip
+      return this.dataPendidikan.namaSekolah !== "" && this.dataPendidikan.nomorDokumen !== "" && dok.ijazah && dok.transkrip
     }
   },
   methods: {
@@ -325,22 +304,10 @@ export default {
       })
     },
     whereError() {
-      this.inputError.jenisPendidikan.status = this.dataPendidikan.idJenisPendidikan === 0
-      this.inputError.jenisPendidikan.description = this.dataPendidikan.idJenisPendidikan === 0 ? "Jenis pendidikan harus dipilih" : ""
-      this.inputError.tingkatPendidikan.status = this.dataPendidikan.idTingkatPendidikan === 0 || (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length <= 0
-      this.inputError.tingkatPendidikan.description = this.dataPendidikan.idTingkatPendidikan === 0 ? "Tingkat pendidikan harus dipilih" : (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length <= 0 ? "Tingkat pendidikan atau pendidikan tidak valid" : ""
-      this.inputError.pendidikan.status = this.dataPendidikan.idDaftarPendidikan === 0 || (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length <= 0
-      this.inputError.pendidikan.description = this.dataPendidikan.idDaftarPendidikan === 0 ? "Pendidikan harus dipilih" : (this.pendidikan.filter(el => parseInt(el.idTingkatPendidikan) === parseInt(this.dataPendidikan.idTingkatPendidikan) && parseInt(el.id) === parseInt(this.dataPendidikan.idDaftarPendidikan))).length <= 0 ? "Tingkat pendidikan atau pendidikan tidak valid" : ""
       this.inputError.namaSekolah.status = this.dataPendidikan.namaSekolah === ""
       this.inputError.namaSekolah.description = this.dataPendidikan.namaSekolah === "" ? "Nama sekolah harus diisi" : ""
-      this.inputError.tanggalLulus.status = this.dataPendidikan.tanggalLulus === ""
-      this.inputError.tanggalLulus.description = this.dataPendidikan.tanggalLulus === "" ? "Tanggal lulus harus diisi" : ""
-      this.inputError.tahunLulus.status = this.dataPendidikan.tahunLulus === ""
-      this.inputError.tahunLulus.description = this.dataPendidikan.tahunLulus === "" ? "Tahun lulus harus diisi" : ""
       this.inputError.nomorDokumenIjazah.status = this.dataPendidikan.nomorDokumen === ""
       this.inputError.nomorDokumenIjazah.description = this.dataPendidikan.nomorDokumen === "" ? "Nomor dokumen harus diisi" : ""
-      this.inputError.tanggalDokumenIjazah.status = this.dataPendidikan.tanggalDokumen === ""
-      this.inputError.tanggalDokumenIjazah.description = this.dataPendidikan.tanggalDokumen === "" ? "Tanggal dokumen harus diisi" : ""
       if (this.getModalMethod === "Tambah") {
         if (this.dataPendidikan.dokumen === "") {
           this.inputError.dokumen.status = true
