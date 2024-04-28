@@ -451,7 +451,18 @@ export default {
         this.daftarTugasTambahan = data.message.tugasTambahan
         this.daftarUnor.listAllUnor = data.message.unitOrganisasi
         this.daftarJabatan.listAllJabatan = data.message.jabatan.jabatan
-        this.daftarJabatan.listGroupJabatan = data.message.jabatan.jabatanGroup
+        // this.daftarJabatan.listGroupJabatan = data.message.jabatan.jabatanGroup
+        let jbtnGrp = []
+        data.message.jabatan.jabatan.forEach(el => {
+          if (parseInt(el.terisi) > 0 || parseInt(el.kebutuhan) > -1) {
+            if (jbtnGrp.length === 0) {
+              jbtnGrp.push(el)
+            } else {
+              if (jbtnGrp[jbtnGrp.length - 1].nama !== el.nama) jbtnGrp.push(el)
+            }
+          }
+        })
+        this.daftarJabatan.listGroupJabatan = jbtnGrp
       })
     },
     getDataJabatanDetail() {
@@ -469,7 +480,18 @@ export default {
         this.daftarTugasTambahan = data.message.tugasTambahan
         this.daftarUnor.listAllUnor = data.message.unitOrganisasi
         this.daftarJabatan.listAllJabatan = data.message.jabatan.jabatan
-        this.daftarJabatan.listGroupJabatan = data.message.jabatan.jabatanGroup
+        // this.daftarJabatan.listGroupJabatan = data.message.jabatan.jabatanGroup
+        let jbtnGrp = []
+        data.message.jabatan.jabatan.forEach(el => {
+          if (parseInt(el.terisi) > 0 || parseInt(el.kebutuhan) > -1) {
+            if (jbtnGrp.length === 0) {
+              jbtnGrp.push(el)
+            } else {
+              if (jbtnGrp[jbtnGrp.length - 1].nama !== el.nama) jbtnGrp.push(el)
+            }
+          }
+        })
+        this.daftarJabatan.listGroupJabatan = jbtnGrp
         this.dataJabatanUnitOrganisasi = data.message.dataJabatanUnitOrganisasi[0]
         this.dataJabatanUnitOrganisasi.isPltPlh = parseInt(this.dataJabatanUnitOrganisasi.isPltPlh) === 1
         if (this.dataJabatanUnitOrganisasi.kodeKomponen.includes("-")) {
