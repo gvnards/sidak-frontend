@@ -26,6 +26,7 @@ import StatusChangePasswordContent from "@/components/Modal/StatusCallback/Statu
 import DataPegawaiContent from "@/components/Modal/Pegawai/DataPegawaiContent.vue"
 import AkunPenggunaContent from "@/components/Modal/AkunPengguna/AkunPenggunaContent.vue"
 import BeforeAddDataContent from "@/components/Modal/Pegawai/BeforeAddDataContent.vue"
+import ProfilePictureContent from "@/components/Modal/Pegawai/ProfilePictureContent.vue"
 
 Vue.component("ModalWrapper", ModalWrapper)
 Vue.component("ModalHeaderFooter", ModalHeaderFooter)
@@ -53,3 +54,4 @@ Vue.component("UsulanMultipleVerificationContent", UsulanMultipleVerificationCon
 Vue.component("DataAngkaKreditContent", DataAngkaKreditContent)
 Vue.component("DataEDocumentContent", DataEDocumentContent)
 Vue.component("BeforeAddDataContent", BeforeAddDataContent)
+Vue.component("ProfilePictureContent", ProfilePictureContent)
