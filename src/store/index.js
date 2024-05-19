@@ -36,6 +36,9 @@ const store = new Vuex.Store({
       modalBeforeAddUpdateData: {
         status: "wait", // status: wait/sync/next -> wait=masih belum milih - sync=milih sync - next=lanjut ke proses add/update data
         // onData: "wait" // onData: wait/{di data mana dia berada, jabatan/pangkat/dsb}
+      },
+      modalDeleteData: {
+        status: "", // delete atau empty string
       }
     }
   },
@@ -53,6 +56,7 @@ const store = new Vuex.Store({
     getWindowWidth: state => state.windowWidth,
     getResultCallbackReload: state => state.resultCallbackReload,
     getModalBeforeAddUpdateDataStatus: state => state.modalBeforeAddUpdateData.status,
+    getModalDeleteDataStatus: state => state.modalDeleteData.status,
     // getModalBeforeAddUpdateDataOnData: state => state.modalBeforeAddUpdateData.onData,
   },
   mutations: {
@@ -98,6 +102,9 @@ const store = new Vuex.Store({
     },
     onModalBeforeAddUpdateDataStatus(state, val) {
       state.modalBeforeAddUpdateData.status = val
+    },
+    onModalDeleteDataStatus(state, val) {
+      state.modalDeleteData.status = val
     },
     // onModalBeforeAddUpdateDataOnData(state, val) {
     //   state.modalBeforeAddUpdateData.onData = val

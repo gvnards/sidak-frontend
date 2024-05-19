@@ -27,8 +27,9 @@
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronJabatanSiasn()">Sinkron Jabatan dari MySAPK</button>
           </div>
-          <div v-for="(item, idx) in dataJabatan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataJabatan(item)">
-            <data-found :icon="'fa-solid fa-briefcase'" :primaryBrief="item.kodeKomponen.includes('-') && idx === 0 ? `(Data jabatan tidak valid, hubungi BKPSDM)` : `(TMT: ${item.tmt}) | ${item.jabatan}`" :secondaryBrief="item.unitOrganisasi" :style="item.kodeKomponen.includes('-') && idx === 0 ? 'border: 1px solid #EC392F; background-color: #EC392F07;' : ''"></data-found>
+          <div v-for="(item, idx) in dataJabatan" :key="item.id" style="display: flex;">
+            <data-found style="width: 100%;" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click.native="editDataJabatan(item)" :icon="'fa-solid fa-briefcase'" :primaryBrief="item.kodeKomponen.includes('-') && idx === 0 ? `(Data jabatan tidak valid, hubungi BKPSDM)` : `(TMT: ${item.tmt}) | ${item.jabatan}`" :secondaryBrief="item.unitOrganisasi" :style="item.kodeKomponen.includes('-') && idx === 0 ? 'border: 1px solid #EC392F; background-color: #EC392F07;' : ''"></data-found>
+            <div v-if="parseInt(roleUser.idAppRoleUser) === 1" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="deleteData(item)" id="delete-wrapper" class="text-center"><i class="fa-solid fa-trash-can icon-delete"></i></div>
           </div>
         </div>
     </div>
@@ -41,6 +42,13 @@ import axios from "axios"
 const env = import.meta.env
 export default {
   watch: {
+    getModalDeleteDataStatus (val) {
+      if (val === "delete") {
+        let tempDataDelete = {...this.dataDeleteReady}
+        this.deleteDataJabatan(tempDataDelete)
+      }
+      this.dataDeleteReady = null
+    },
     getModalBeforeAddUpdateDataStatus (val) {
       if (val === "sync") {
         this.btnSinkronJabatanSiasn()
@@ -55,15 +63,32 @@ export default {
       dataJabatan: [],
       btnDisabled: {
         sync: false
-      }
+      },
+      dataDeleteReady: null
     }
   },
   computed: {
     getModalBeforeAddUpdateDataStatus() {
       return this.$store.getters.getModalBeforeAddUpdateDataStatus
+    },
+    getModalDeleteDataStatus() {
+      return this.$store.getters.getModalDeleteDataStatus
+    },
+    roleUser() {
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      return {
+        idAppRoleUser: u.idAppRoleUser,
+        appRoleUser: u.appRoleUser
+      }
     }
   },
   methods: {
+    deleteData(item) {
+      this.$store.commit("onModalMethod", "DELETE")
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "DeleteData")
+      this.dataDeleteReady = item
+    },
     beforeAdd() {
       this.$store.commit("onModalFolder", "Pegawai")
       this.$store.commit("onModalContent", "BeforeAddData")
@@ -78,6 +103,37 @@ export default {
       this.$store.commit("onModalFolder", "Pegawai")
       this.$store.commit("onModalContent", "DataJabatanUnitKerja")
       this.$store.commit("onModalData", item)
+    },
+    deleteDataJabatan(item) {
+      let url = `/data-jabatan/delete/${item.id}`
+      return axios({
+        method: "DELETE",
+        url: `${env.VITE_BACKEND_URL}${url}`,
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      }).then(async res1 => {
+        /// jika sudah dapet result, panggil sinkron
+        /// ganti this.$store.commit("onModalMethod", "SYNC") jadi this.$store.commit("onModalMethod", "DELETE")this.isLoading = true
+        let data = res1.data
+        this.btnDisabled.sync = true
+        await this.sinkronJabatanSiasn().then(() => {
+          this.btnDisabled.sync = false
+          $("#modal-sync").click()
+          this.$store.commit("onModalMethod", "DELETE")
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
+            message: data.message
+          })
+          return this.getDataJabatan()
+        }).then(res => {
+          let data = res.data
+          this.isLoading = false
+          this.dataJabatan = data.message
+        })
+      })
     },
     getDataJabatan() {
       this.isLoading = true
@@ -142,6 +198,33 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#delete-wrapper {
+  border-radius: 8px;
+  background-color: rgba(236, 57, 47, 0.8);
+  margin: 20px 10px 0px 0px;
+  box-sizing: border-box;
+  padding: 4px;
+  min-width: 30px;
+  height: 80px;
+  box-shadow: 0px 10px 20px -2px rgba(71, 123, 121, 0.1);
+  overflow: hidden;
+  transition: all 0.4s;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  &:hover {
+    transform: scale(1.01);
+    box-shadow: 0px 10px 20px -2px rgba(71, 123, 121, 0.25);
+  }
+  .icon-delete {
+    font-size: 18px;
+    color: white;
+    position: relative;
+    // top: 50;
+    margin-top: 100%;
+    // border: 1px solid black;
+  }
+}
 .icon-plus {
   font-size: 18px;
   position: relative;

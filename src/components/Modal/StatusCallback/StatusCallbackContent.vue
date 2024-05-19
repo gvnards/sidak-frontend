@@ -26,6 +26,7 @@ export default {
       if (modalMethod.toLowerCase() === "create") return "ditambahkan"
       else if (modalMethod.toLowerCase() === "update") return "diperbaharui"
       else if (modalMethod.toLowerCase() === "sync") return "disinkronisasi"
+      else if (modalMethod.toLowerCase() === "delete") return "dihapus"
       return "dihapus"
     }
   }
