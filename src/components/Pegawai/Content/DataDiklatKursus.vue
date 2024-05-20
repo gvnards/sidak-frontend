@@ -90,11 +90,8 @@ export default {
           status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataDiklatKursus()
-      }).then(res => {
-        let data = res.data
         this.isLoading = false
-        this.dataDiklatKursus = data.message
+        this.dataDiklatKursus = data.data
       })
     },
     addDataDiklatKursus() {

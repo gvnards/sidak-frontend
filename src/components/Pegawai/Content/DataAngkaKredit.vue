@@ -90,11 +90,8 @@ export default {
           status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataAngkaKredit()
-      }).then(res => {
-        let data = res.data
         this.isLoading = false
-        this.dataAngkaKredit = data.message.dataAngkaKredit
+        this.dataAngkaKredit = data.data
       })
     },
     addDataAngkaKredit() {

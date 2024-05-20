@@ -90,11 +90,8 @@ export default {
           status: parseInt(data.status) || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataPenghargaan()
-      }).then(res => {
-        let data = res.data
         this.isLoading = false
-        this.dataPenghargaan = data.message
+        this.dataPenghargaan = data.data
       })
     },
     addDataPenghargaan() {

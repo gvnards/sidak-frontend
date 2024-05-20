@@ -74,11 +74,8 @@ export default {
           status: parseInt(data.status) || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataPendidikan()
-      }).then(res => {
-        let data = res.data
         this.isLoading = false
-        this.dataPendidikan = data.message
+        this.dataPendidikan = data.data
       })
     },
     addDataPendidikan() {

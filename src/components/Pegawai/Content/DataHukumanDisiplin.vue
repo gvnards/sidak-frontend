@@ -73,11 +73,8 @@ export default {
           status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataHukumanDisiplin()
-      }).then(res => {
-        let data = res.data
         this.isLoading = false
-        this.dataHukumanDisiplin = data.message
+        this.dataHukumanDisiplin = data.data
       })
     },
     addDataHukumanDisiplin() {

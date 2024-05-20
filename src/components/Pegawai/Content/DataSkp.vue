@@ -67,7 +67,8 @@ export default {
           status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataSkp()
+        this.isLoading = false
+        this.dataSkp = data.data
       })
     },
     editDataSkp(item) {

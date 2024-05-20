@@ -113,25 +113,21 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(async res1 => {
-        /// jika sudah dapet result, panggil sinkron
-        /// ganti this.$store.commit("onModalMethod", "SYNC") jadi this.$store.commit("onModalMethod", "DELETE")this.isLoading = true
-        let data = res1.data
+        let data1 = res1.data
         this.btnDisabled.sync = true
-        await this.sinkronJabatanSiasn().then(() => {
+        await this.sinkronJabatanSiasn().then(res2 => {
           this.btnDisabled.sync = false
           $("#modal-sync").click()
           this.$store.commit("onModalMethod", "DELETE")
           this.$store.commit("onModalFolder", "StatusCallback")
           this.$store.commit("onModalContent", "StatusCallback")
           this.$store.commit("onModalStatusCallback", {
-            status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
-            message: data.message
+            status: parseInt(data1.status) === 2 || data1.status === true ? "Success" : "Failed",
+            message: data1.message
           })
-          return this.getDataJabatan()
-        }).then(res => {
-          let data = res.data
+          let data2 = res2.data
           this.isLoading = false
-          this.dataJabatan = data.message
+          this.dataJabatan = data2.data
         })
       })
     },
@@ -167,11 +163,8 @@ export default {
           status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataJabatan()
-      }).then(res => {
-        let data = res.data
         this.isLoading = false
-        this.dataJabatan = data.message
+        this.dataJabatan = data.data
       })
     }
   },

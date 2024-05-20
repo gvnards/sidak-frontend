@@ -66,11 +66,8 @@ export default {
           status: parseInt(data.status) || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataPangkatGolongan()
-      }).then(res => {
-        let data = res.data
         this.isLoading = false
-        this.dataPangkatGolongan = data.message
+        this.dataPangkatGolongan = data.data
       })
     },
     addDataPangkatGolongan() {
