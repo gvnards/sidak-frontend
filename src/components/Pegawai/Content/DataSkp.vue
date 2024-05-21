@@ -22,9 +22,7 @@
             <span style="margin: 0 10px; font-weight: 600;"></span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronSkpSiasn()">Sinkron SKP dari MySAPK</button>
           </div>
-          <div v-for="(item, idx) in dataSkp" :key="idx" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataSkp(item)">
-            <data-found :icon="'fa-solid fa-graduation-cap'" :primaryBrief="`${item.tahun}`" :secondaryBrief="`Nilai: ${item.nilai}`"></data-found>
-          </div>
+          <data-found v-for="(item, idx) in dataSkp" :key="idx" @click.native="editDataSkp(item)" :icon="'fa-solid fa-graduation-cap'" :primaryBrief="`${item.tahun}`" :secondaryBrief="`Nilai: ${item.nilai}`" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>

@@ -29,9 +29,7 @@
             <span style="margin: 0 10px; font-weight: 600;"></span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPendidikanSiasn()">Sinkron Pendidikan dari MySAPK</button>
           </div>
-          <div v-for="item in dataPendidikan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataPendidikan(item)">
-            <data-found :icon="'fa-solid fa-graduation-cap'" :primaryBrief="item.tingkatPendidikan" :secondaryBrief="item.namaSekolah"></data-found>
-          </div>
+          <data-found v-for="item in dataPendidikan" :key="item.id" @click.native="editDataPendidikan(item)" :icon="'fa-solid fa-graduation-cap'" :primaryBrief="item.tingkatPendidikan" :secondaryBrief="item.namaSekolah" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>

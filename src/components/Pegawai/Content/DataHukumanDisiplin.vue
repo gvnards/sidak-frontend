@@ -27,9 +27,7 @@
             <span style="margin: 0 10px; font-weight: 600;">{{ userRole === 1 ? 'atau' : '' }}</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronHukdisSiasn()">Sinkron Hukuman Disiplin dari MySAPK</button>
           </div>
-          <div v-for="item in dataHukumanDisiplin" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataHukumanDisiplin(item)">
-            <data-found :icon="'fa-solid fa-file-contract'" :primaryBrief="item.jenisHukumanDisiplin" :secondaryBrief="item.daftarHukumanDisiplin"></data-found>
-          </div>
+          <data-found v-for="item in dataHukumanDisiplin" :key="item.id" @click.native="editDataHukumanDisiplin(item)" :icon="'fa-solid fa-file-contract'" :primaryBrief="item.jenisHukumanDisiplin" :secondaryBrief="item.daftarHukumanDisiplin" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>

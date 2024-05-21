@@ -27,9 +27,7 @@
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronDiklatSiasn()">Sinkron Diklat/Kursus dari MySAPK</button>
           </div>
-          <div v-for="item in dataDiklatKursus" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataDiklatKursus(item)">
-            <data-found :icon="'fa-solid fa-book'" :primaryBrief="item.jenisDiklat" :secondaryBrief="item.daftarDiklat === 'DIKLAT/KURSUS TIDAK ADA DALAM DAFTAR' ? item.namaDiklat : item.daftarDiklat"></data-found>
-          </div>
+          <data-found v-for="item in dataDiklatKursus" :key="item.id" @click.native="editDataDiklatKursus(item)" :icon="'fa-solid fa-book'" :primaryBrief="item.jenisDiklat" :secondaryBrief="item.daftarDiklat === 'DIKLAT/KURSUS TIDAK ADA DALAM DAFTAR' ? item.namaDiklat : item.daftarDiklat" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>

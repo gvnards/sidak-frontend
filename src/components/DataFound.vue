@@ -1,5 +1,5 @@
 <template>
-  <div id="data-found">
+  <div id="data-found" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false">
     <div class="data-item">
       <div class="circle">
         <i :class="`${icon} data-found-icon`"></i>

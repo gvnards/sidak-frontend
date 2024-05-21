@@ -27,9 +27,7 @@
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPenghargaanSiasn()">Sinkron Penghargaan dari MySAPK</button>
           </div>
-          <div v-for="item in dataPenghargaan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataPenghargaan(item)">
-            <data-found :icon="'fa-solid fa-medal'" :primaryBrief="item.penghargaan" :secondaryBrief="item.tahun"></data-found>
-          </div>
+          <data-found v-for="item in dataPenghargaan" :key="item.id" @click.native="editDataPenghargaan(item)" :icon="'fa-solid fa-medal'" :primaryBrief="item.penghargaan" :secondaryBrief="item.tahun" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>
