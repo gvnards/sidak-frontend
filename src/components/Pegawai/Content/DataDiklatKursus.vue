@@ -13,17 +13,19 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataDiklatKursus.length == 0"
         >
-          <DataEmpty @addData="beforeAdd()" />
+          <DataEmpty @addData="() => {}" :addData="false" />
+          <a class="btn my-btn-primary btn-sm" href="https://sibangsitur.situbondokab.go.id/" target="_blank">Tambah data melalui aplikasi SIBANGSITUR</a>
           <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p>
           <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronDiklatSiasn()">Sinkron Diklat/Kursus dari MySAPK</button>
         </div>
         <div v-else-if="!isLoading && dataDiklatKursus.length > 0">
           <div style="padding-left: 20px; padding-right: 20px; padding-top: 16px;">
-            <button :disabled="btnDisabled.sync" class="btn my-btn-primary btn-sm"
+            <!-- <button :disabled="btnDisabled.sync" class="btn my-btn-primary btn-sm"
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false" @click="beforeAdd()">Tambah Diklat/Kursus</button>
+            data-keyboard="false" @click="beforeAdd()">Tambah Diklat/Kursus</button> -->
+            <a class="btn my-btn-primary btn-sm" href="https://sibangsitur.situbondokab.go.id/" target="_blank">Tambah data melalui aplikasi SIBANGSITUR</a>
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronDiklatSiasn()">Sinkron Diklat/Kursus dari MySAPK</button>
           </div>
@@ -137,6 +139,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+a {
+  color: #ffffff;
+}
 .icon-plus {
   font-size: 18px;
   position: relative;
