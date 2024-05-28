@@ -154,6 +154,7 @@ export default {
   mixins: [mixins],
   data() {
     return {
+      oldData: {},
       loading: true,
       dataPendidikan: {
         idJenisPendidikan: 0,
@@ -344,6 +345,16 @@ export default {
     },
     async onUsulkan() {
       if (!this.isFulfilled) return this.whereError()
+      if (!this.doesDataChange(this.oldData, this.dataPendidikan)) {
+        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusCallback")
+        this.$store.commit("onModalStatusCallback", {
+          status: "Failed",
+          message: "Data tidak ada perubahan."
+        })
+        return
+      }
       if (!this.changeDokumen.ijazah) {
         if (this.streamDokumen.ijazah.dokumen !== "") this.dataPendidikan.dokumen = this.streamDokumen.ijazah.dokumen
         else await this.getStreamDokumen("ijazah").then(res => {
@@ -416,6 +427,7 @@ export default {
         if (this.dataPendidikan.dokumenTranskrip !== "") {
           $("#dokumenTranskrip").append(`<iframe src="${this.dataPendidikan.dokumenTranskrip}" frameborder="0" style="width: 100%; height: 600px;"></iframe>`)
         }
+        this.oldData = {...this.dataPendidikan}
       })
     },
     async onChangeFile(item) {

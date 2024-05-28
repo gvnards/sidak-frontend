@@ -132,6 +132,7 @@ export default {
   mixins: [mixins],
   data() {
     return {
+      oldData: {},
       loading: true,
       fileCategory: {},
       dataPangkatGolongan: {
@@ -306,10 +307,21 @@ export default {
         this.jenisKepangkatan = data.message.jenisGolonganPangkat
         this.fileCategory = data.message.dokumenKategori
         this.dataPangkatGolongan = data.message.dataGolonganPangkat
+        this.oldData = {...this.dataPangkatGolongan}
       })
     },
     async onUsulkan() {
       if (!this.isFulfilled) return this.whereError()
+      if (!this.doesDataChange(this.oldData, this.dataPangkatGolongan)) {
+        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusCallback")
+        this.$store.commit("onModalStatusCallback", {
+          status: "Failed",
+          message: "Data tidak ada perubahan."
+        })
+        return
+      }
       if (!this.changeDokumen) {
         if (this.streamDokumen.dokumen !== "") this.dataPangkatGolongan.dokumen = this.streamDokumen.dokumen
         else {

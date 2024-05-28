@@ -82,6 +82,7 @@ export default {
   mixins: [mixins],
   data() {
     return {
+      oldData: {},
       loading: true,
       dataPenghargaan: {
         idDaftarJenisPenghargaan: 0,
@@ -180,6 +181,16 @@ export default {
     },
     async onUsulkan() {
       if (!this.isFullfiled) return this.whereError()
+      if (!this.doesDataChange(this.oldData, this.dataPenghargaan)) {
+        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusCallback")
+        this.$store.commit("onModalStatusCallback", {
+          status: "Failed",
+          message: "Data tidak ada perubahan."
+        })
+        return
+      }
       if (!this.changeDokumen) {
         if (this.streamDokumen.dokumen !== "") this.dataPenghargaan.dokumen = this.streamDokumen.dokumen
         else {
@@ -242,6 +253,7 @@ export default {
         this.daftarJenisPenghargaan = data.message.jenisPenghargaan
         this.fileCategory = data.message.dokumenKategori
         this.dataPenghargaan = data.message.dataPenghargaan[0]
+        this.oldData = {...this.dataPenghargaan}
       })
     },
     async onChangeFile(item) {

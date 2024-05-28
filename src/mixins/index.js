@@ -1,5 +1,21 @@
 export default {
   methods: {
+    doesDataChange(oldData, newData) {
+      let isDifferent = false
+      let keys = Object.keys(oldData)
+      keys.forEach(el => {
+        if (typeof(oldData[el]) === "string") {
+          if (oldData[el].toLowerCase() !== newData[el].toLowerCase()) {
+            isDifferent = true
+          }
+        } else {
+          if (oldData[el] !== newData[el]) {
+            isDifferent = true
+          }
+        }
+      })
+      return isDifferent
+    },
     dateToDateString(date, dateFormat, stringFormat) {
       let months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
       let year, month, day, tempDate

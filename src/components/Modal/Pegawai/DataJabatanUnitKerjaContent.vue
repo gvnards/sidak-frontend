@@ -218,6 +218,7 @@ export default {
   mixins: [mixins],
   data() {
     return {
+      oldData: {},
       loading: true,
       dataInvalid: false,
       jabatanText: "-- Pilih Unit Organisasi Dahulu --",
@@ -396,6 +397,16 @@ export default {
     },
     async onUsulkan() {
       if (!this.isFulFilled) return this.whereError()
+      if (!this.doesDataChange(this.oldData, this.dataJabatanUnitOrganisasi)) {
+        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+        this.$store.commit("onModalFolder", "StatusCallback")
+        this.$store.commit("onModalContent", "StatusCallback")
+        this.$store.commit("onModalStatusCallback", {
+          status: "Failed",
+          message: "Data tidak ada perubahan."
+        })
+        return
+      }
       if (!this.changeDokumen) {
         if (this.streamDokumen.dokumen !== "") this.dataJabatanUnitOrganisasi.dokumen = this.streamDokumen.dokumen
         else {
@@ -506,6 +517,7 @@ export default {
           this.listJabatanActive(this.dataJabatanUnitOrganisasi.kodeKomponen, true)
           this.jabatanText = jbtn.length > 0 ? jbtn[0].nama : "-- Unit Organisasi Belum Dipilih --"
         }
+        this.oldData = {...this.dataJabatanUnitOrganisasi}
       })
     }
   },
