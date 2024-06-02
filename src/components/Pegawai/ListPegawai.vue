@@ -7,7 +7,7 @@
       <h6 class="text-black">
         Total Pegawai: {{ totalPegawai }} Pegawai
       </h6>
-      <div v-if="getIdAppRoleUser == 1">
+      <!-- <div v-if="getIdAppRoleUser == 1">
         <div class="btn my-btn-primary"
               data-toggle="modal"
               data-target="#modal"
@@ -45,7 +45,7 @@
             <small class="text-danger" style="font-weight: 600;">*Maksimal jumlah sinkron 500 pegawai</small>
           </div>
         </div>
-      </div>
+      </div> -->
       <div class="form-group search-wrapper" style="margin-top: 8px;">
         <i
           class="fa-solid fa-magnifying-glass search-icon text-primary"
@@ -54,7 +54,7 @@
           type="text"
           v-model="searchValue"
           class="form-control search"
-          placeholder="Cari berdasarkan NIP/Nama"
+          placeholder="Cari NIP/Nama/Jabatan"
         />
       </div>
     </div>
@@ -125,7 +125,8 @@ export default {
       return this.accordionSync.max - this.accordionSync.min + 1
     },
     filterPegawai () {
-      return this.searchValue === "" ? this.pegawai : this.pegawai.filter(el => el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) || el.nama.toLowerCase().includes(this.searchValue.toLowerCase()))
+      return this.searchValue === "" ? this.pegawai : this.pegawai.filter(el => (el.nama === null || el.nip === null || el.jabatan === null) ? false : (el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) || el.nama.toLowerCase().includes(this.searchValue.toLowerCase()) || el.jabatan.toLowerCase().includes(this.searchValue.toLowerCase()))
+      )
     },
     totalPage() {
       return this.filterPegawai.length == 0 ? 0 : Math.ceil(this.filterPegawai.length / this.dataPerPage)
@@ -212,7 +213,8 @@ export default {
     letter-spacing: 1px;
     &-wrapper {
       position: relative;
-      max-width: 300px;
+      // max-width: 300px;
+      max-width: 100%;
       margin-top: 20px;
       .search-icon {
         position: absolute;
