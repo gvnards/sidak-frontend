@@ -321,15 +321,17 @@ export default {
     async onUsulkan() {
       this.whereError()
       if (!this.isFulfilled) return
-      if (!this.doesDataChange(this.oldData, this.dataAngkaKredit)) {
-        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
-        this.$store.commit("onModalFolder", "StatusCallback")
-        this.$store.commit("onModalContent", "StatusCallback")
-        this.$store.commit("onModalStatusCallback", {
-          status: "Failed",
-          message: "Data tidak ada perubahan."
-        })
-        return
+      if(this.$store.getters.getModalMethod === "UPDATE") {
+        if (!this.doesDataChange(this.oldData, this.dataAngkaKredit)) {
+          this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: "Failed",
+            message: "Data tidak ada perubahan."
+          })
+          return
+        }
       }
       if (!this.changeDokumen) {
         if (this.streamDokumen.dokumen !== "") this.dataAngkaKredit.dokumen = this.streamDokumen.dokumen

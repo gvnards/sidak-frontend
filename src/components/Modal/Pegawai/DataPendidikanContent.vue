@@ -345,15 +345,17 @@ export default {
     },
     async onUsulkan() {
       if (!this.isFulfilled) return this.whereError()
-      if (!this.doesDataChange(this.oldData, this.dataPendidikan)) {
-        this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
-        this.$store.commit("onModalFolder", "StatusCallback")
-        this.$store.commit("onModalContent", "StatusCallback")
-        this.$store.commit("onModalStatusCallback", {
-          status: "Failed",
-          message: "Data tidak ada perubahan."
-        })
-        return
+      if(this.$store.getters.getModalMethod === "UPDATE") {
+        if (!this.doesDataChange(this.oldData, this.dataPendidikan)) {
+          this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: "Failed",
+            message: "Data tidak ada perubahan."
+          })
+          return
+        }
       }
       if (!this.changeDokumen.ijazah) {
         if (this.streamDokumen.ijazah.dokumen !== "") this.dataPendidikan.dokumen = this.streamDokumen.ijazah.dokumen

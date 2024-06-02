@@ -4,12 +4,12 @@ export default {
       let isDifferent = false
       let keys = Object.keys(oldData)
       keys.forEach(el => {
-        if (typeof(oldData[el]) === "string") {
+        if (typeof(oldData[el]) === "string" && typeof(newData[el]) === "string") {
           if (oldData[el].toLowerCase() !== newData[el].toLowerCase()) {
             isDifferent = true
           }
         } else {
-          if (oldData[el] !== newData[el]) {
+          if (Number(oldData[el]) !== Number(newData[el])) {
             isDifferent = true
           }
         }
