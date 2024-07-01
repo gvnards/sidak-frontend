@@ -52,6 +52,12 @@
         </div>
         <div class="col-12">
           <div class="form-group">
+            <label for="jenisJabatan">Jenis Jabatan</label>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ jenisJabatanText }}</div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
             <div class="custom-control custom-checkbox">
               <input
                 type="checkbox"
@@ -152,6 +158,7 @@
         <div class="col-12">
           <div class="form-group text-left" style="margin-bottom: -4px;">
             <label for="fieldDokumenSk">Dokumen SK Jabatan</label>
+            <small class="text-red"><b> *Jika JFT, maka yang diupload SK Jabfung</b></small>
           </div>
         </div>
       </div>
@@ -165,7 +172,7 @@
           <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
         </div>
       </div>
-      <div class="row row-for">
+      <div class="row row-form">
         <div class="col-12" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataJabatanUnitOrganisasi.idDokumen === null)">
           <div class="form-group text-left">
             <div class="custom-file">
@@ -202,6 +209,14 @@
           ></iframe>
         </div>
       </div>
+      <div class="row row-form" style="border-top: 2px dashed #477b79; border-bottom: 2px dashed #477b79; padding-top: 8px; padding-bottom: 8px;">
+        <div class="col-12">
+          <div class="btn my-btn-outline-primary btn-block btn-sm" @click="addMutasiUnor">Tambah Mutasi Unor</div>
+        </div>
+        <div class="col-12" v-for="(item, idx) in listMutasiUnor.data" :key="item.id" style="margin-top: 16px; padding-top: 8px; border-top: 1px solid #acb7c2;">
+          <ComponentDataJabatanUnitKerjaMutasi :isUsulkan="listMutasiUnor.isUsulkan" @deleteMutasiUnor="deleteMutasiUnor($event)" :index="idx" :urutanArray="listMutasiUnor.data.length - idx" @valueChangeMutasiUnor="valueChangeMutasiUnor($event)" :dataMutasiUnor="item" :listAllUnor="daftarUnor.listAllUnor" />
+        </div>
+      </div>
     </div>
   </ModalHeaderFooter>
 </template>
@@ -211,17 +226,24 @@ import axios from "axios"
 const env = import.meta.env
 import mixins from "@/mixins/index.js"
 import ShimmeringItem from "@/components/ShimmeringItem.vue"
+import ComponentDataJabatanUnitKerjaMutasi from "./ComponentDataJabatanUnitKerjaMutasi.vue"
 export default {
   components: {
-    ShimmeringItem
+    ShimmeringItem,
+    ComponentDataJabatanUnitKerjaMutasi
   },
   mixins: [mixins],
   data() {
     return {
+      listMutasiUnor: {
+        data: [],
+        isUsulkan: false,
+      },
       oldData: {},
       loading: true,
       dataInvalid: false,
       jabatanText: "-- Pilih Unit Organisasi Dahulu --",
+      jenisJabatanText: "-",
       unorText: "-- Unit Organisasi Belum Dipilih --",
       dataJabatanUnitOrganisasi: {
         kodeKomponen: "",
@@ -307,6 +329,26 @@ export default {
     },
   },
   methods: {
+    valueChangeMutasiUnor(value) {
+      // let dt = this.listMutasiUnor.data.filter(el => String(el.id) === String(value.id))
+      this.listMutasiUnor.data[parseInt(value.idx)][value.component] = value.value
+    },
+    deleteMutasiUnor(idx) {
+      this.listMutasiUnor.data.splice(idx,1)
+    },
+    addMutasiUnor() {
+      let newDate = (new Date()).getTime()
+      let newData = {
+        id: `new-${newDate}`,
+        idUnor: null,
+        tmt: "",
+        spmt: "",
+        nomorDokumen: "",
+        tanggalDokumen: "",
+        dokumen: ""
+      }
+      this.listMutasiUnor.data.unshift(newData)
+    },
     btnGetStreamDokumen() {
       this.streamDokumen.show = !this.streamDokumen.show
       if (this.streamDokumen.dokumen !== "") return
@@ -373,6 +415,7 @@ export default {
       this.dataJabatanUnitOrganisasi.kodeKomponenJabatan = item.kodeKomponen
       this.jabatanText = item.nama
       this.daftarJabatan.showJabatan = false
+      this.jenisJabatanText = item.jenisJabatan
     },
     listJabatanActive(kodeKomponen, isUpdated=false) {
       this.daftarJabatan.showJabatan = false
@@ -384,8 +427,10 @@ export default {
         jabatanSesuaiKodeKomponen = jabatanSesuaiKodeKomponen.concat(jabatanTidakSesuaiKodeKomponen)
         this.daftarJabatan.listJabatanActive = jabatanSesuaiKodeKomponen
         this.jabatanText = "-- Pilih Jabatan --"
+        this.jenisJabatanText = "-"
       } else {
         this.jabatanText = "-- Pilih Unit Organisasi Dahulu --"
+        this.jenisJabatanText = "-"
       }
       if (!isUpdated) this.dataJabatanUnitOrganisasi.idJabatan = 0
     },
@@ -396,6 +441,8 @@ export default {
       this.unorText = item.nama
     },
     async onUsulkan() {
+      this.listMutasiUnor.isUsulkan = true
+      return
       if (!this.isFulFilled) return this.whereError()
       if(this.$store.getters.getModalMethod === "UPDATE") {
         if (!this.doesDataChange(this.oldData, this.dataJabatanUnitOrganisasi)) {
@@ -511,6 +558,7 @@ export default {
           // this.dataJabatanUnitOrganisasi.idJabatan = 0
           // this.dataJabatanUnitOrganisasi.kodeKomponen = ""
           this.dataInvalid = true
+          this.jenisJabatanText = "-"
         } else {
           let unor = this.daftarUnor.listAllUnor.filter(el => el.kodeKomponen === this.dataJabatanUnitOrganisasi.kodeKomponen)
           this.unorText = unor.length > 0 ? unor[0].nama : "-- Unit Organisasi Belum Dipilih --"
@@ -518,6 +566,7 @@ export default {
           this.dataJabatanUnitOrganisasi.kodeKomponenJabatan = jbtn.length > 0 ? jbtn[0].kodeKomponen : ""
           this.listJabatanActive(this.dataJabatanUnitOrganisasi.kodeKomponen, true)
           this.jabatanText = jbtn.length > 0 ? jbtn[0].nama : "-- Unit Organisasi Belum Dipilih --"
+          this.jenisJabatanText = jbtn.length > 0 ? jbtn[0].jenisJabatan : "-"
         }
         this.oldData = {...this.dataJabatanUnitOrganisasi}
       })
