@@ -1,5 +1,7 @@
 <template>
   <ModalHeaderFooter :header-title="'Pasangan'" :header-subtitle="'pasangan'" :illustration="'IllustrationDataKeluarga'" @onUsulkan="onUsulkan()">
+    <ShimmeringItem v-if="loading" :layouts="[12,6,6,6,6,12]" />
+    <div v-else>
       <div class="row row-form">
         <div class="col-12">
           <div class="form-group text-left">
@@ -104,10 +106,22 @@
           </div>
         </div>
       </div>
-      <div class="row row-form">
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label for="fieldDokumenStatusPerkawinan">Dokumen Akta Nikah/Cerai/Meninggal</label>
+      </div>
+      <div class="row row-form" v-if="(getModalMethod === 'Ubah' && dataPasangan.idDokumen !== null)">
+        <div class="col-12">
+          <div class="btn btn-sm btn-block btn-secondary" @click="btnGetStreamDokumen()" style="font-weight: 500;">{{ dataPasangan.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+          <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+        </div>
+        <div class="col-12" v-if="!changeDokumen">
+          <p class="text-center" style="margin: 6px 0px;">atau</p>
+          <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+        </div>
+      </div>
+      <div class="row row-form" v-if="getModalMethod === 'Tambah' || changeDokumen || (getModalMethod === 'Ubah' && dataPasangan.idDokumen === null)">
         <div class="col-12">
           <div class="form-group text-left">
-            <label for="fieldDokumenStatusPerkawinan">Dokumen Akta Nikah/Cerai/Meninggal</label>
             <div class="custom-file">
               <input type="file" class="custom-file-input" accept="application/pdf" id="fieldDokumenStatusPerkawinan" @change="onChangeFile">
               <label class="custom-file-label" for="fieldDokumenStatusPerkawinan" :class="inputError.dokumenAkta.status ? 'form-error' : ''">Cari dokumen</label>
@@ -115,12 +129,11 @@
             <small :class="inputError.dokumenAkta.status ? 'text-red' : 'text-primary'"><b>*{{ inputError.dokumenAkta.status ? inputError.dokumenAkta.description : `Ukuran dokumen maksimal ${fileCategory.ukuran}MB(${fileCategory.ukuran * 1024}KB).` }}</b></small>
           </div>
         </div>
-      </div>
-      <div class="row row-form">
-        <div class="col-12">
-          <iframe v-if="dataPasangan.dokumen !== '' && dataPasangan.dokumen !== null" :src="dataPasangan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+        <div class="col-12" v-if="dataPasangan.dokumen !== '' && dataPasangan.dokumen !== null">
+          <iframe :src="dataPasangan.dokumen" frameborder="0" style="width: 100%; height: 600px;"></iframe>
         </div>
       </div>
+    </div>
   </ModalHeaderFooter>
 </template>
 
@@ -128,10 +141,16 @@
 import axios from "axios"
 const env = import.meta.env
 import mixins from "@/mixins/index.js"
+import ShimmeringItem from "@/components/ShimmeringItem.vue"
 export default {
+  components: {
+    ShimmeringItem
+  },
   mixins: [mixins],
   data() {
     return {
+      oldData: {},
+      loading: true,
       inputError: {
         nama: {
           status: false,
@@ -178,6 +197,11 @@ export default {
       },
       statusPerkawinan: [],
       fileCategory: {},
+      changeDokumen: false,
+      streamDokumen: {
+        show: false,
+        dokumen: ""
+      },
     }
   },
   computed: {
@@ -190,10 +214,33 @@ export default {
       return modalMethod
     },
     isFulfilled() {
-      return this.dataPasangan.nama !== "" && this.dataPasangan.tempatLahir !== "" && this.dataPasangan.tanggalLahir !== "" && this.dataPasangan.idStatusPerkawinan !== 0 && this.dataPasangan.tanggalStatusPerkawinan !== "" && this.dataPasangan.nomorDokumen !== "" && this.dataPasangan.tanggalDokumen !== "" && this.dataPasangan.dokumen !== ""
+      let dok = true
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPasangan.dokumen === "") dok = false
+      } else {
+        if (this.dataPasangan.idDokumen === null && this.dataPasangan.dokumen === "") dok = false
+        else dok = !(this.dataPasangan.dokumen !== "" ^ this.changeDokumen)
+      }
+      return this.dataPasangan.nama !== "" && this.dataPasangan.tempatLahir !== "" && this.dataPasangan.tanggalLahir !== "" && this.dataPasangan.idStatusPerkawinan !== 0 && this.dataPasangan.tanggalStatusPerkawinan !== "" && this.dataPasangan.nomorDokumen !== "" && this.dataPasangan.tanggalDokumen !== "" && dok
     }
   },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataPasangan.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     whereError() {
       this.inputError.nama.status = this.dataPasangan.nama === ""
       this.inputError.nama.description = this.dataPasangan.nama === "" ? "Nama harus diisi" : ""
@@ -209,11 +256,43 @@ export default {
       this.inputError.nomorDokumenAkta.description = this.dataPasangan.nomorDokumen === "" ? "Nomor dokumen harus diisi" : ""
       this.inputError.tanggalDokumenAkta.status = this.dataPasangan.tanggalDokumen === ""
       this.inputError.tanggalDokumenAkta.description = this.dataPasangan.tanggalDokumen === "" ? "Tanggal dokumen harus diisi" : ""
-      this.inputError.dokumenAkta.status = this.dataPasangan.dokumen === ""
-      this.inputError.dokumenAkta.description = this.dataPasangan.dokumen === "" ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
+      if (this.getModalMethod === "Tambah") {
+        if (this.dataPasangan.dokumen === "") {
+          this.inputError.dokumenAkta.status = true
+          this.inputError.dokumenAkta.description = this.inputError.dokumenAkta.status ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
+        }
+      } else {
+        if (this.dataPasangan.idDokumen === null && this.dataPasangan.dokumen === "") {
+          this.inputError.dokumenAkta.status = true
+          this.inputError.dokumenAkta.description = this.inputError.dokumenAkta.status ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
+        } else {
+          this.inputError.dokumenAkta.status = !!(this.dataPasangan.dokumen !== "" ^ this.changeDokumen)
+          this.inputError.dokumenAkta.description = this.inputError.dokumenAkta.status ? "Dokumen akta nikah/cerai/meninggal harus diisi" : ""
+        }
+      }
     },
-    onUsulkan() {
+    async onUsulkan() {
       if (!this.isFulfilled) return this.whereError()
+      if(this.$store.getters.getModalMethod === "UPDATE") {
+        if (!this.doesDataChange(this.oldData, this.dataPasangan)) {
+          this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: "Failed",
+            message: "Data tidak ada perubahan."
+          })
+          return
+        }
+      }
+      if (!this.changeDokumen) {
+        if (this.streamDokumen.dokumen !== "") this.dataPasangan.dokumen = this.streamDokumen.dokumen
+        else {
+          await this.getStreamDokumen().then(res => {
+            this.dataPasangan.dokumen = res.data
+          })
+        }
+      }
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       this.dataPasangan.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-pasangan" : `/data-pasangan/${this.dataPasangan.id}`
@@ -228,12 +307,12 @@ export default {
           message: this.$store.getters.getEncrypt(JSON.stringify(this.dataPasangan), u)
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
       }).catch(() => {
@@ -246,31 +325,22 @@ export default {
         })
       })
     },
-    getDataPasangan() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+    getDataPasanganDetail() {
+      this.loading = true
       let idPegawai = this.$store.getters.getIdPegawai
       axios({
-        url: `${env.VITE_BACKEND_URL}/data-pasangan/${idPegawai}/${this.$store.getters.getModalData.id}`,
+        url: `${env.VITE_BACKEND_URL}/data-pasangan/detail/${idPegawai}/${this.$store.getters.getModalData.id}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.dataPasangan = data.message[0]
-      })
-    },
-    getMaxFileSize() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/dokumen-kategori/perkawinan`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.fileCategory = data.message[0]
+        this.loading = false
+        let data = res.data
+        this.dataPasangan = data.message.dataPasangan[0]
+        this.statusPerkawinan = data.message.dataStatusPerkawinan
+        this.fileCategory = data.message.dokumenKategori
+        this.oldData = {...this.dataPasangan}
       })
     },
     async onChangeFile(item) {
@@ -288,28 +358,31 @@ export default {
         } else {
           this.inputError.dokumenAkta.status = false
           this.dataPasangan.dokumen = await this.getBase64(item.target.files[0])
+          this.changeDokumen = true
         }
       }
     },
-    getStatusPerkawinan() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+    getDataPasanganCreated () {
+      this.loading = true
       axios({
-        url: `${env.VITE_BACKEND_URL}/status-perkawinan`,
+        url: `${env.VITE_BACKEND_URL}/data-pasangan/created/${this.$store.getters.getIdPegawai}`,
         method: "GET",
         headers: {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.statusPerkawinan = data.message
+        this.loading = false
+        let data = res.data
+        this.statusPerkawinan = data.message.dataStatusPerkawinan
+        this.fileCategory = data.message.dokumenKategori
       })
     }
   },
   created() {
-    this.getMaxFileSize()
-    this.getStatusPerkawinan()
     if(this.$store.getters.getModalMethod === "UPDATE") {
-      this.getDataPasangan()
+      this.getDataPasanganDetail()
+    } else {
+      this.getDataPasanganCreated()
     }
   },
   destroyed() {
@@ -317,3 +390,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.btn-show-document {
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.4s;
+}
+</style>

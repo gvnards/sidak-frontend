@@ -21,7 +21,7 @@
           type="text"
           v-model="searchValue"
           class="form-control search"
-          placeholder="Cari berdasarkan Nama/Usulan"
+          placeholder="Cari berdasarkan NIP/Nama/Usulan"
         />
       </div>
       <div class="row row-form" style="border-bottom: 0.5px solid lightgray;">
@@ -44,7 +44,7 @@
         </div>
       </div>
       <div @click="onUsulanActive(item, index, $event)" v-for="(item, index) in dataUsulanVisible" :key="index" :title="`${item.usulan} ${item.usulanKriteria}`">
-        <UsulanItem :isChecked="item.isChecked" :style="(usulanActive === index) ? 'background-color: #EFF5F5;' : ''" :statusUsulan="item.statusUsulan" :mainText="`${item.usulan} ${item.usulanKriteria}`" :subText="item.nama" :timeText="item.createdAt" :isSetujui="parseInt(item.idUsulanHasil) !== 2" :isDisabled="(userRole === 4) || ((userRole === 2 || userRole === 3) && !(item.usulanKriteria === 'Data Pasangan' || item.usulanKriteria === 'Data Anak')) || parseInt(item.idUsulan) === 2" />
+        <UsulanItem :isChecked="item.isChecked" :style="(usulanActive === index) ? 'background-color: #EFF5F5;' : ''" :statusUsulan="item.statusUsulan" :mainText="`${item.usulan} ${item.usulanKriteria}`" :subTextUpper="item.nama" :subTextLower="item.nip" :timeText="item.createdAt" :isSetujui="parseInt(item.idUsulanHasil) !== 2" :isDisabled="(userRole === 4) || ((userRole === 2 || userRole === 3) && !(item.usulanKriteria === 'Data Pasangan' || item.usulanKriteria === 'Data Anak')) || parseInt(item.idUsulan) === 2" />
       </div>
       <!-- Ini kurang pagging nya aja, mau dibikin "Sebelumnya - Selanjutnya" atau "Pagging Number" juga terserah -->
       <ul class="pagination-wrapper" style="margin-top: 24px;" v-if="page.total > 1">
@@ -78,7 +78,7 @@ export default {
       if (val === "") {
         this.page.total = Math.ceil(this.dataUsulan.length / this.page.maxDataPerPage)
       } else {
-        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(val.toLowerCase()) || el.usulanKriteria.toLowerCase().includes(this.searchValue.toLowerCase()))
+        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(val.toLowerCase()) || el.usulanKriteria.toLowerCase().includes(val.toLowerCase()) || el.nip.toLowerCase().includes(val.toLowerCase()))
         this.page.total = Math.ceil(data.length / this.page.maxDataPerPage)
         this.page.active = 1
       }
@@ -106,7 +106,7 @@ export default {
     dataUsulanVisible() {
       if (this.dataUsulan.length < 1) return []
       if (this.searchValue !== "") {
-        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(this.searchValue.toLowerCase()) || el.usulanKriteria.toLowerCase().includes(this.searchValue.toLowerCase()))
+        let data = this.dataUsulan.filter((el, idx) => el.nama.toLowerCase().includes(this.searchValue.toLowerCase()) || el.usulanKriteria.toLowerCase().includes(this.searchValue.toLowerCase()) || el.nip.toLowerCase().includes(this.searchValue.toLowerCase()))
         return data.filter((el, idx) => (idx) < (this.page.maxDataPerPage * this.page.active) && idx >= ((this.page.active - 1) * this.page.maxDataPerPage))
       }
       return this.dataUsulan.filter((el, idx) => (idx) < (this.page.maxDataPerPage * this.page.active) && idx >= ((this.page.active - 1) * this.page.maxDataPerPage))
@@ -169,7 +169,7 @@ export default {
         method: "GET"
       }).then(res => {
         this.isLoading = false
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.dataUsulan = data.message
         this.page.total = Math.ceil(data.message.length / this.page.maxDataPerPage)
       })

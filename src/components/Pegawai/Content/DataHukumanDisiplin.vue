@@ -27,9 +27,7 @@
             <span style="margin: 0 10px; font-weight: 600;">{{ userRole === 1 ? 'atau' : '' }}</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronHukdisSiasn()">Sinkron Hukuman Disiplin dari MySAPK</button>
           </div>
-          <div v-for="item in dataHukumanDisiplin" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataHukumanDisiplin(item)">
-            <data-found :icon="'fa-solid fa-file-contract'" :primaryBrief="item.jenisHukumanDisiplin" :secondaryBrief="item.daftarHukumanDisiplin"></data-found>
-          </div>
+          <data-found v-for="item in dataHukumanDisiplin" :key="item.id" @click.native="editDataHukumanDisiplin(item)" :icon="'fa-solid fa-file-contract'" :primaryBrief="item.jenisHukumanDisiplin" :secondaryBrief="item.daftarHukumanDisiplin" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>
@@ -64,22 +62,17 @@ export default {
       this.btnDisabled.sync = true
       await this.sinkronHukdisSiasn().then(res => {
         this.btnDisabled.sync = false
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         $("#modal-sync").click()
         this.$store.commit("onModalMethod", "SYNC")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataHukumanDisiplin()
-      }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        this.dataHukumanDisiplin = data.message
+        this.dataHukumanDisiplin = data.data
       })
     },
     addDataHukumanDisiplin() {
@@ -96,7 +89,6 @@ export default {
     getDataHukumanDisiplin() {
       this.isLoading = true
       let token = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
-      let u = token.username
       if (token.idAppRoleUser === 1 || token.idAppRoleUser === 2) {
         this.isVisibleButton = true
       }
@@ -107,7 +99,7 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.isLoading = false
         if (data.status === 2) {
           this.dataHukumanDisiplin = data.message

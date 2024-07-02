@@ -10,6 +10,7 @@ import DataKeluargaPasanganContent from "@/components/Modal/Pegawai/DataKeluarga
 import DataPangkatGolonganContent from "@/components/Modal/Pegawai/DataPangkatGolonganContent.vue"
 import DataPendidikanContent from "@/components/Modal/Pegawai/DataPendidikanContent.vue"
 import DataSkpContent from "@/components/Modal/Pegawai/DataSkpContent.vue"
+import DataSkp2022Content from "@/components/Modal/Pegawai/DataSkp2022Content.vue"
 import DataJabatanUnitKerjaContent from "@/components/Modal/Pegawai/DataJabatanUnitKerjaContent.vue"
 import DataEDocumentContent from "@/components/Modal/Pegawai/DataEDocumentContent.vue"
 import DataPenghargaanContent from "@/components/Modal/Pegawai/DataPenghargaanContent.vue"
@@ -24,6 +25,9 @@ import UsulanMultipleVerificationContent from "@/components/Modal/Usulan/UsulanM
 import StatusChangePasswordContent from "@/components/Modal/StatusCallback/StatusChangePasswordContent.vue"
 import DataPegawaiContent from "@/components/Modal/Pegawai/DataPegawaiContent.vue"
 import AkunPenggunaContent from "@/components/Modal/AkunPengguna/AkunPenggunaContent.vue"
+import BeforeAddDataContent from "@/components/Modal/Pegawai/BeforeAddDataContent.vue"
+import ProfilePictureContent from "@/components/Modal/Pegawai/ProfilePictureContent.vue"
+import DeleteDataContent from "@/components/Modal/Pegawai/DeleteDataContent.vue"
 
 Vue.component("ModalWrapper", ModalWrapper)
 Vue.component("ModalHeaderFooter", ModalHeaderFooter)
@@ -35,6 +39,7 @@ Vue.component("DataKeluargaPasanganContent", DataKeluargaPasanganContent)
 Vue.component("DataPangkatGolonganContent", DataPangkatGolonganContent)
 Vue.component("DataPendidikanContent", DataPendidikanContent)
 Vue.component("DataSkpContent", DataSkpContent)
+Vue.component("DataSkp2022Content", DataSkp2022Content)
 Vue.component("DataJabatanUnitKerjaContent", DataJabatanUnitKerjaContent)
 Vue.component("DataUnitOrganisasiContent", DataUnitOrganisasiContent)
 Vue.component("DataJabatanContent", DataJabatanContent)
@@ -49,3 +54,6 @@ Vue.component("DataPenghargaanContent", DataPenghargaanContent)
 Vue.component("UsulanMultipleVerificationContent", UsulanMultipleVerificationContent)
 Vue.component("DataAngkaKreditContent", DataAngkaKreditContent)
 Vue.component("DataEDocumentContent", DataEDocumentContent)
+Vue.component("BeforeAddDataContent", BeforeAddDataContent)
+Vue.component("ProfilePictureContent", ProfilePictureContent)
+Vue.component("DeleteDataContent", DeleteDataContent)

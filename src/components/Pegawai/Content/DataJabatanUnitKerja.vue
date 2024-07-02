@@ -13,7 +13,7 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataJabatan.length == 0"
         >
-          <DataEmpty @addData="addDataJabatan()" />
+          <DataEmpty @addData="beforeAdd()" />
           <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p>
           <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronJabatanSiasn()">Sinkron Jabatan dari MySAPK</button>
         </div>
@@ -23,12 +23,13 @@
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false" @click="addDataJabatan()">Tambah Jabatan</button>
+            data-keyboard="false" @click="beforeAdd()">Tambah Jabatan</button>
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronJabatanSiasn()">Sinkron Jabatan dari MySAPK</button>
           </div>
-          <div v-for="item in dataJabatan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataJabatan(item)">
-            <data-found :icon="'fa-solid fa-briefcase'" :primaryBrief="item.jabatan" :secondaryBrief="item.jenisJabatan"></data-found>
+          <div v-for="(item, idx) in dataJabatan" :key="item.id" style="display: flex;">
+            <data-found style="width: 100%;" @click.native="editDataJabatan(item)" :icon="'fa-solid fa-briefcase'" :primaryBrief="item.kodeKomponen.includes('-') && idx === 0 ? `(Data jabatan tidak valid, hubungi BKPSDM)` : `(TMT: ${item.tmt}) | ${item.jabatan}`" :secondaryBrief="item.unitOrganisasi" :style="item.kodeKomponen.includes('-') && idx === 0 ? 'border: 1px solid #EC392F; background-color: #EC392F07;' : ''" />
+            <data-found-delete v-if="parseInt(roleUser.idAppRoleUser) === 1" @click.native="deleteData(item)" />
           </div>
         </div>
     </div>
@@ -38,18 +39,62 @@
 
 <script>
 import axios from "axios"
+import DataFoundDelete from "../../DataFoundDelete.vue"
 const env = import.meta.env
 export default {
+  components: { DataFoundDelete },
+  watch: {
+    getModalDeleteDataStatus (val) {
+      if (val === "delete") {
+        let tempDataDelete = {...this.dataDeleteReady}
+        this.deleteDataJabatan(tempDataDelete)
+      }
+      this.dataDeleteReady = null
+    },
+    getModalBeforeAddUpdateDataStatus (val) {
+      if (val === "sync") {
+        this.btnSinkronJabatanSiasn()
+      } else if (val === "next") {
+        this.addDataJabatan()
+      }
+    }
+  },
   data() {
     return {
-      isLoading: false,
+      isLoading: true,
       dataJabatan: [],
       btnDisabled: {
         sync: false
+      },
+      dataDeleteReady: null
+    }
+  },
+  computed: {
+    getModalBeforeAddUpdateDataStatus() {
+      return this.$store.getters.getModalBeforeAddUpdateDataStatus
+    },
+    getModalDeleteDataStatus() {
+      return this.$store.getters.getModalDeleteDataStatus
+    },
+    roleUser() {
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      return {
+        idAppRoleUser: u.idAppRoleUser,
+        appRoleUser: u.appRoleUser
       }
     }
   },
   methods: {
+    deleteData(item) {
+      this.$store.commit("onModalMethod", "DELETE")
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "DeleteData")
+      this.dataDeleteReady = item
+    },
+    beforeAdd() {
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "BeforeAddData")
+    },
     addDataJabatan() {
       this.$store.commit("onModalMethod", "CREATE")
       this.$store.commit("onModalFolder", "Pegawai")
@@ -60,6 +105,33 @@ export default {
       this.$store.commit("onModalFolder", "Pegawai")
       this.$store.commit("onModalContent", "DataJabatanUnitKerja")
       this.$store.commit("onModalData", item)
+    },
+    deleteDataJabatan(item) {
+      let url = `/data-jabatan/delete/${item.id}`
+      return axios({
+        method: "DELETE",
+        url: `${env.VITE_BACKEND_URL}${url}`,
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      }).then(async res1 => {
+        let data1 = res1.data
+        this.btnDisabled.sync = true
+        await this.sinkronJabatanSiasn().then(res2 => {
+          this.btnDisabled.sync = false
+          $("#modal-sync").click()
+          this.$store.commit("onModalMethod", "DELETE")
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: parseInt(data1.status) === 2 || data1.status === true ? "Success" : "Failed",
+            message: data1.message
+          })
+          let data2 = res2.data
+          this.isLoading = false
+          this.dataJabatan = data2.data
+        })
+      })
     },
     getDataJabatan() {
       this.isLoading = true
@@ -84,31 +156,25 @@ export default {
       this.btnDisabled.sync = true
       await this.sinkronJabatanSiasn().then(res => {
         this.btnDisabled.sync = false
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         $("#modal-sync").click()
         this.$store.commit("onModalMethod", "SYNC")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataJabatan()
-      }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        this.dataJabatan = data.message
+        this.dataJabatan = data.data
       })
     }
   },
   async created() {
     await this.getDataJabatan().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      let data = res.data
       this.isLoading = false
-      if (data.status === 2) {
+      if (parseInt(data.status) === 2) {
         this.dataJabatan = data.message
       } else {
         localStorage.clear()

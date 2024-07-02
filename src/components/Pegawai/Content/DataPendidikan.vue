@@ -29,9 +29,7 @@
             <span style="margin: 0 10px; font-weight: 600;"></span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPendidikanSiasn()">Sinkron Pendidikan dari MySAPK</button>
           </div>
-          <div v-for="item in dataPendidikan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataPendidikan(item)">
-            <data-found :icon="'fa-solid fa-graduation-cap'" :primaryBrief="item.tingkatPendidikan" :secondaryBrief="item.namaSekolah"></data-found>
-          </div>
+          <data-found v-for="item in dataPendidikan" :key="item.id" @click.native="editDataPendidikan(item)" :icon="'fa-solid fa-graduation-cap'" :primaryBrief="item.tingkatPendidikan" :secondaryBrief="item.namaSekolah" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>
@@ -65,22 +63,17 @@ export default {
       this.btnDisabled.sync = true
       await this.sinkronPendidikanSiasn().then(res => {
         this.btnDisabled.sync = false
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         $("#modal-sync").click()
         this.$store.commit("onModalMethod", "SYNC")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataPendidikan()
-      }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        this.dataPendidikan = data.message
+        this.dataPendidikan = data.data
       })
     },
     addDataPendidikan() {
@@ -107,10 +100,9 @@ export default {
   },
   async created() {
     this.getDataPendidikan().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      let data = res.data
       this.isLoading = false
-      if (data.status === 2) {
+      if (parseInt(data.status) === 2) {
         this.dataPendidikan = data.message
       } else {
         localStorage.clear()

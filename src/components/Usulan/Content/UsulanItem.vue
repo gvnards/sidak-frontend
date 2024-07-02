@@ -14,7 +14,8 @@
       <div class="col-8">
         <div class="text-wrapper">
           <h6 class="text-black">{{ mainText }}</h6>
-          <p class="nama">{{ subText }}</p>
+          <p>{{ subTextUpper }}</p>
+          <p class="nama">{{ subTextLower }}</p>
           <p class="waktu">{{ timeText }}</p>
         </div>
       </div>
@@ -40,12 +41,17 @@ export default {
       required: true,
       type: String
     },
+    subTextUpper: {
+      default: "",
+      required: true,
+      type: String
+    },
     mainText: {
       default: "",
       required: true,
       type: String
     },
-    subText: {
+    subTextLower: {
       default: "",
       required: true,
       type: String
@@ -77,7 +83,7 @@ export default {
 <style lang="less" scoped>
 .item-wrapper {
   width: 100%;
-  height: 54px;
+  height: 66px;
   padding: 8px 14px;
   box-sizing: border-box;
   transition: all 0.4s;
@@ -124,7 +130,6 @@ export default {
       margin: 0px;
       font-size: 12px;
       font-weight: 500;
-      position: absolute;
       width: 100%;
       color: #537777;
       white-space: nowrap;
@@ -132,12 +137,14 @@ export default {
       text-overflow: ellipsis;
       &.nama {
         left: 0;
-        max-width: 73%;
+        max-width: 50%;
+        position: absolute;
       }
       &.waktu {
         right: 0;
-        max-width: 27%;
+        max-width: 50%;
         text-align: end;
+        position: absolute;
       }
     }
   }

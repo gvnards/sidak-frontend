@@ -122,7 +122,7 @@ export default {
           "Authorization": localStorage.getItem("token")
         },
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         this.usulanDetail = data.message[0]
         this.isUsulanUpdate = parseInt(this.usulanDetail.idUsulan) === 2
         if (this.isUsulanUpdate) {

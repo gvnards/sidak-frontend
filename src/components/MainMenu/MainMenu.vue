@@ -95,10 +95,8 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 2) {
-          this.mainMenu = data.message
+        if(parseInt(res.data.status) === 2) {
+          this.mainMenu = res.data.message
           this.isMenuActive()
         } else {
           localStorage.clear()

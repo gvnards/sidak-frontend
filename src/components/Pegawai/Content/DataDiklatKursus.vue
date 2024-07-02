@@ -13,23 +13,23 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataDiklatKursus.length == 0"
         >
-          <DataEmpty @addData="addDataDiklatKursus()" />
+          <DataEmpty @addData="() => {}" :addData="false" />
+          <a class="btn my-btn-primary btn-sm" href="https://sibangsitur.situbondokab.go.id/" target="_blank">Tambah data melalui aplikasi SIBANGSITUR</a>
           <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p>
           <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronDiklatSiasn()">Sinkron Diklat/Kursus dari MySAPK</button>
         </div>
         <div v-else-if="!isLoading && dataDiklatKursus.length > 0">
           <div style="padding-left: 20px; padding-right: 20px; padding-top: 16px;">
-            <button :disabled="btnDisabled.sync" class="btn my-btn-primary btn-sm"
+            <!-- <button :disabled="btnDisabled.sync" class="btn my-btn-primary btn-sm"
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false" @click="addDataDiklatKursus()">Tambah Diklat/Kursus</button>
+            data-keyboard="false" @click="beforeAdd()">Tambah Diklat/Kursus</button> -->
+            <a class="btn my-btn-primary btn-sm" href="https://sibangsitur.situbondokab.go.id/" target="_blank">Tambah data melalui aplikasi SIBANGSITUR</a>
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronDiklatSiasn()">Sinkron Diklat/Kursus dari MySAPK</button>
           </div>
-          <div v-for="item in dataDiklatKursus" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataDiklatKursus(item)">
-            <data-found :icon="'fa-solid fa-book'" :primaryBrief="item.jenisDiklat" :secondaryBrief="item.daftarDiklat === 'DIKLAT/KURSUS TIDAK ADA DALAM DAFTAR' ? item.namaDiklat : item.daftarDiklat"></data-found>
-          </div>
+          <data-found v-for="item in dataDiklatKursus" :key="item.id" @click.native="editDataDiklatKursus(item)" :icon="'fa-solid fa-book'" :primaryBrief="item.jenisDiklat" :secondaryBrief="item.daftarDiklat === 'DIKLAT/KURSUS TIDAK ADA DALAM DAFTAR' ? item.namaDiklat : item.daftarDiklat" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>
@@ -40,6 +40,15 @@
 import axios from "axios"
 const env = import.meta.env
 export default {
+  watch: {
+    getModalBeforeAddUpdateDataStatus (val) {
+      if (val === "sync") {
+        this.btnSinkronDiklatSiasn()
+      } else if (val === "next") {
+        this.addDataDiklatKursus()
+      }
+    }
+  },
   data() {
     return {
       isLoading: false,
@@ -49,7 +58,16 @@ export default {
       }
     }
   },
+  computed: {
+    getModalBeforeAddUpdateDataStatus() {
+      return this.$store.getters.getModalBeforeAddUpdateDataStatus
+    }
+  },
   methods: {
+    beforeAdd() {
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "BeforeAddData")
+    },
     sinkronDiklatSiasn() {
       return axios({
         url: `${env.VITE_BACKEND_URL}/siasn/diklat/riwayat/sync/${this.$store.getters.getIdPegawai}`,
@@ -63,22 +81,17 @@ export default {
       this.btnDisabled.sync = true
       await this.sinkronDiklatSiasn().then(res => {
         this.btnDisabled.sync = false
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         $("#modal-sync").click()
         this.$store.commit("onModalMethod", "SYNC")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataDiklatKursus()
-      }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        this.dataDiklatKursus = data.message
+        this.dataDiklatKursus = data.data
       })
     },
     addDataDiklatKursus() {
@@ -105,10 +118,9 @@ export default {
   },
   async created() {
     this.getDataDiklatKursus().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      let data = res.data
       this.isLoading = false
-      if (data.status === 2) {
+      if (parseInt(data.status) === 2) {
         this.dataDiklatKursus = data.message
       } else {
         localStorage.clear()
@@ -127,6 +139,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+a {
+  color: #ffffff;
+}
 .icon-plus {
   font-size: 18px;
   position: relative;

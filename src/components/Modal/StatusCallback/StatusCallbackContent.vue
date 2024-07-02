@@ -7,7 +7,7 @@
       <p style="white-space: pre-line;">{{ $store.getters.getModalStatusCallback.message }}</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-lg btn-block my-btn-primary" data-dismiss="modal">Mengerti dan Tutup</button>
+      <button id="btnTutupModal" type="button" class="btn btn-lg btn-block my-btn-primary" data-dismiss="modal">Mengerti dan Tutup</button>
     </div>
   </div>
 </template>
@@ -26,6 +26,7 @@ export default {
       if (modalMethod.toLowerCase() === "create") return "ditambahkan"
       else if (modalMethod.toLowerCase() === "update") return "diperbaharui"
       else if (modalMethod.toLowerCase() === "sync") return "disinkronisasi"
+      else if (modalMethod.toLowerCase() === "delete") return "dihapus"
       return "dihapus"
     }
   }

@@ -187,7 +187,7 @@ export default {
   },
   methods: {
     getData() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      this.isLoading = true
       let url = `/data-cpns-pns/${this.$store.getters.getIdPegawai}`
       axios({
         baseURL: `${env.VITE_BACKEND_URL}${url}`,
@@ -197,9 +197,10 @@ export default {
         }
       }).then((res) => {
         this.isLoading = false
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        if (data.status === 2 || data.status === 3) {
-          this.dataCpnsPns = data.message[0]
+        let data = res.data
+        if (parseInt(data.status) === 2 || parseInt(data.status) === 3) {
+          this.dataCpnsPns = data.message.dataCpnsPns[0]
+          this.fileCategory = data.message.dokumenKategori
         } else {
           localStorage.clear()
           this.$router.push({
@@ -214,6 +215,7 @@ export default {
       })
     },
     updateDataCpnsPns() {
+      this.isLoading = true
       let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         baseURL: `${env.VITE_BACKEND_URL}/data-cpns-pns/${this.dataCpnsPns.id}`,
@@ -225,12 +227,12 @@ export default {
           message: this.$store.getters.getEncrypt(JSON.stringify(this.dataCpnsPns), p)
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
+        let data = res.data
         this.$store.commit("onModalMethod", "UPDATE")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
         $("#showModal").trigger("click")
@@ -244,19 +246,6 @@ export default {
           message: "Terjadi kesalahan server. Silahkan menghubungi penyedia layanan Sidak."
         })
         $("#showModal").trigger("click")
-      })
-    },
-    getMaxFileSize() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/dokumen-kategori/cpns`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        },
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.fileCategory = data.message[0]
       })
     },
     async onChangeFile(item, mode) {
@@ -297,7 +286,6 @@ export default {
   },
   created() {
     this.getData()
-    this.getMaxFileSize()
   },
   destroyed() {
     this.$destroy()

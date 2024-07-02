@@ -7,7 +7,7 @@
       <h6 class="text-black">
         Total Pegawai: {{ totalPegawai }} Pegawai
       </h6>
-      <div v-if="getIdAppRoleUser == 1">
+      <!-- <div v-if="getIdAppRoleUser == 1">
         <div class="btn my-btn-primary"
               data-toggle="modal"
               data-target="#modal"
@@ -45,7 +45,7 @@
             <small class="text-danger" style="font-weight: 600;">*Maksimal jumlah sinkron 500 pegawai</small>
           </div>
         </div>
-      </div>
+      </div> -->
       <div class="form-group search-wrapper" style="margin-top: 8px;">
         <i
           class="fa-solid fa-magnifying-glass search-icon text-primary"
@@ -54,28 +54,27 @@
           type="text"
           v-model="searchValue"
           class="form-control search"
-          placeholder="Cari berdasarkan NIP/Nama"
+          placeholder="Cari NIP/Nama/Jabatan"
         />
       </div>
     </div>
     <div id="list-pegawai-wrapper">
       <div id="list-pegawai">
-        <div @click="$emit('selectPegawai', item.id)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" style="margin: 10px;">
+        <!-- <div @click="$emit('selectPegawai', item.id)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" style="margin: 10px;">
           <ListPegawaiItem :pegawai="item" />
-        </div>
-        <!-- <table class="table">
+        </div> -->
+        <table class="table">
           <thead class="thead-dark">
             <tr style="font-size: 0.85rem;">
-              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Nama/NIP</th>
-              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Golongan</th>
-              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Jabatan</th>
-              <th scope="col" class="text-primary" style="background-color: #eff5f5; border-color: #eff5f5;">Unit Organisasi</th>
+              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white;">Nama<br>NIP</th>
+              <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white;">Jabatan<br>Unit Organisasi</th>
+              <th scope="col" class="text-primary text-center" style="max-width: 20px; background-color: #eff5f5; border-color: #eff5f5;">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            <ListPegawaiItemX />
+            <ListPegawaiItem class="item-pegawai" @showPegawai="showPegawai(item)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" :dataPegawai="item" />
           </tbody>
-        </table> -->
+        </table>
         <ul class="pagination-wrapper" style="margin-top: 24px;">
           <!-- <li class="pagination-item" v-for="i in (totalPage==0?totalPage:pagination)" :key="i" :class="i == pageActive ? 'active' : ''" @click="pageActive=i">{{ i }}</li>
           <li style="list-style-type: none; padding: 4px 8px;" v-if="pageActive < totalPage-7">...</li>
@@ -95,7 +94,7 @@ const env = import.meta.env
 import ListPegawaiItem from "./Content/ListPegawaiItem.vue"
 export default {
   components: {
-    ListPegawaiItem
+    ListPegawaiItem,
   },
   data() {
     return {
@@ -126,7 +125,8 @@ export default {
       return this.accordionSync.max - this.accordionSync.min + 1
     },
     filterPegawai () {
-      return this.searchValue === "" ? this.pegawai : this.pegawai.filter(el => el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) || el.nama.toLowerCase().includes(this.searchValue.toLowerCase()))
+      return this.searchValue === "" ? this.pegawai : this.pegawai.filter(el => (el.nama === null || el.nip === null || el.jabatan === null) ? false : (el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) || el.nama.toLowerCase().includes(this.searchValue.toLowerCase()) || el.jabatan.toLowerCase().includes(this.searchValue.toLowerCase()))
+      )
     },
     totalPage() {
       return this.filterPegawai.length == 0 ? 0 : Math.ceil(this.filterPegawai.length / this.dataPerPage)
@@ -136,6 +136,9 @@ export default {
     }
   },
   methods: {
+    showPegawai(item) {
+      this.$emit("selectPegawai", item.id)
+    },
     onSyncAllASN() {
       this.accordionSync.visibility = !this.accordionSync.visibility
     },
@@ -168,56 +171,10 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        this.pegawai = data.message
-        // let pegawai = data.message
-        // if (pegawai.length > 100) {
-        //   let tempPegawai = []
-        //   for(let i=0; i<pegawai.length; i++) {
-        //     tempPegawai.push(pegawai.splice(0,100))
-        //   }
-        //   for(let i=0; i<tempPegawai.length; i++) {
-        //     setTimeout(() => {
-        //       for(let j=0; j<tempPegawai[i].length; j++) {
-        //         this.pegawai.push(tempPegawai[i][j])
-        //       }
-        //       this.totalPegawaiLoaded += tempPegawai[i].length
-        //     }, 200)
-        //   }
-        // } else {
-        //   this.pegawai = pegawai
-        // }
-      })
-    },
-    getTotalPegawai() {
-      axios({
-        url: `${env.VITE_BACKEND_URL}/total-pegawai`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 2) {
-          this.totalPegawai = data.message
-        }
-      })
-    },
-    getNamaUnitOrganisasi() {
-      axios({
-        url: `${env.VITE_BACKEND_URL}/nama-unit-organisasi`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 2) {
-          this.namaUnitOrganisasi = data.message
-        }
+        let data = res.data
+        this.pegawai = data.message.pegawai
+        this.totalPegawai = data.message.pegawai.length
+        this.namaUnitOrganisasi = data.message.unitOrganisasi
       })
     },
     pushDataPegawai() {
@@ -230,14 +187,17 @@ export default {
     }
   },
   created() {
-    this.getTotalPegawai()
     this.getDataPegawai()
-    this.getNamaUnitOrganisasi()
   }
 }
 </script>
 
 <style lang="less" scoped>
+.item-pegawai {
+  &:hover {
+    background-color: rgba(211,211,211,0.3);
+  }
+}
 #list-pegawai-header {
   margin-bottom: 20px;
   h5 {
@@ -253,7 +213,8 @@ export default {
     letter-spacing: 1px;
     &-wrapper {
       position: relative;
-      max-width: 300px;
+      // max-width: 300px;
+      max-width: 100%;
       margin-top: 20px;
       .search-icon {
         position: absolute;

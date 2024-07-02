@@ -9,6 +9,8 @@ import ViewJabatan from "../views/JabatanView.vue"
 import ViewUnitOrganisasi from "../views/UnitOrganisasiView.vue"
 import ViewUbahPassword from "../views/UbahPasswordView.vue"
 import ViewAkunPengguna from "../views/AkunPenggunaView.vue"
+import ViewRekapSinkron from "../views/RekapSinkronView.vue"
+import ViewExportData from "../views/ExportDataView.vue"
 import axios from "axios"
 import store from "./../store/index"
 const env = import.meta.env
@@ -100,7 +102,17 @@ const router = new VueRouter({
           path: "akunpengguna",
           name: "akun pengguna",
           component: ViewAkunPengguna
-        }
+        },
+        {
+          path: "rekapsinkron",
+          name: "rekap sinkron",
+          component: ViewRekapSinkron
+        },
+        {
+          path: "exportdata",
+          name: "export data",
+          component: ViewExportData
+        },
       ],
     },
     // {

@@ -32,7 +32,14 @@ const store = new Vuex.Store({
       usulanData: {},
       isUsulanMobile: false,
       windowWidth: window.innerWidth,
-      resultCallbackReload: ""
+      resultCallbackReload: "",
+      modalBeforeAddUpdateData: {
+        status: "wait", // status: wait/sync/next -> wait=masih belum milih - sync=milih sync - next=lanjut ke proses add/update data
+        // onData: "wait" // onData: wait/{di data mana dia berada, jabatan/pangkat/dsb}
+      },
+      modalDeleteData: {
+        status: "", // delete atau empty string
+      }
     }
   },
   getters: {
@@ -47,7 +54,10 @@ const store = new Vuex.Store({
     getUsulanData: state => state.usulanData,
     getIsUsulanMobile: state => state.isUsulanMobile,
     getWindowWidth: state => state.windowWidth,
-    getResultCallbackReload: state => state.resultCallbackReload
+    getResultCallbackReload: state => state.resultCallbackReload,
+    getModalBeforeAddUpdateDataStatus: state => state.modalBeforeAddUpdateData.status,
+    getModalDeleteDataStatus: state => state.modalDeleteData.status,
+    // getModalBeforeAddUpdateDataOnData: state => state.modalBeforeAddUpdateData.onData,
   },
   mutations: {
     onResultCallbackReload(state, val) {
@@ -89,7 +99,16 @@ const store = new Vuex.Store({
     },
     onWindowWidth(state, val) {
       state.windowWidth = val
-    }
+    },
+    onModalBeforeAddUpdateDataStatus(state, val) {
+      state.modalBeforeAddUpdateData.status = val
+    },
+    onModalDeleteDataStatus(state, val) {
+      state.modalDeleteData.status = val
+    },
+    // onModalBeforeAddUpdateDataOnData(state, val) {
+    //   state.modalBeforeAddUpdateData.onData = val
+    // }
   }
 });
 

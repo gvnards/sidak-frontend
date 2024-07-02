@@ -2,10 +2,10 @@
 <template>
   <div class="short-brief-wrapper">
     <div class="short-brief-data-wrapper">
-      <div class="profile-picture-wrapper">
+      <div class="profile-picture-wrapper" @click="changePicture()" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false">
         <img
           class="profile-picture"
-          src=""
+          :src="dataShortBrief.foto"
           alt="Foto Profil"
           v-if="dataShortBrief.foto !== undefined && dataShortBrief.foto !== null && dataShortBrief.foto !== ''"
         />
@@ -23,7 +23,11 @@
             dataShortBrief.jenisKelamin === 'P'
           "
         ></illustration-profile-picture-woman>
+        <div v-if="isLoaded" style="margin-top: 20px; margin-bottom: 14px;" class="text-center">
+          <div class="btn btn-sm btn-block my-btn-outline-primary">{{ parseInt(roleUser.idAppRoleUser) === 1 ? 'Lihat/Ubah Foto' : 'Lihat Foto' }}</div>
+        </div>
       </div>
+      <br>
       <div class="detail-text-wrapper">
         <p class="greeting">
           Hai! Saya {{ dataShortBrief.nama }}
@@ -67,10 +71,24 @@ export default {
         jenisKelamin: "",
         foto: "",
       },
+      isLoaded: false,
     }
   },
   methods: {
+    changePicture() {
+      $("#modal-picture").click()
+      this.$store.commit("onModalMethod", "UPDATE")
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "ProfilePicture")
+      this.$store.commit("onModalData", {
+        foto: this.dataShortBrief.foto,
+        jenisKelamin: this.dataShortBrief.jenisKelamin,
+        nip: this.dataShortBrief.nip,
+        idAppRoleUser: this.roleUser.idAppRoleUser
+      })
+    },
     getShortBrief() {
+      this.isLoaded = false
       axios({
         url: `${env.VITE_BACKEND_URL}/data-short-brief/${this.$store.getters.getIdPegawai}`,
         method: "GET",
@@ -78,18 +96,26 @@ export default {
           "Authorization": localStorage.getItem("token")
         }
       }).then(res => {
-        let p = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), p)
-        if(data.status === 2) {
+        let data = res.data
+        if(parseInt(data.status) === 2) {
           this.dataShortBrief = data.message[0]
-        } else {
-          localStorage.clear()
-          this.$router.push({
-            name: "login"
-          })
+          this.isLoaded = true
         }
       }).catch(() => {
+        localStorage.clear()
+        this.$router.push({
+          name: "login"
+        })
       })
+    },
+  },
+  computed: {
+    roleUser() {
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      return {
+        idAppRoleUser: u.idAppRoleUser,
+        appRoleUser: u.appRoleUser
+      }
     }
   },
   created() {
@@ -154,7 +180,7 @@ export default {
   .profile-picture-wrapper {
     // filter: blur(4px);
     backdrop-filter: blur(8px);
-    overflow: hidden;
+    // overflow: hidden;
     margin: auto;
     border-radius: 100%;
     border: 4px solid #477b79;
@@ -164,22 +190,47 @@ export default {
     max-width: 240px;
     position: relative;
     margin-bottom: 40px;
-    &::after {
+    padding: 4px;
+    &:hover::after {
+      width: calc(100% - 10px);
+      height: calc(100% - 10px);
+      border-radius: 100%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0,0,0,0.25);
+      z-index: 4;
+      content: '\f030';
+      font-family: FontAwesome;
+      font-weight: normal;
+      font-style: normal;
+      text-align: center;
+      font-size: 32px;
+      line-height: 3rem;
+      color: rgba(255,255,255,0.75);
+      padding-top: calc(50% - 30px);
+      cursor: pointer;
+      // margin:0px 0px 0px 10px;
+      // text-decoration:none;
+    }
+    &::before {
       content: "";
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       position: absolute;
       background-color: #477b79;
+      border: 3px solid white;
       border-radius: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      top: -10px;
+      left: 80%;
+      bottom: 7.5%;
+      z-index: 4;
     }
     .profile-picture {
       width: 100%;
       height: auto;
-      max-width: 220px;
-      max-height: 220px;
+      width: 100%;
+      height: 100%;
       border-radius: 100%;
       margin: auto;
       display: block;

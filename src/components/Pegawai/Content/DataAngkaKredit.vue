@@ -13,7 +13,7 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataAngkaKredit.length == 0"
         >
-          <DataEmpty @addData="addDataAngkaKredit()" />
+          <DataEmpty @addData="beforeAdd()" />
           <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p>
           <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronAngkaKreditSiasn()">Sinkron Angka Kredit dari MySAPK</button>
         </div>
@@ -23,12 +23,13 @@
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false" @click="addDataAngkaKredit()">Tambah Angka Kredit</button>
+            data-keyboard="false" @click="beforeAdd()">Tambah Angka Kredit</button>
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronAngkaKreditSiasn()">Sinkron Angka Kredit dari MySAPK</button>
           </div>
-          <div v-for="item in dataAngkaKredit" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataAngkaKredit(item)">
-            <data-found :icon="'fa-solid fa-graduation-cap'" :primaryBrief="`${item.jabatan}`" :secondaryBrief="`Total AK: ${item.totalAngkaKredit} | Periode: ${item.periodeMulai} s/d ${item.periodeSelesai}`"></data-found>
+          <div v-for="item in dataAngkaKredit" :key="item.id" style="display: flex;">
+            <data-found style="width: 100%;" @click.native="editDataAngkaKredit(item)" :icon="'fa-solid fa-graduation-cap'" :primaryBrief="`${item.jabatan}`" :secondaryBrief="`Total AK: ${item.totalAngkaKredit} | Periode: ${item.periodeMulai} s/d ${item.periodeSelesai}`" />
+            <data-found-delete v-if="parseInt(roleUser.idAppRoleUser) === 1" @click.native="deleteData(item)" />
           </div>
         </div>
     </div>
@@ -40,6 +41,23 @@
 import axios from "axios"
 const env = import.meta.env
 export default {
+  watch: {
+    getModalDeleteDataStatus (val) {
+      console.log("masuk sini")
+      if (val === "delete") {
+        let tempDataDelete = {...this.dataDeleteReady}
+        this.deleteDataAngkaKredit(tempDataDelete)
+      }
+      this.dataDeleteReady = null
+    },
+    getModalBeforeAddUpdateDataStatus (val) {
+      if (val === "sync") {
+        this.btnSinkronAngkaKreditSiasn()
+      } else if (val === "next") {
+        this.addDataAngkaKredit()
+      }
+    }
+  },
   data() {
     return {
       isLoading: false,
@@ -49,7 +67,32 @@ export default {
       }
     }
   },
+  computed: {
+    getModalDeleteDataStatus() {
+      return this.$store.getters.getModalDeleteDataStatus
+    },
+    roleUser() {
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab")
+      return {
+        idAppRoleUser: u.idAppRoleUser,
+        appRoleUser: u.appRoleUser
+      }
+    },
+    getModalBeforeAddUpdateDataStatus() {
+      return this.$store.getters.getModalBeforeAddUpdateDataStatus
+    }
+  },
   methods: {
+    deleteData(item) {
+      this.$store.commit("onModalMethod", "DELETE")
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "DeleteData")
+      this.dataDeleteReady = item
+    },
+    beforeAdd() {
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "BeforeAddData")
+    },
     sinkronAngkaKreditSiasn() {
       return axios({
         url: `${env.VITE_BACKEND_URL}/siasn/angka-kredit/riwayat/sync/${this.$store.getters.getIdPegawai}`,
@@ -63,22 +106,44 @@ export default {
       this.btnDisabled.sync = true
       await this.sinkronAngkaKreditSiasn().then(res => {
         this.btnDisabled.sync = false
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         $("#modal-sync").click()
         this.$store.commit("onModalMethod", "SYNC")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) === 2 || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataAngkaKredit()
-      }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        this.dataAngkaKredit = data.message.dataAngkaKredit
+        this.dataAngkaKredit = data.data
+      })
+    },
+    deleteDataAngkaKredit(item) {
+      let url = `/angka-kredit/delete/${item.id}`
+      return axios({
+        method: "DELETE",
+        url: `${env.VITE_BACKEND_URL}${url}`,
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      }).then(async res1 => {
+        let data1 = res1.data
+        this.btnDisabled.sync = true
+        await this.sinkronAngkaKreditSiasn().then(res2 => {
+          this.btnDisabled.sync = false
+          $("#modal-sync").click()
+          this.$store.commit("onModalMethod", "DELETE")
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: parseInt(data1.status) === 2 || data1.status === true ? "Success" : "Failed",
+            message: data1.message
+          })
+          let data2 = res2.data
+          this.isLoading = false
+          this.dataAngkaKredit = data2.data
+        })
       })
     },
     addDataAngkaKredit() {
@@ -105,10 +170,9 @@ export default {
   },
   async created() {
     this.getDataAngkaKredit().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      let data = res.data
       this.isLoading = false
-      if (data.status === 2) {
+      if (parseInt(data.status) === 2) {
         this.dataAngkaKredit = data.message.dataAngkaKredit
       } else {
         localStorage.clear()

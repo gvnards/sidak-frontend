@@ -13,7 +13,7 @@
           class="data-not-found-wrapper"
           v-if="!isLoading && dataPenghargaan.length == 0"
         >
-          <DataEmpty @addData="addDataPenghargaan()" />
+          <DataEmpty @addData="beforeAdd()" />
           <p style="margin-top: 12px; margin-bottom: 12px; font-weight: 500;">atau</p>
           <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPenghargaanSiasn()">Sinkron Penghargaan dari MySAPK</button>
         </div>
@@ -23,13 +23,11 @@
             data-toggle="modal"
             data-target="#modal"
             data-backdrop="static"
-            data-keyboard="false" @click="addDataPenghargaan()">Tambah Penghargaan</button>
+            data-keyboard="false" @click="beforeAdd()">Tambah Penghargaan</button>
             <span style="margin: 0 10px; font-weight: 600;">atau</span>
             <button :disabled="btnDisabled.sync" class="btn my-btn-outline-primary btn-sm" @click="btnSinkronPenghargaanSiasn()">Sinkron Penghargaan dari MySAPK</button>
           </div>
-          <div v-for="item in dataPenghargaan" :key="item.id" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" @click="editDataPenghargaan(item)">
-            <data-found :icon="'fa-solid fa-medal'" :primaryBrief="item.penghargaan" :secondaryBrief="item.tahun"></data-found>
-          </div>
+          <data-found v-for="item in dataPenghargaan" :key="item.id" @click.native="editDataPenghargaan(item)" :icon="'fa-solid fa-medal'" :primaryBrief="item.penghargaan" :secondaryBrief="item.tahun" />
         </div>
     </div>
     <button hidden id="modal-sync" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false"></button>
@@ -40,6 +38,15 @@
 import axios from "axios"
 const env = import.meta.env
 export default {
+  watch: {
+    getModalBeforeAddUpdateDataStatus (val) {
+      if (val === "sync") {
+        this.btnSinkronPenghargaanSiasn()
+      } else if (val === "next") {
+        this.addDataPenghargaan()
+      }
+    }
+  },
   data() {
     return {
       isLoading: false,
@@ -49,7 +56,16 @@ export default {
       }
     }
   },
+  computed: {
+    getModalBeforeAddUpdateDataStatus() {
+      return this.$store.getters.getModalBeforeAddUpdateDataStatus
+    }
+  },
   methods: {
+    beforeAdd() {
+      this.$store.commit("onModalFolder", "Pegawai")
+      this.$store.commit("onModalContent", "BeforeAddData")
+    },
     sinkronPenghargaanSiasn() {
       return axios({
         url: `${env.VITE_BACKEND_URL}/siasn/penghargaan/riwayat/sync/${this.$store.getters.getIdPegawai}`,
@@ -63,22 +79,17 @@ export default {
       this.btnDisabled.sync = true
       await this.sinkronPenghargaanSiasn().then(res => {
         this.btnDisabled.sync = false
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+        let data = res.data
         $("#modal-sync").click()
         this.$store.commit("onModalMethod", "SYNC")
         this.$store.commit("onModalFolder", "StatusCallback")
         this.$store.commit("onModalContent", "StatusCallback")
         this.$store.commit("onModalStatusCallback", {
-          status: data.status === 2 || data.status === true ? "Success" : "Failed",
+          status: parseInt(data.status) || data.status === true ? "Success" : "Failed",
           message: data.message
         })
-        return this.getDataPenghargaan()
-      }).then(res => {
-        let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
         this.isLoading = false
-        this.dataPenghargaan = data.message
+        this.dataPenghargaan = data.data
       })
     },
     addDataPenghargaan() {
@@ -105,10 +116,9 @@ export default {
   },
   async created() {
     this.getDataPenghargaan().then(res => {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
+      let data = res.data
       this.isLoading = false
-      if (data.status === 2) {
+      if (parseInt(data.status) === 2) {
         this.dataPenghargaan = data.message
       } else {
         localStorage.clear()
