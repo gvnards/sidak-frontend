@@ -60,6 +60,11 @@
       </div>
     </div>
     <div class="col-12">
+      <div class="form-group text-left" style="margin-bottom: -4px;">
+        <label :for="`fieldDokumenMutasiUnor-${dataMutasiUnor.id}`">Dokumen SK Mutasi</label>
+      </div>
+    </div>
+    <div class="col-12" v-if="dataMutasiUnor.idDokumen === null">
       <div class="form-group text-left">
         <div class="custom-file">
           <input type="file" class="custom-file-input" accept="application/pdf" :id="`fieldDokumenMutasiUnor-${dataMutasiUnor.id}`" @change="onChangeFile">
@@ -67,6 +72,8 @@
         </div>
         <small :class="dataMutasiUnor.dokumen === '' && isUsulkan ? 'text-red' : 'text-primary'"><b>*{{ dataMutasiUnor.dokumen === '' && isUsulkan ? 'Dokumen mutasi harus diisi.' : `Ukuran dokumen maksimal 0.5MB(${0.5 * 1024}KB).` }}</b></small>
       </div>
+      <iframe v-if="dataMutasiUnor.dokumen !== '' && dataMutasiUnor.dokumen !== null" :src="dataMutasiUnor.dokumen" frameborder="0" style="width: 100%; height: 600px"
+      ></iframe>
     </div>
   </div>
 </template>
@@ -130,6 +137,11 @@ export default {
         search: "",
         text: "-- Pilih Unit Organisasi Dahulu --"
       },
+      inputError: {
+        dokumen: {
+          description: "",
+        }
+      }
     }
   },
   computed: {
@@ -145,16 +157,19 @@ export default {
     async onChangeFile(item) {
       if (item.target.files.length !== 0) {
         if (item.target.files[0].size > (1024000 * 0.5)) {
-          this.inputError.dokumenAkta.description = `Ukuran file melebihi ${0.5 * 1024}KB.`
+          this.inputError.dokumen.description = `Ukuran file melebihi ${0.5 * 1024}KB.`
           item.target.value = null
-          this.dataMutasiUnorTemp.dokumen.dokumen = ""
+          // this.dataMutasiUnorTemp.dokumen.dokumen = ""
+          this.emitValue("dokumen", "")
         } else if (item.target.files[0].type !== "application/pdf") {
-          this.inputError.dokumenAkta.description = "Dokumen harus berjenis PDF."
+          this.inputError.dokumen.description = "Dokumen harus berjenis PDF."
           item.target.value = null
-          this.dataMutasiUnorTemp.dokumen.dokumen = ""
+          // this.dataMutasiUnorTemp.dokumen.dokumen = ""
+          this.emitValue("dokumen", "")
         } else {
-          this.dataMutasiUnorTemp.dokumen.dokumen = await this.getBase64(item.target.files[0])
-          this.dataMutasiUnorTemp.dokumen.change = true
+          // this.dataMutasiUnorTemp.dokumen.dokumen = await this.getBase64(item.target.files[0])
+          // this.dataMutasiUnorTemp.dokumen.change = true
+          this.emitValue("dokumen", await this.getBase64(item.target.files[0]))
         }
       }
     },
