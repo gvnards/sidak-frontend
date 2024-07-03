@@ -345,6 +345,7 @@ export default {
         spmt: "",
         nomorDokumen: "",
         tanggalDokumen: "",
+        idDokumen: null,
         dokumen: ""
       }
       this.listMutasiUnor.data.unshift(newData)
