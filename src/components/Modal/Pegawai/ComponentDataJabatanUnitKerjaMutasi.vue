@@ -64,13 +64,23 @@
         <label :for="`fieldDokumenMutasiUnor-${dataMutasiUnor.id}`">Dokumen SK Mutasi</label>
       </div>
     </div>
-    <div class="col-12" v-if="dataMutasiUnor.idDokumen === null">
+    <div class="col-12" v-if="dataMutasiUnor.idDokumen !== null">
+      <div>
+        <div class="btn btn-sm btn-block btn-secondary" @click="dataMutasiUnor.idDokumen === null ? () => {} : btnGetStreamDokumen()" style="font-weight: 500;">{{ dataMutasiUnor.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
+        <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
+      </div>
+      <div v-if="!changeDokumen">
+        <p class="text-center" style="margin: 6px 0px;">atau</p>
+        <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
+      </div>
+    </div>
+    <div class="col-12" v-if="dataMutasiUnor.idDokumen === null || changeDokumen">
       <div class="form-group text-left">
         <div class="custom-file">
           <input type="file" class="custom-file-input" accept="application/pdf" :id="`fieldDokumenMutasiUnor-${dataMutasiUnor.id}`" @change="onChangeFile">
           <label class="custom-file-label" :for="`fieldDokumenMutasiUnor-${dataMutasiUnor.id}`" :class="dataMutasiUnor.dokumen === '' && isUsulkan ? 'form-error' : ''">Cari dokumen</label>
         </div>
-        <small :class="dataMutasiUnor.dokumen === '' && isUsulkan ? 'text-red' : 'text-primary'"><b>*{{ dataMutasiUnor.dokumen === '' && isUsulkan ? 'Dokumen mutasi harus diisi.' : `Ukuran dokumen maksimal 0.5MB(${0.5 * 1024}KB).` }}</b></small>
+        <small :class="dataMutasiUnor.dokumen === '' && isUsulkan ? 'text-red' : 'text-primary'"><b>*{{ dataMutasiUnor.dokumen === '' && isUsulkan ? 'Dokumen mutasi harus diisi.' : inputError.dokumen.description }}</b></small>
       </div>
       <iframe v-if="dataMutasiUnor.dokumen !== '' && dataMutasiUnor.dokumen !== null" :src="dataMutasiUnor.dokumen" frameborder="0" style="width: 100%; height: 600px"
       ></iframe>
@@ -79,6 +89,8 @@
 </template>
 
 <script>
+import axios from "axios"
+const env = import.meta.env
 import mixins from "@/mixins/index.js"
 export default {
   mixins: [mixins],
@@ -139,9 +151,14 @@ export default {
       },
       inputError: {
         dokumen: {
-          description: "",
+          description: `Ukuran dokumen maksimal 0.5MB(${0.5 * 1024}KB).`,
         }
-      }
+      },
+      streamDokumen: {
+        dokumen: "",
+        show: false
+      },
+      changeDokumen: false
     }
   },
   computed: {
@@ -154,6 +171,22 @@ export default {
     }
   },
   methods: {
+    btnGetStreamDokumen() {
+      this.streamDokumen.show = !this.streamDokumen.show
+      if (this.streamDokumen.dokumen !== "") return
+      this.getStreamDokumen().then(res => {
+        this.streamDokumen.dokumen = res.data
+      })
+    },
+    async getStreamDokumen() {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/dokumen/${this.dataMutasiUnor.idDokumen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      })
+    },
     async onChangeFile(item) {
       if (item.target.files.length !== 0) {
         if (item.target.files[0].size > (1024000 * 0.5)) {
@@ -169,6 +202,7 @@ export default {
         } else {
           // this.dataMutasiUnorTemp.dokumen.dokumen = await this.getBase64(item.target.files[0])
           // this.dataMutasiUnorTemp.dokumen.change = true
+          this.inputError.dokumen.description = `Ukuran dokumen maksimal 0.5MB(${0.5 * 1024}KB).`
           this.emitValue("dokumen", await this.getBase64(item.target.files[0]))
         }
       }
