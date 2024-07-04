@@ -237,6 +237,7 @@ export default {
     return {
       listMutasiUnor: {
         data: [],
+        oldData: [],
         isUsulkan: false,
       },
       oldData: {},
@@ -455,7 +456,12 @@ export default {
     async onUsulkan() {
       this.listMutasiUnor.isUsulkan = true
       if (!this.isFulFilled || !this.isMutasiUnorFulfilled) return this.whereError()
+      let mutasiUnorKirim = []
+      if (this.listMutasiUnor.data.length > 0) {
+        mutasiUnorKirim = this.listMutasiUnor.data.filter(el => String(el.id).includes("new-"))
+      }
       return
+      ///// INI GIMANA CARANYA BUAT NGECEK ARRAY ?
       if(this.$store.getters.getModalMethod === "UPDATE") {
         if (!this.doesDataChange(this.oldData, this.dataJabatanUnitOrganisasi)) {
           this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
@@ -564,7 +570,8 @@ export default {
           }
         })
         this.daftarJabatan.listGroupJabatan = jbtnGrp
-        this.dataJabatanUnitOrganisasi = data.message.dataJabatanUnitOrganisasi[0]
+        const { mutasiUnor, ...originalDataJabatan } = data.message.dataJabatanUnitOrganisasi[0]
+        this.dataJabatanUnitOrganisasi = originalDataJabatan
         this.dataJabatanUnitOrganisasi.isPltPlh = parseInt(this.dataJabatanUnitOrganisasi.isPltPlh) === 1
         if (this.dataJabatanUnitOrganisasi.kodeKomponen.includes("-")) {
           // this.dataJabatanUnitOrganisasi.idJabatan = 0
@@ -581,6 +588,8 @@ export default {
           this.jenisJabatanText = jbtn.length > 0 ? jbtn[0].jenisJabatan : "-"
         }
         this.oldData = {...this.dataJabatanUnitOrganisasi}
+        this.listMutasiUnor.data = mutasiUnor === undefined ? [] : mutasiUnor
+        this.listMutasiUnor.oldData = mutasiUnor === undefined ? [] : mutasiUnor
       })
     }
   },
