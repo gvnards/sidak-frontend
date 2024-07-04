@@ -209,7 +209,7 @@
           ></iframe>
         </div>
       </div>
-      <div class="row row-form" style="border-top: 2px dashed #477b79; border-bottom: 2px dashed #477b79; padding-top: 8px; padding-bottom: 8px;">
+      <div class="row row-form" style="border-top: 2px dashed #477b79; border-bottom: 2px dashed #477b79; padding-top: 8px; padding-bottom: 8px;" v-if="jenisJabatanText === 'Jabatan Fungsional Tertentu'">
         <div class="col-12">
           <div class="btn my-btn-outline-primary btn-block btn-sm" @click="addMutasiUnor">Tambah Mutasi Unor</div>
         </div>
@@ -327,6 +327,17 @@ export default {
       }
       return this.dataJabatanUnitOrganisasi.idJabatan !== 0 && this.dataJabatanUnitOrganisasi.tmt !== "" && this.dataJabatanUnitOrganisasi.spmt !== "" && this.dataJabatanUnitOrganisasi.nomorDokumen !== "" && this.dataJabatanUnitOrganisasi.tanggalDokumen !== "" && dok
     },
+    isMutasiUnorFulfilled() {
+      let isFulFilled = true
+      this.listMutasiUnor.data.forEach(el => {
+        if (String(el.id).includes("new-")) {
+          if ((el.idUnor === null) || (el.tmt === "") || (el.spmt === "") || (el.nomorDokumen === "") || (el.tanggalDokumen === "") || (el.dokumen === "")) {
+            isFulFilled = false
+          }
+        }
+      })
+      return isFulFilled
+    }
   },
   methods: {
     valueChangeMutasiUnor(value) {
@@ -443,8 +454,8 @@ export default {
     },
     async onUsulkan() {
       this.listMutasiUnor.isUsulkan = true
+      if (!this.isFulFilled || !this.isMutasiUnorFulfilled) return this.whereError()
       return
-      if (!this.isFulFilled) return this.whereError()
       if(this.$store.getters.getModalMethod === "UPDATE") {
         if (!this.doesDataChange(this.oldData, this.dataJabatanUnitOrganisasi)) {
           this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)

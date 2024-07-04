@@ -29,6 +29,7 @@
             </div>
           </div>
         </div>
+        <small class="text-red" v-if="dataMutasiUnor.idUnor === null && isUsulkan"><b>*Unit organisasi harus diisi</b></small>
       </div>
     </div>
     <div class="col-6">
@@ -64,12 +65,13 @@
         <label :for="`fieldDokumenMutasiUnor-${dataMutasiUnor.id}`">Dokumen SK Mutasi</label>
       </div>
     </div>
-    <div class="col-12" v-if="dataMutasiUnor.idDokumen !== null">
+    <div class="col-12" v-if="dataMutasiUnor.idDokumen !== null" style="margin-bottom: 8px;">
       <div>
         <div class="btn btn-sm btn-block btn-secondary" @click="dataMutasiUnor.idDokumen === null ? () => {} : btnGetStreamDokumen()" style="font-weight: 500;">{{ dataMutasiUnor.idDokumen === null ? 'Belum Ada Dokumen' : 'Lihat Dokumen' }}</div>
         <iframe v-if="streamDokumen.show" :src="streamDokumen.dokumen" frameborder="0" style="width: 100%; height: 600px; margin-top: 6px;"></iframe>
       </div>
-      <div v-if="!changeDokumen">
+      <!-- <div v-if="!changeDokumen"> -->
+      <div v-if="false">
         <p class="text-center" style="margin: 6px 0px;">atau</p>
         <div class="btn btn-sm btn-block btn-outline-secondary" @click="changeDokumen = true" style="font-weight: 500;">Ganti Dokumen</div>
       </div>
@@ -209,7 +211,6 @@ export default {
     },
     emitValue(component, value) {
       this.$emit("valueChangeMutasiUnor", {
-        // id: this.dataMutasiUnor.id,
         idx: this.index,
         component: component,
         value: value
