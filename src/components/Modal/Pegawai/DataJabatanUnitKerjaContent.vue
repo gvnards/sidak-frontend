@@ -457,13 +457,13 @@ export default {
       this.listMutasiUnor.isUsulkan = true
       if (!this.isFulFilled || !this.isMutasiUnorFulfilled) return this.whereError()
       let mutasiUnorKirim = []
+      let isMutasiUnorChange = true
       if (this.listMutasiUnor.data.length > 0) {
         mutasiUnorKirim = this.listMutasiUnor.data.filter(el => String(el.id).includes("new-"))
       }
-      return
-      ///// INI GIMANA CARANYA BUAT NGECEK ARRAY ?
       if(this.$store.getters.getModalMethod === "UPDATE") {
-        if (!this.doesDataChange(this.oldData, this.dataJabatanUnitOrganisasi)) {
+        isMutasiUnorChange = this.listMutasiUnor.data.length !== this.listMutasiUnor.oldData.length
+        if (!this.doesDataChange(this.oldData, this.dataJabatanUnitOrganisasi) && !isMutasiUnorChange) {
           this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
           this.$store.commit("onModalFolder", "StatusCallback")
           this.$store.commit("onModalContent", "StatusCallback")
@@ -486,6 +486,9 @@ export default {
       this.dataJabatanUnitOrganisasi.idPegawai = this.$store.getters.getIdPegawai
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-jabatan" : `/data-jabatan/${this.dataJabatanUnitOrganisasi.id}`
       this.dataJabatanUnitOrganisasi.date = Date.now()
+      let dt = {...this.dataJabatanUnitOrganisasi, mutasiUnor: mutasiUnorKirim}
+      console.log(dt)
+      return
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         method: "POST",
