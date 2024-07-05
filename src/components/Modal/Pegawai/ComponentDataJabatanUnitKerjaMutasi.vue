@@ -49,15 +49,43 @@
     <div class="col-6">
       <div class="form-group">
         <label :for="`fieldSpmtMutasiUnor-${dataMutasiUnor.id}`">SPMT</label>
-        <div v-if="isLocked" class="form-control text-primary locked-text">{{ dataMutasiUnor.tmt }}</div>
+        <div v-if="isLocked" class="form-control text-primary locked-text">{{ dataMutasiUnor.spmt }}</div>
         <input v-else
-          :class="dataMutasiUnor.tmt === '' && isUsulkan ? 'form-error' : ''"
+          :class="dataMutasiUnor.spmt === '' && isUsulkan ? 'form-error' : ''"
           type="date"
           v-model="dataMutasiUnorTemp.spmt"
           :id="`fieldSpmtMutasiUnor-${dataMutasiUnor.id}`"
           class="form-control"
         />
         <small class="text-red" v-if="dataMutasiUnor.spmt === '' && isUsulkan"><b>*SPMT harus diisi</b></small>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        <label :for="`fieldNomorDokMutasiUnor-${dataMutasiUnor.id}`">Nomor SK</label>
+        <input
+          :class="dataMutasiUnor.nomorDokumen === '' && isUsulkan ? 'form-error' : ''"
+          type="text"
+          placeholder="Nomor SK Mutasi Anda"
+          v-model="dataMutasiUnorTemp.nomorDokumen"
+          :id="`fieldNomorDokMutasiUnor-${dataMutasiUnor.id}`"
+          class="form-control"
+        />
+        <small class="text-red" v-if="dataMutasiUnor.nomorDokumen === '' && isUsulkan"><b>*Nomor SK harus diisi</b></small>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        <label :for="`fieldTglDokMutasiUnor-${dataMutasiUnor.id}`">Tanggal SK</label>
+        <div v-if="isLocked" class="form-control text-primary locked-text">{{ dataMutasiUnor.tanggalDokumen }}</div>
+        <input v-else
+          :class="dataMutasiUnor.tanggalDokumen === '' && isUsulkan ? 'form-error' : ''"
+          type="date"
+          v-model="dataMutasiUnorTemp.tanggalDokumen"
+          :id="`fieldTglDokMutasiUnor-${dataMutasiUnor.id}`"
+          class="form-control"
+        />
+        <small class="text-red" v-if="dataMutasiUnor.tanggalDokumen === '' && isUsulkan"><b>*Tanggal SK harus diisi</b></small>
       </div>
     </div>
     <div class="col-12">
