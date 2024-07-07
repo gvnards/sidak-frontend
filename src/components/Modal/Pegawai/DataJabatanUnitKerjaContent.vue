@@ -487,8 +487,6 @@ export default {
       let url = this.$store.getters.getModalMethod === "CREATE" ? "/data-jabatan" : `/data-jabatan/${this.dataJabatanUnitOrganisasi.id}`
       this.dataJabatanUnitOrganisasi.date = Date.now()
       let dt = {...this.dataJabatanUnitOrganisasi, mutasiUnor: mutasiUnorKirim}
-      console.log(dt)
-      return
       axios({
         url: `${env.VITE_BACKEND_URL}${url}`,
         method: "POST",
@@ -496,7 +494,7 @@ export default {
           "Authorization": localStorage.getItem("token")
         },
         data: {
-          message: this.$store.getters.getEncrypt(JSON.stringify(this.dataJabatanUnitOrganisasi), u)
+          message: this.$store.getters.getEncrypt(JSON.stringify(dt), u)
         }
       }).then(res => {
         let data = res.data
