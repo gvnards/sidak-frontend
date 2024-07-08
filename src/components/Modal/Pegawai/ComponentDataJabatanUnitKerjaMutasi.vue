@@ -29,7 +29,7 @@
             </div>
           </div>
         </div>
-        <small class="text-red" v-if="dataMutasiUnor.idUnor === null && isUsulkan"><b>*Unit organisasi harus diisi</b></small>
+        <small class="text-red" v-if="dataMutasiUnor.kodeKomponen === '' && isUsulkan"><b>*Unit organisasi harus diisi</b></small>
       </div>
     </div>
     <div class="col-6">
@@ -196,7 +196,7 @@ export default {
       return !(String(this.dataMutasiUnor.id).includes("new-"))
     },
     namaUnor() {
-      let unor = this.listAllUnor.filter(el => parseInt(el.id) === parseInt(this.dataMutasiUnor.idUnor))
+      let unor = this.listAllUnor.filter(el => el.kodeKomponen === this.dataMutasiUnor.kodeKomponen)
       return unor.length > 0 ? unor[0]["nama"] : "-- Unor Tidak Valid, Silahkan Hubungi BKPSDM --"
     }
   },
@@ -245,7 +245,7 @@ export default {
       })
     },
     unorSelected(item) {
-      this.emitValue("idUnor", parseInt(item.id))
+      this.emitValue("kodeKomponen", item.kodeKomponen)
       this.unor.show = false
       this.unor.text = item.nama
     },

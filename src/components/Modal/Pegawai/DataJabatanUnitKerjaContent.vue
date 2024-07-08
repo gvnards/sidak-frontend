@@ -352,7 +352,7 @@ export default {
       let newDate = (new Date()).getTime()
       let newData = {
         id: `new-${newDate}`,
-        idUnor: null,
+        kodeKomponen: "",
         tmt: "",
         spmt: "",
         nomorDokumen: "",
