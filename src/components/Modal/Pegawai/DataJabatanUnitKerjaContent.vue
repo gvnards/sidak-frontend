@@ -209,14 +209,16 @@
           ></iframe>
         </div>
       </div>
-      <div class="row row-form" style="border-top: 2px dashed #477b79; border-bottom: 2px dashed #477b79; padding-top: 8px; padding-bottom: 8px;" v-if="jenisJabatanText === 'Jabatan Fungsional Tertentu'">
-        <div class="col-12">
-          <div class="btn my-btn-outline-primary btn-block btn-sm" @click="addMutasiUnor">Tambah Mutasi Unor</div>
-        </div>
-        <div class="col-12" v-for="(item, idx) in listMutasiUnor.data" :key="item.id" style="margin-top: 16px; padding-top: 8px; border-top: 1px solid #acb7c2;">
-          <ComponentDataJabatanUnitKerjaMutasi :isUsulkan="listMutasiUnor.isUsulkan" @deleteMutasiUnor="deleteMutasiUnor($event)" :index="idx" :urutanArray="listMutasiUnor.data.length - idx" @valueChangeMutasiUnor="valueChangeMutasiUnor($event)" :dataMutasiUnor="item" :listAllUnor="daftarUnor.listAllUnor" />
-        </div>
-      </div>
+			<div v-if="false">
+				<div class="row row-form" style="border-top: 2px dashed #477b79; border-bottom: 2px dashed #477b79; padding-top: 8px; padding-bottom: 8px;" v-if="jenisJabatanText === 'Jabatan Fungsional Tertentu'">
+					<div class="col-12">
+						<div class="btn my-btn-outline-primary btn-block btn-sm" @click="addMutasiUnor">Tambah Mutasi Unor</div>
+					</div>
+					<div class="col-12" v-for="(item, idx) in listMutasiUnor.data" :key="item.id" style="margin-top: 16px; padding-top: 8px; border-top: 1px solid #acb7c2;">
+						<ComponentDataJabatanUnitKerjaMutasi :isUsulkan="listMutasiUnor.isUsulkan" @deleteMutasiUnor="deleteMutasiUnor($event)" :index="idx" :urutanArray="listMutasiUnor.data.length - idx" @valueChangeMutasiUnor="valueChangeMutasiUnor($event)" :dataMutasiUnor="item" :listAllUnor="daftarUnor.listAllUnor" />
+					</div>
+				</div>
+			</div>
     </div>
   </ModalHeaderFooter>
 </template>
