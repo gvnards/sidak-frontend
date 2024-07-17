@@ -393,7 +393,7 @@ export default {
         if (this.dataDiklatKursus.idDokumen === null && this.dataDiklatKursus.dokumen === "") dok = false
         else dok = !(this.dataDiklatKursus.dokumen !== "" ^ this.changeDokumen)
       }
-      let jenisAndDaftarIsCorect = this.daftarDiklatKursus.filter(el => { return parseInt(el.idJenisDiklat > 2) ? parseInt(el.idJenisDiklat > 2) : parseInt(el.idJenisDiklat) === parseInt(this.dataDiklatKursus.idJenisDiklat) && parseInt(el.id) === parseInt(this.dataDiklatKursus.idDaftarDiklat) })
+      let jenisAndDaftarIsCorect = this.daftarDiklatKursus.filter(el => { return parseInt(el.idJenisDiklat) > 2 ? parseInt(el.idJenisDiklat) > 2 : parseInt(el.idJenisDiklat) === parseInt(this.dataDiklatKursus.idJenisDiklat) && parseInt(el.id) === parseInt(this.dataDiklatKursus.idDaftarDiklat) })
       return this.dataDiklatKursus.idJenisDiklat !== 0 && this.dataDiklatKursus.idDaftarDiklat !== 0 && jenisAndDaftarIsCorect.length > 0 && this.dataDiklatKursus.namaDiklat !== "" && this.dataDiklatKursus.lamaDiklat !== 0 && this.dataDiklatKursus.tanggalDiklat !== 0 && this.dataDiklatKursus.idDaftarInstansiDiklat !== 0 && this.dataDiklatKursus.institusiPenyelenggara !== "" && dok
     }
   },
