@@ -16,6 +16,7 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.2",
     "jquery": "^3.6.0",
+    "jspdf": "^2.5.1",
     "path-browserify": "^1.0.1",
     "vue": "^2.7.7",
     "vue-router": "^3.5.4",
