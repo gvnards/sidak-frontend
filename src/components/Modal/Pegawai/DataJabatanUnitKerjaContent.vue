@@ -56,7 +56,7 @@
             <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ jenisJabatanText }}</div>
           </div>
         </div>
-        <div class="col-12">
+        <div class="col-12" v-if="jenisJabatanText === 'Jabatan Struktural'">
           <div class="form-group">
             <div class="custom-control custom-checkbox">
               <input
