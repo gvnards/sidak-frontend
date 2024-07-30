@@ -7,7 +7,7 @@
           <div class="form-group text-left">
             <label for="fieldJenisAngkaKredit">Jenis Angka Kredit</label>
             <select class="custom-select" id="fieldJenisAngkaKredit" :class="inputError.jenisAngkaKredit.status ? 'form-error' : ''" v-model="dataAngkaKredit.idDaftarJenisAngkaKredit">
-              <option value="0" selected disabled>{{ '-- Pilih Daftar Jenis Angka Kredit --' }}</option>
+              <option value="0" :selected="dataAngkaKredit.idDaftarJenisAngkaKredit === 0" disabled>{{ '-- Pilih Daftar Jenis Angka Kredit --' }}</option>
               <option :selected="item.id === dataAngkaKredit.idDaftarJenisAngkaKredit" v-for="item in jenisAngkaKredit" :key="item.id" :value="item.id">
                 {{ item.jenisAngkaKredit }}
               </option>
@@ -142,6 +142,31 @@ export default {
     ShimmeringItem
   },
   mixins: [mixins],
+  watch: {
+    "dataAngkaKredit.idDaftarJenisAngkaKredit"(val) {
+      if (this.getModalMethod === "Tambah") {
+        if (parseInt(val) === 2 && this.hasIntegrasi) {
+          this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: "Failed",
+            message: "Data Angka Kredit Integrasi sudah ada."
+          })
+          return
+        } else if (parseInt(val) === 3 && !this.hasIntegrasi) {
+          this.$store.commit("onModalMethod", this.$store.getters.getModalMethod)
+          this.$store.commit("onModalFolder", "StatusCallback")
+          this.$store.commit("onModalContent", "StatusCallback")
+          this.$store.commit("onModalStatusCallback", {
+            status: "Failed",
+            message: "Harus menambahkan Data Angka Kredit Integrasi terlebih dahulu."
+          })
+          return
+        }
+      }
+    }
+  },
   data() {
     return {
       oldData: {},
@@ -159,6 +184,7 @@ export default {
         angkaKreditTotal: 0.001,
         dokumen: ""
       },
+      hasIntegrasi: false,
       jenisAngkaKredit: [],
       jabatan: [],
       inputError: {
@@ -384,6 +410,7 @@ export default {
         this.jabatan = data.message.jabatan
         this.jenisAngkaKredit = data.message.jenisAngkaKredit
         this.fileCategory = data.message.dokumenKategori
+        this.hasIntegrasi = data.message.hasIntegrasi
       })
     }
   }
