@@ -432,21 +432,39 @@ export default {
       this.daftarJabatan.showJabatan = false
       this.jenisJabatanText = item.jenisJabatan
     },
-    listJabatanActive(kodeKomponen, isUpdated=false) {
+    async listJabatanActive(kodeKomponen, isUpdated=false) {
       this.daftarJabatan.showJabatan = false
       this.jabatanText = "-- Sedang Diproses --"
       this.daftarJabatan.listJabatanActive = []
-      let jabatanSesuaiKodeKomponen = this.daftarJabatan.listAllJabatan.filter(el => el.kodeKomponen === kodeKomponen)
-      if (jabatanSesuaiKodeKomponen.length > 0) {
-        let jabatanTidakSesuaiKodeKomponen = this.daftarJabatan.listGroupJabatan.filter(el => el.kodeKomponen !== kodeKomponen)
-        jabatanSesuaiKodeKomponen = jabatanSesuaiKodeKomponen.concat(jabatanTidakSesuaiKodeKomponen)
-        this.daftarJabatan.listJabatanActive = jabatanSesuaiKodeKomponen
-        this.jabatanText = "-- Pilih Jabatan --"
-        this.jenisJabatanText = "-"
-      } else {
-        this.jabatanText = "-- Pilih Unit Organisasi Dahulu --"
-        this.jenisJabatanText = "-"
-      }
+      await axios({
+        url: `${env.VITE_BACKEND_URL}/data-jabatan/jabatan/${kodeKomponen}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        }
+      }).then(res => {
+        let jabatanSesuaiKodeKomponen = res.data.message.jabatan
+        if (jabatanSesuaiKodeKomponen.length > 0) {
+          let jabatanTidakSesuaiIdBkn = []
+          // let jabatanTidakSesuaiKodeKomponen = this.daftarJabatan.listGroupJabatan.filter(el => el.kodeKomponen !== kodeKomponen)
+          this.daftarJabatan.listGroupJabatan.forEach(grp => {
+            let isAny = false
+            jabatanSesuaiKodeKomponen.forEach(jbt => {
+              if (jbt.idBkn == grp.idBkn) isAny = true
+            })
+            if (!isAny) {
+              jabatanTidakSesuaiIdBkn.push(grp)
+            }
+          })
+          jabatanSesuaiKodeKomponen = jabatanSesuaiKodeKomponen.concat(jabatanTidakSesuaiIdBkn)
+          this.daftarJabatan.listJabatanActive = jabatanSesuaiKodeKomponen
+          this.jabatanText = "-- Pilih Jabatan --"
+          this.jenisJabatanText = "-"
+        } else {
+          this.jabatanText = "-- Pilih Unit Organisasi Dahulu --"
+          this.jenisJabatanText = "-"
+        }
+      })
       if (!isUpdated) this.dataJabatanUnitOrganisasi.idJabatan = 0
     },
     unorSelected(item) {
@@ -531,19 +549,19 @@ export default {
         this.fileCategory = data.message.dokumenKategori
         this.daftarTugasTambahan = data.message.tugasTambahan
         this.daftarUnor.listAllUnor = data.message.unitOrganisasi
-        this.daftarJabatan.listAllJabatan = data.message.jabatan.jabatan
+        // this.daftarJabatan.listAllJabatan = data.message.jabatan.jabatan
         // this.daftarJabatan.listGroupJabatan = data.message.jabatan.jabatanGroup
-        let jbtnGrp = []
-        data.message.jabatan.jabatan.forEach(el => {
-          if (parseInt(el.terisi) > 0 || parseInt(el.kebutuhan) > -1) {
-            if (jbtnGrp.length === 0) {
-              jbtnGrp.push(el)
-            } else {
-              if (jbtnGrp[jbtnGrp.length - 1].nama !== el.nama) jbtnGrp.push(el)
-            }
-          }
-        })
-        this.daftarJabatan.listGroupJabatan = jbtnGrp
+        // let jbtnGrp = []
+        // data.message.jabatan.jabatan.forEach(el => {
+        //   if (parseInt(el.terisi) > 0 || parseInt(el.kebutuhan) > -1) {
+        //     if (jbtnGrp.length === 0) {
+        //       jbtnGrp.push(el)
+        //     } else {
+        //       if (jbtnGrp[jbtnGrp.length - 1].nama !== el.nama) jbtnGrp.push(el)
+        //     }
+        //   }
+        // })
+        this.daftarJabatan.listGroupJabatan = data.message.jabatan
       })
     },
     getDataJabatanDetail() {
@@ -554,25 +572,25 @@ export default {
         headers: {
           "Authorization": localStorage.getItem("token")
         }
-      }).then(res => {
+      }).then(async (res) => {
         this.loading = false
         let data = res.data
         this.fileCategory = data.message.dokumenKategori
         this.daftarTugasTambahan = data.message.tugasTambahan
         this.daftarUnor.listAllUnor = data.message.unitOrganisasi
-        this.daftarJabatan.listAllJabatan = data.message.jabatan.jabatan
-        // this.daftarJabatan.listGroupJabatan = data.message.jabatan.jabatanGroup
-        let jbtnGrp = []
-        data.message.jabatan.jabatan.forEach(el => {
-          if (parseInt(el.terisi) > 0 || parseInt(el.kebutuhan) > -1) {
-            if (jbtnGrp.length === 0) {
-              jbtnGrp.push(el)
-            } else {
-              if (jbtnGrp[jbtnGrp.length - 1].nama !== el.nama) jbtnGrp.push(el)
-            }
-          }
-        })
-        this.daftarJabatan.listGroupJabatan = jbtnGrp
+        // this.daftarJabatan.listAllJabatan = data.message.jabatan.jabatan
+        // // this.daftarJabatan.listGroupJabatan = data.message.jabatan.jabatanGroup
+        // let jbtnGrp = []
+        // data.message.jabatan.jabatan.forEach(el => {
+        //   if (parseInt(el.terisi) > 0 || parseInt(el.kebutuhan) > -1) {
+        //     if (jbtnGrp.length === 0) {
+        //       jbtnGrp.push(el)
+        //     } else {
+        //       if (jbtnGrp[jbtnGrp.length - 1].nama !== el.nama) jbtnGrp.push(el)
+        //     }
+        //   }
+        // })
+        this.daftarJabatan.listGroupJabatan = data.message.jabatan
         const { mutasiUnor, ...originalDataJabatan } = data.message.dataJabatanUnitOrganisasi[0]
         this.dataJabatanUnitOrganisasi = originalDataJabatan
         this.dataJabatanUnitOrganisasi.isPltPlh = parseInt(this.dataJabatanUnitOrganisasi.isPltPlh) === 1
@@ -584,9 +602,9 @@ export default {
         } else {
           let unor = this.daftarUnor.listAllUnor.filter(el => el.kodeKomponen === this.dataJabatanUnitOrganisasi.kodeKomponen)
           this.unorText = unor.length > 0 ? unor[0].nama : "-- Unit Organisasi Belum Dipilih --"
-          let jbtn = this.daftarJabatan.listAllJabatan.filter(el => parseInt(el.id) === parseInt(this.dataJabatanUnitOrganisasi.idJabatan))
+          await this.listJabatanActive(this.dataJabatanUnitOrganisasi.kodeKomponen, true)
+          let jbtn = this.daftarJabatan.listJabatanActive.filter(el => parseInt(el.id) === parseInt(this.dataJabatanUnitOrganisasi.idJabatan))
           this.dataJabatanUnitOrganisasi.kodeKomponenJabatan = jbtn.length > 0 ? jbtn[0].kodeKomponen : ""
-          this.listJabatanActive(this.dataJabatanUnitOrganisasi.kodeKomponen, true)
           this.jabatanText = jbtn.length > 0 ? jbtn[0].nama : "-- Unit Organisasi Belum Dipilih --"
           this.jenisJabatanText = jbtn.length > 0 ? jbtn[0].jenisJabatan : "-"
         }
