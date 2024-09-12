@@ -23,7 +23,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in pegawaiShow" :key="item.id" style="border: 2px solid rgb(239,245,245);">
+            <tr v-for="(item, idx) in pegawaiShow" :key="idx" style="border: 2px solid rgb(239,245,245);">
               <td style="width: 40px; border-right: 2px solid rgb(239,245,245);">
                 <input :disabled="!item.hasPhoto" type="checkbox" :checked="item.checked" class="form-control checked-box" @click="item.hasPhoto ? pegawaiChecked(item) : () => {}">
               </td>
@@ -75,8 +75,8 @@ export default {
       let pegawaiConcat = this.listPegawai.checked.concat(this.listPegawai.all)
       return this.searchValue === "" ? pegawaiConcat : pegawaiConcat.filter(el =>
         el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) ||
-        el.nama.toLowerCase().includes(this.searchValue.toLowerCase()) ||
-        el.unitOrganisasi.toLowerCase().includes(this.searchValue.toLowerCase())
+        el.nama.toLowerCase().includes(this.searchValue.toLowerCase())
+        // el.unitOrganisasi.toLowerCase().includes(this.searchValue.toLowerCase())
       )
     }
   },
@@ -94,7 +94,7 @@ export default {
         this.listPegawai.checked.push(pegawaiTemp)
       }
     },
-    templateIdCard(pdfCreate, templateGambar, foto, $ekstensiFoto, biodata, index) {
+    templateIdCard(pdfCreate, templateGambar, foto, ekstensiFoto, biodata, index) {
       // next nya, bg => y + 6
       let kurangiLebar = 0.5
       let bgDepan = pdfCreate.addImage(templateGambar.background.depan, "JPEG", (1 + (index * 5.5)), 1, (6 - kurangiLebar), 9, "bgDepan", "FAST", 0)
@@ -107,7 +107,7 @@ export default {
       }, 0)
 
       // FOTO DI SINI
-      let fotoDepan = pdfCreate.addImage(foto, $ekstensiFoto, (1.925 + (index * 5.5)), 4, 3.5, 4.5, "fotoDepan", "FAST", 0)
+      let fotoDepan = pdfCreate.addImage(foto, ekstensiFoto, (1.925 + (index * 5.5)), 4, 3.5, 4.5, `foto-${biodata.nip}`, "FAST", 0)
       // END FOTO
 
       let name = biodata.nama
@@ -239,7 +239,10 @@ export default {
           message: data
         }
       }).then(res => {
-        let listFotoJson = JSON.parse(res.data.message.foto)
+        let listFotoJson = res.data.message.foto.replace("[", "")
+        listFotoJson = listFotoJson.replace("]", "")
+        listFotoJson = listFotoJson.replace("}},{", "},")
+        listFotoJson = JSON.parse(listFotoJson)
         this.idCardData.template = res.data.message.template
         // this.idCardData.data = res.data.message.data
         let idCardPdf = new jsPDF({
@@ -261,20 +264,6 @@ export default {
         method: "GET",
       }).then(res => {
         this.listPegawai.all = res.data.message.pegawai
-        // this.listPegawai.all = [
-        //   {id:1,nama:"1",nip:"nip1",jabatan:"jabatan1",unitOrganisasi:"unor1"},
-        //   {id:2,nama:"2",nip:"nip2",jabatan:"jabatan2",unitOrganisasi:"unor2"},
-        //   {id:3,nama:"3",nip:"nip3",jabatan:"jabatan3",unitOrganisasi:"unor3"},
-        //   {id:4,nama:"4",nip:"nip4",jabatan:"jabatan4",unitOrganisasi:"unor4"},
-        //   {id:5,nama:"5",nip:"nip5",jabatan:"jabatan5",unitOrganisasi:"unor5"},
-        //   {id:6,nama:"6",nip:"nip6",jabatan:"jabatan6",unitOrganisasi:"unor6"},
-        //   {id:7,nama:"7",nip:"nip7",jabatan:"jabatan7",unitOrganisasi:"unor7"},
-        //   {id:8,nama:"8",nip:"nip8",jabatan:"jabatan8",unitOrganisasi:"unor8"},
-        //   {id:9,nama:"9",nip:"nip9",jabatan:"jabatan9",unitOrganisasi:"unor9"},
-        //   {id:10,nama:"10",nip:"nip10",jabatan:"jabatan10",unitOrganisasi:"unor10"},
-        //   {id:11,nama:"11",nip:"nip11",jabatan:"jabatan11",unitOrganisasi:"unor11"},
-        //   {id:12,nama:"12",nip:"nip12",jabatan:"jabatan12",unitOrganisasi:"unor12"},
-        // ]
       })
     }
   },
