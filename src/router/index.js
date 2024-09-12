@@ -11,6 +11,7 @@ import ViewUbahPassword from "../views/UbahPasswordView.vue"
 import ViewAkunPengguna from "../views/AkunPenggunaView.vue"
 import ViewRekapSinkron from "../views/RekapSinkronView.vue"
 import ViewExportData from "../views/ExportDataView.vue"
+import ViewIdCard from "../views/IdCardView.vue"
 import axios from "axios"
 import store from "./../store/index"
 const env = import.meta.env
@@ -112,6 +113,11 @@ const router = new VueRouter({
           path: "exportdata",
           name: "export data",
           component: ViewExportData
+        },
+        {
+          path: "idcard",
+          name: "id card",
+          component: ViewIdCard
         },
       ],
     },
