@@ -11,10 +11,10 @@
           type="text"
           v-model="searchValue"
           class="form-control search"
-          placeholder="Cari NIP/Nama/Unit Kerja"
+          placeholder="Cari NIP/Nama"
         />
       </div>
-      <div class="btn btn-sm my-btn-primary" v-if="listPegawai.checked.length > 0" @click="idCard()">Cetak ID Card</div>
+      <div class="btn btn-sm my-btn-primary" v-if="listPegawai.checkedCount > 0" @click="idCard()">Cetak ID Card</div>
       <div id="list-pegawai-wrapper">
         <table class="table">
           <thead class="thead-dark">
@@ -23,9 +23,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, idx) in pegawaiShow" :key="idx" style="border: 2px solid rgb(239,245,245);">
+            <tr v-for="(item, idx) in listPegawai.all" v-show="pegawaiShow(item)" :key="idx" style="border: 2px solid rgb(239,245,245);">
               <td style="width: 40px; border-right: 2px solid rgb(239,245,245);">
-                <input :disabled="!item.hasPhoto" type="checkbox" :checked="item.checked" class="form-control checked-box" @click="item.hasPhoto ? pegawaiChecked(item) : () => {}">
+                <input :disabled="!item.hasPhoto" type="checkbox" :checked="item.checked" class="form-control checked-box" @click="item.hasPhoto ? pegawaiChecked(idx) : () => {}">
               </td>
               <td>
                 <p style="padding: 0px; margin: 0px; font-size: 14px; font-weight: 500;">
@@ -52,7 +52,7 @@ export default {
       searchValue: "",
       listPegawai: {
         all: [],
-        checked: [],
+        checkedCount: 0
       },
       idCardData: {
         template: {
@@ -70,31 +70,18 @@ export default {
       }
     }
   },
-  computed: {
-    pegawaiShow() {
-      let pegawaiConcat = this.listPegawai.checked.concat(this.listPegawai.all)
-      return this.searchValue === "" ? pegawaiConcat : pegawaiConcat.filter(el =>
-        el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) ||
-        el.nama.toLowerCase().includes(this.searchValue.toLowerCase())
-        // el.unitOrganisasi.toLowerCase().includes(this.searchValue.toLowerCase())
-      )
-    }
-  },
   methods: {
-    pegawaiChecked(item) {
-      if (item.checked) {
-        let pegawaiTemp = {...item}
-        pegawaiTemp.checked = false
-        this.listPegawai.all.push(pegawaiTemp)
-        this.listPegawai.checked = this.listPegawai.checked.filter(el => parseInt(el.id) !== parseInt(pegawaiTemp.id))
-      } else {
-        let pegawaiTemp = {...item}
-        this.listPegawai.all = this.listPegawai.all.filter(el => parseInt(el.id) !== parseInt(pegawaiTemp.id))
-        pegawaiTemp.checked = true
-        this.listPegawai.checked.push(pegawaiTemp)
-      }
+    pegawaiShow(item) {
+      return this.searchValue === "" ? true :
+        (item.nip.toLowerCase()).includes(this.searchValue.toLowerCase()) ||
+        (item.nama.toLowerCase()).includes(this.searchValue.toLowerCase())
+        // || (item.unitOrganisasi.toLowerCase()).includes(this.searchValue.toLowerCase())
     },
-    templateIdCard(pdfCreate, templateGambar, foto, ekstensiFoto, biodata, index) {
+    pegawaiChecked(idx) {
+      this.listPegawai.all[idx].checked = !this.listPegawai.all[idx].checked
+      this.listPegawai.checkedCount = this.listPegawai.all[idx].checked ? this.listPegawai.checkedCount + 1 : this.listPegawai.checkedCount - 1
+    },
+    templateIdCard(pdfCreate, templateGambar, foto, ekstensiFoto, biodata, profilSekda, index) {
       // next nya, bg => y + 6
       let kurangiLebar = 0.5
       let bgDepan = pdfCreate.addImage(templateGambar.background.depan, "JPEG", (1 + (index * 5.5)), 1, (6 - kurangiLebar), 9, "bgDepan", "FAST", 0)
@@ -221,12 +208,37 @@ export default {
         initialLocationDecreaseForLabel = (initialLocation - (initialLocation-((1*(idx+1))+0.3)))/1.9
         initialLocationDecreaseForText = (initialLocation - (initialLocation-((1*(idx+1))+0.3)))/4.5
       })
+      ////// TTD
+      let arrayTtd = [
+        "an. BUPATI SITUBONDO",
+        profilSekda.jabatan.toUpperCase(),
+        profilSekda.nama.toUpperCase(),
+        "NIP. "+profilSekda.nip.toUpperCase()
+      ]
+      arrayTtd.forEach((el, idx) => {
+        let fontTtd = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(0,0,0).setFontSize(7)
+        let txtTtd = el
+        let widthTxtTtd = fontTtd.getTextWidth(txtTtd)
+        if (widthTxtTtd > 5.5) {
+          fontTtd.setFontSize(5)
+          widthTxtTtd = fontTtd.getTextWidth(txtTtd)
+        }
+        fontTtd.text(txtTtd, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthTxtTtd/2), idx <= 1 ? 11.95-(idx*0.25) : 11.95-(0.6+(idx*0.25)), {
+          align: "left",
+          angle: 180,
+        }, 0)
+      })
     },
     idCard() {
       let listNip = []
-      this.listPegawai.checked.forEach(function (el) {
-        listNip.push(el.nip)
+      let listCheckedPegawai = this.listPegawai.all.filter(function (el) {
+        if (el.checked) {
+          listNip.push(el.nip)
+          return el
+        }
       })
+      let profilSekdaTemp = this.listPegawai.all.find(el => (el.jabatan.toLowerCase()).includes("sekretaris daerah"))
+      let profilSekda = profilSekdaTemp === undefined ? {id:0,nama:"{ Data tidak ada }",nip:"{ Data tidak ada }",jabatan:"{ Data tidak ada }",unitOrganisasi:"{ Data tidak ada }"} : profilSekdaTemp
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       let data = this.$store.getters.getEncrypt(JSON.stringify({listNip}), u)
       axios({
@@ -251,8 +263,8 @@ export default {
           unit: "cm",
           format: "a4"
         })
-        this.listPegawai.checked.forEach((dt, idx) => {
-          this.templateIdCard(idCardPdf, this.idCardData.template, listFotoJson[dt.nip]["foto"], listFotoJson[dt.nip]["ekstensi"], dt, (idx%5))
+        listCheckedPegawai.forEach((dt, idx) => {
+          this.templateIdCard(idCardPdf, this.idCardData.template, listFotoJson[dt.nip]["foto"], listFotoJson[dt.nip]["ekstensi"], dt, profilSekda, (idx%5))
           if ((idx+1)%5===0) idCardPdf.addPage("a4", "landscape")
         })
         idCardPdf.save("idCard.pdf")
