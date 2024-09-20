@@ -11,7 +11,7 @@
           type="text"
           v-model="searchValue"
           class="form-control search"
-          placeholder="Cari NIP/Nama"
+          placeholder="Cari NIP/Nama/Unit Organisasi"
         />
       </div>
       <div class="btn btn-sm my-btn-primary" v-if="listPegawai.checkedCount > 0" @click="idCard()">Cetak ID Card</div>
@@ -23,9 +23,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, idx) in listPegawai.all" v-show="pegawaiShow(item)" :key="idx" style="border: 2px solid rgb(239,245,245);">
+            <tr v-for="(item, idx) in pegawaiShow" :key="idx" style="border: 2px solid rgb(239,245,245);">
               <td style="width: 40px; border-right: 2px solid rgb(239,245,245);">
-                <input :disabled="!item.hasPhoto" type="checkbox" :checked="item.checked" class="form-control checked-box" @click="item.hasPhoto ? pegawaiChecked(idx) : () => {}">
+                <input :disabled="!item.hasPhoto" type="checkbox" :checked="item.checked" class="form-control checked-box" @click="item.hasPhoto ? pegawaiChecked(item) : () => {}">
               </td>
               <td>
                 <p style="padding: 0px; margin: 0px; font-size: 14px; font-weight: 500;">
@@ -34,6 +34,15 @@
                   {{ item.jabatan }} pada {{ item.unitOrganisasi }}
                 </p>
                 <small :class="item.hasPhoto ? 'text-primary' : 'text-danger'" style="font-weight: 600;">{{ item.hasPhoto ? "(Foto tersedia)" : "(Foto tidak ada)" }}</small>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" class="text-center">
+                <ul class="pagination-wrapper" style="margin-top: 24px;">
+                  <li class="pagination-item" :class="page.active === 1 ? 'disabled' : ''" @click="updateActivePage('prev')">Sebelumnya</li>
+                  <div style="width: 12px;"></div>
+                  <li class="pagination-item" :class="page.active === page.total ? 'disabled' : ''" @click="updateActivePage('next')">Selanjutnya</li>
+                </ul>
               </td>
             </tr>
           </tbody>
@@ -47,6 +56,11 @@ import { jsPDF } from "jspdf"
 import axios from "axios"
 const env = import.meta.env
 export default {
+  watch: {
+    searchValue () {
+      this.resetPage()
+    }
+  },
   data() {
     return {
       searchValue: "",
@@ -56,28 +70,58 @@ export default {
       },
       idCardData: {
         template: {
-          background: {
-            depan: "",
-            belakang: ""
-          },
-          components: {
-            logo: "",
-            ttd: "",
-            stempel: ""
-          }
+          background: {},
+          components: {}
         },
-        data: []
+      },
+      page: {
+        perPage: 20,
+        active: 1,
+        total: 1
       }
     }
   },
-  methods: {
-    pegawaiShow(item) {
-      return this.searchValue === "" ? true :
-        (item.nip.toLowerCase()).includes(this.searchValue.toLowerCase()) ||
-        (item.nama.toLowerCase()).includes(this.searchValue.toLowerCase())
-        // || (item.unitOrganisasi.toLowerCase()).includes(this.searchValue.toLowerCase())
+  computed: {
+    pegawaiShow() {
+      let idxMin = (this.page.active - 1) * this.page.perPage
+      let idxMax = (this.page.active * this.page.perPage) - 1
+      if (this.searchValue === "") {
+        this.updateTotalPage(this.listPegawai.all.length)
+        return this.listPegawai.all.slice(idxMin, idxMax+1)
+      }
+      let tempPegawaiSearch = this.listPegawai.all.filter(el =>
+        (el.nip.toLowerCase()).includes(this.searchValue.toLowerCase()) ||
+        (el.nama.toLowerCase()).includes(this.searchValue.toLowerCase())
+      || (el.unitOrganisasi.toLowerCase()).includes(this.searchValue.toLowerCase())
+      )
+      this.updateTotalPage(tempPegawaiSearch.length)
+      return tempPegawaiSearch.slice(idxMin, idxMax+1)
     },
-    pegawaiChecked(idx) {
+  },
+  methods: {
+    updateTotalPage(lengthData) {
+      this.page.total = Math.ceil(lengthData / this.page.perPage)
+    },
+    updateActivePage(mode) {
+      // <li class="pagination-item" :class="page.active === 1 ? 'disabled' : ''" @click="page.active=page.active===1?page.active:page.active-1">Sebelumnya</li>
+      // <div style="width: 12px;"></div>
+      // <li class="pagination-item" :class="page.active === page.total ? 'disabled' : ''" @click="page.active===page.total?page.active=page.active:page.active+1">Selanjutnya</li>
+      if (mode === "prev") {
+        if (this.page.active !== 1) this.page.active--
+      }
+      else if (mode === "next") {
+        if (this.page.active !== this.page.total) this.page.active++
+      }
+    },
+    resetPage() {
+      this.page = {
+        perPage: 20,
+        active: 1,
+        total: 1
+      }
+    },
+    pegawaiChecked(item) {
+      let idx = this.listPegawai.all.findIndex(el => el.nip === item.nip)
       this.listPegawai.all[idx].checked = !this.listPegawai.all[idx].checked
       this.listPegawai.checkedCount = this.listPegawai.all[idx].checked ? this.listPegawai.checkedCount + 1 : this.listPegawai.checkedCount - 1
     },
@@ -228,35 +272,46 @@ export default {
           angle: 180,
         }, 0)
       })
+      pdfCreate.addImage(templateGambar.components.ttd, "JPEG", (2.75 + (index * 5.5)), 10.7, 1.3, 0, "ttd", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.stempel, "JPEG", (3.8 + (index * 5.5)), 10.7, 1.3, 1.3, "stempel", "FAST", 0)
     },
-    idCard() {
-      let listNip = []
-      let listCheckedPegawai = this.listPegawai.all.filter(function (el) {
-        if (el.checked) {
-          listNip.push(el.nip)
-          return el
+    getFoto(nip) {
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/idcard/photo/${nip}`,
+        method: "GET",
+        headers: {
+          "Authorization": localStorage.getItem("token")
         }
       })
+    },
+    async idCard() {
+      let listCheckedPegawai = this.listPegawai.all.filter(el => el.checked === true)
+      let listFoto = []
+      for (let i = 0; i < listCheckedPegawai.length; i++) {
+        await this.getFoto(listCheckedPegawai[i]["nip"]).then(res => {
+          listFoto.push({
+            nip: listCheckedPegawai[i]["nip"],
+            blob: res.data.blob,
+            ekstensi: res.data.ekstensi
+          })
+        }).catch(() => {
+          listFoto.push({
+            nip: listCheckedPegawai[i]["nip"],
+            blob: "",
+            ekstensi: "jpeg"
+          })
+        })
+      }
       let profilSekdaTemp = this.listPegawai.all.find(el => (el.jabatan.toLowerCase()).includes("sekretaris daerah"))
       let profilSekda = profilSekdaTemp === undefined ? {id:0,nama:"{ Data tidak ada }",nip:"{ Data tidak ada }",jabatan:"{ Data tidak ada }",unitOrganisasi:"{ Data tidak ada }"} : profilSekdaTemp
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      let data = this.$store.getters.getEncrypt(JSON.stringify({listNip}), u)
       axios({
-        url: `${env.VITE_BACKEND_URL}/idcard/make-pdf`,
+        url: `${env.VITE_BACKEND_URL}/idcard/pdf`,
         method: "POST",
         headers: {
           "Authorization": localStorage.getItem("token")
-        },
-        data: {
-          message: data
         }
       }).then(res => {
-        let listFotoJson = res.data.message.foto.replace("[", "")
-        listFotoJson = listFotoJson.replace("]", "")
-        listFotoJson = listFotoJson.replace("}},{", "},")
-        listFotoJson = JSON.parse(listFotoJson)
         this.idCardData.template = res.data.message.template
-        // this.idCardData.data = res.data.message.data
         let idCardPdf = new jsPDF({
           compress: true,
           orientation: "l",
@@ -264,7 +319,8 @@ export default {
           format: "a4"
         })
         listCheckedPegawai.forEach((dt, idx) => {
-          this.templateIdCard(idCardPdf, this.idCardData.template, listFotoJson[dt.nip]["foto"], listFotoJson[dt.nip]["ekstensi"], dt, profilSekda, (idx%5))
+          let dtFoto = listFoto.find(el => el.nip === dt.nip)
+          this.templateIdCard(idCardPdf, this.idCardData.template, dtFoto["blob"], dtFoto["ekstensi"], dt, profilSekda, (idx%5))
           if ((idx+1)%5===0) idCardPdf.addPage("a4", "landscape")
         })
         idCardPdf.save("idCard.pdf")
@@ -275,7 +331,7 @@ export default {
         url: `${env.VITE_BACKEND_URL}/idcard/created`,
         method: "GET",
       }).then(res => {
-        this.listPegawai.all = res.data.message.pegawai
+        this.listPegawai.all = res.data.message.pegawai.filter(el => el.hasOwnProperty("unitOrganisasi"))
       })
     }
   },
