@@ -72,7 +72,7 @@
             </tr>
           </thead>
           <tbody>
-            <ListPegawaiItem class="item-pegawai" @showPegawai="showPegawai(item)" v-for="item in (filterPegawai.slice(100*(pageActive-1),pageActive*100))" :key="item.id" :dataPegawai="item" />
+            <ListPegawaiItem class="item-pegawai" @showPegawai="showPegawai(item)" v-for="item in (filterPegawai.slice(dataPerPage*(pageActive-1),pageActive*dataPerPage))" :key="item.id" :dataPegawai="item" />
           </tbody>
         </table>
         <ul class="pagination-wrapper" style="margin-top: 24px;">
@@ -105,7 +105,7 @@ export default {
       namaUnitOrganisasi: "",
       searchValue: "",
       totalPegawaiLoaded: 0,
-      dataPerPage: 100,
+      dataPerPage: 20,
       pageActive: 1,
       accordionSync: {
         visibility: false,
