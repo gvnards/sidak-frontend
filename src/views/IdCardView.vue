@@ -130,7 +130,7 @@ export default {
       let kurangiLebar = 0.5
       let tambahJarakDepan = 0.15
       let bgDepan = pdfCreate.addImage(templateGambar.background.depan, "JPEG", (1 + (index * 5.5)), 1, (6 - kurangiLebar), 9, "bgDepan", "FAST", 0)
-      let logoDepan = pdfCreate.addImage(templateGambar.components.logo, "PNG", ((3.45 - (kurangiLebar/2)) + (index * 5.5)), (1.4+tambahJarakDepan), 1.1, 0, "logoDepan", "FAST", 0)
+      let logoDepan = pdfCreate.addImage(templateGambar.components.logo, "PNG", (3.3 + (index * 5.5)), (1.4+tambahJarakDepan), 1.1, 0, "logoDepan", "FAST", 0)
       let headerDepan1 = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(39, 69, 123).setFontSize(9).text("PEMERINTAH KABUPATEN", ((4 - (kurangiLebar/2)) + (index * 5.5)), (3.35+tambahJarakDepan), {
         align: "center"
       }, 0)
@@ -139,7 +139,7 @@ export default {
       }, 0)
 
       // FOTO DI SINI
-      let fotoDepan = pdfCreate.addImage(foto, ekstensiFoto, (1.925 + (index * 5.5)), (4+tambahJarakDepan), 3.5, 4.5, `foto-${biodata.nip}`, "FAST", 0)
+      let fotoDepan = pdfCreate.addImage(foto, ekstensiFoto, (2 + (index * 5.5)), (4+tambahJarakDepan), 3.5, 4.5, `foto-${biodata.nip}`, "FAST", 0)
       // END FOTO
 
       let name = biodata.nama
@@ -275,7 +275,7 @@ export default {
         }, 0)
       })
       pdfCreate.addImage(templateGambar.components.ttd, "JPEG", (2.75 + (index * 5.5)), (10.7+tambahJarakBelakang+0.05), 1.3, 0, "ttd", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.stempel, "JPEG", (3.8 + (index * 5.5)), (10.7+tambahJarakBelakang+0.05), 1.3, 1.3, "stempel", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.stempel, "JPEG", (3.8 + (index * 5.5)), (10.7+tambahJarakBelakang-0.15), 1.75, 1.75, "stempel", "FAST", 0)
     },
     getFoto(nip) {
       return axios({
