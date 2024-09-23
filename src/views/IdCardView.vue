@@ -128,25 +128,26 @@ export default {
     templateIdCard(pdfCreate, templateGambar, foto, ekstensiFoto, biodata, profilSekda, index) {
       // next nya, bg => y + 6
       let kurangiLebar = 0.5
+      let tambahJarakDepan = 0.15
       let bgDepan = pdfCreate.addImage(templateGambar.background.depan, "JPEG", (1 + (index * 5.5)), 1, (6 - kurangiLebar), 9, "bgDepan", "FAST", 0)
-      let logoDepan = pdfCreate.addImage(templateGambar.components.logo, "PNG", ((3.45 - (kurangiLebar/2)) + (index * 5.5)), 1.4, 1.1, 0, "logoDepan", "FAST", 0)
-      let headerDepan1 = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(39, 69, 123).setFontSize(9).text("PEMERINTAH KABUPATEN", ((4 - (kurangiLebar/2)) + (index * 5.5)), 3.35, {
+      let logoDepan = pdfCreate.addImage(templateGambar.components.logo, "PNG", ((3.45 - (kurangiLebar/2)) + (index * 5.5)), (1.4+tambahJarakDepan), 1.1, 0, "logoDepan", "FAST", 0)
+      let headerDepan1 = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(39, 69, 123).setFontSize(9).text("PEMERINTAH KABUPATEN", ((4 - (kurangiLebar/2)) + (index * 5.5)), (3.35+tambahJarakDepan), {
         align: "center"
       }, 0)
-      let headerDepan2 = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(39, 69, 123).setFontSize(9).text("SITUBONDO", ((4 - (kurangiLebar/2)) + (index * 5.5)), 3.7, {
+      let headerDepan2 = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(39, 69, 123).setFontSize(9).text("SITUBONDO", ((4 - (kurangiLebar/2)) + (index * 5.5)), (3.7+tambahJarakDepan), {
         align: "center"
       }, 0)
 
       // FOTO DI SINI
-      let fotoDepan = pdfCreate.addImage(foto, ekstensiFoto, (1.925 + (index * 5.5)), 4, 3.5, 4.5, `foto-${biodata.nip}`, "FAST", 0)
+      let fotoDepan = pdfCreate.addImage(foto, ekstensiFoto, (1.925 + (index * 5.5)), (4+tambahJarakDepan), 3.5, 4.5, `foto-${biodata.nip}`, "FAST", 0)
       // END FOTO
 
       let name = biodata.nama
-      let initialFontSize = 10
+      let initialFontSize = 9.5
       /// 4.75
       let footerDepan = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(39, 69, 123).setFontSize(initialFontSize)
       let widthName = footerDepan.getTextWidth(name)
-      let maxWidthName = 5
+      let maxWidthName = 4.8
       if (widthName > maxWidthName) {
         let nameSplit = name.split(" ")
         let nameSplitLength = nameSplit.length
@@ -180,11 +181,11 @@ export default {
       //// BELAKANG
       let tambahJarakBelakang = 0.5
       let bgBelakang = pdfCreate.addImage(templateGambar.background.belakang, "JPEG", (1 + (index * 5.5)), (10+tambahJarakBelakang), (6+ - kurangiLebar), 9, "bgBelakang", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), (16.35+tambahJarakBelakang), 5.1, 0.7, "line", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), (15.05+tambahJarakBelakang), 5.1, 0.7, "line", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), (13.8+tambahJarakBelakang), 5.1, 0.7, "line", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), (12.6+tambahJarakBelakang), 5.1, 0.7, "line", "FAST", 0)
-      let fontBiodata = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(202, 34, 38).setFontSize(initialFontSize)
+      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.325 + (index * 5.5)), (16.35+tambahJarakBelakang), 4.85, 0.7, "line", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.325 + (index * 5.5)), (15.05+tambahJarakBelakang), 4.85, 0.7, "line", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.325 + (index * 5.5)), (13.8+tambahJarakBelakang), 4.85, 0.7, "line", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.325 + (index * 5.5)), (12.6+tambahJarakBelakang), 4.85, 0.7, "line", "FAST", 0)
+      let fontBiodata = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(202, 34, 38).setFontSize(10)
       let txtBiodata = "BIODATA"
       let widthTextBiodata = fontBiodata.getTextWidth(txtBiodata)
       fontBiodata.text(txtBiodata, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthTextBiodata/2), (18+tambahJarakBelakang), {
@@ -201,13 +202,13 @@ export default {
       let initialLocation = (17.75+tambahJarakBelakang)
       let initialLocationDecreaseForLabel = 0
       let initialLocationDecreaseForText = 0
-      let initialFontSizeBelakang = 9
+      let initialFontSizeBelakang = 8
       contentBelakang.forEach((el,idx) => {
         pdfCreate.setTextColor(0,0,0)
         pdfCreate.setFontSize(initialFontSizeBelakang)
         let labelBelakang = el.label
         let widthlabelBelakang = fontBiodata.getTextWidth(labelBelakang)
-        fontBiodata.text(labelBelakang, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthlabelBelakang/2), (initialLocation-(0.65*(idx+1)))-initialLocationDecreaseForLabel, {
+        fontBiodata.text(labelBelakang, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthlabelBelakang/2), (initialLocation-(0.65*(idx+0.95)))-initialLocationDecreaseForLabel, {
           align: "left",
           angle: 180,
         }, 0)
@@ -215,7 +216,7 @@ export default {
         /// 4.75
         let fontSetting = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(0,0,0).setFontSize(initialFontSizeBelakang)
         let widthTxtBlkg = fontSetting.getTextWidth(txtBlkg)
-        let maxWidthTxtBlkg = 5
+        let maxWidthTxtBlkg = 4.75
         if (widthTxtBlkg > maxWidthTxtBlkg) {
           let txtBlkgSplit = txtBlkg.split(" ")
           let txtBlkgSplitLength = txtBlkgSplit.length
@@ -268,13 +269,13 @@ export default {
           fontTtd.setFontSize(5)
           widthTxtTtd = fontTtd.getTextWidth(txtTtd)
         }
-        fontTtd.text(txtTtd, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthTxtTtd/2), idx <= 1 ? (11.95+tambahJarakBelakang)-(idx*0.25) : (11.95+tambahJarakBelakang)-(0.6+(idx*0.25)), {
+        fontTtd.text(txtTtd, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthTxtTtd/2), idx <= 1 ? (11.95+tambahJarakBelakang+0.05)-(idx*0.25) : (11.95+tambahJarakBelakang+0.05)-(0.6+(idx*0.25)), {
           align: "left",
           angle: 180,
         }, 0)
       })
-      pdfCreate.addImage(templateGambar.components.ttd, "JPEG", (2.75 + (index * 5.5)), 10.7, 1.3, 0, "ttd", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.stempel, "JPEG", (3.8 + (index * 5.5)), 10.7, 1.3, 1.3, "stempel", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.ttd, "JPEG", (2.75 + (index * 5.5)), (10.7+tambahJarakBelakang+0.05), 1.3, 0, "ttd", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.stempel, "JPEG", (3.8 + (index * 5.5)), (10.7+tambahJarakBelakang+0.05), 1.3, 1.3, "stempel", "FAST", 0)
     },
     getFoto(nip) {
       return axios({
