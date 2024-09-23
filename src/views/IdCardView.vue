@@ -178,15 +178,16 @@ export default {
       }
 
       //// BELAKANG
-      let bgBelakang = pdfCreate.addImage(templateGambar.background.belakang, "JPEG", (1 + (index * 5.5)), 10, (6 - kurangiLebar), 9, "bgBelakang", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), 16.35, 5.1, 0.7, "line", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), 15.05, 5.1, 0.7, "line", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), 13.8, 5.1, 0.7, "line", "FAST", 0)
-      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), 12.6, 5.1, 0.7, "line", "FAST", 0)
+      let tambahJarakBelakang = 0.5
+      let bgBelakang = pdfCreate.addImage(templateGambar.background.belakang, "JPEG", (1 + (index * 5.5)), (10+tambahJarakBelakang), (6+ - kurangiLebar), 9, "bgBelakang", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), (16.35+tambahJarakBelakang), 5.1, 0.7, "line", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), (15.05+tambahJarakBelakang), 5.1, 0.7, "line", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), (13.8+tambahJarakBelakang), 5.1, 0.7, "line", "FAST", 0)
+      pdfCreate.addImage(templateGambar.components.line, "JPEG", (1.2 + (index * 5.5)), (12.6+tambahJarakBelakang), 5.1, 0.7, "line", "FAST", 0)
       let fontBiodata = pdfCreate.setFont("helvetica", "normal", "bold").setTextColor(202, 34, 38).setFontSize(initialFontSize)
       let txtBiodata = "BIODATA"
       let widthTextBiodata = fontBiodata.getTextWidth(txtBiodata)
-      fontBiodata.text(txtBiodata, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthTextBiodata/2), 18, {
+      fontBiodata.text(txtBiodata, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthTextBiodata/2), (18+tambahJarakBelakang), {
         align: "left",
         angle: 180,
       }, 0)
@@ -197,7 +198,7 @@ export default {
         {label: "JABATAN", value: biodata.jabatan},
         {label: "INSTANSI", value: biodata.unitOrganisasi}
       ]
-      let initialLocation = 17.75
+      let initialLocation = (17.75+tambahJarakBelakang)
       let initialLocationDecreaseForLabel = 0
       let initialLocationDecreaseForText = 0
       let initialFontSizeBelakang = 9
@@ -267,7 +268,7 @@ export default {
           fontTtd.setFontSize(5)
           widthTxtTtd = fontTtd.getTextWidth(txtTtd)
         }
-        fontTtd.text(txtTtd, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthTxtTtd/2), idx <= 1 ? 11.95-(idx*0.25) : 11.95-(0.6+(idx*0.25)), {
+        fontTtd.text(txtTtd, (((0.25 - (kurangiLebar/2)) + (index * 5.5))) + (7.5/2)+(widthTxtTtd/2), idx <= 1 ? (11.95+tambahJarakBelakang)-(idx*0.25) : (11.95+tambahJarakBelakang)-(0.6+(idx*0.25)), {
           align: "left",
           angle: 180,
         }, 0)
