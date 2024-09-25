@@ -28,6 +28,7 @@ import AkunPenggunaContent from "@/components/Modal/AkunPengguna/AkunPenggunaCon
 import BeforeAddDataContent from "@/components/Modal/Pegawai/BeforeAddDataContent.vue"
 import ProfilePictureContent from "@/components/Modal/Pegawai/ProfilePictureContent.vue"
 import DeleteDataContent from "@/components/Modal/Pegawai/DeleteDataContent.vue"
+import ListPegawaiSiapCetakContent from "@/components/Modal/IdCard/ListPegawaiSiapCetakContent.vue"
 
 Vue.component("ModalWrapper", ModalWrapper)
 Vue.component("ModalHeaderFooter", ModalHeaderFooter)
@@ -57,3 +58,4 @@ Vue.component("DataEDocumentContent", DataEDocumentContent)
 Vue.component("BeforeAddDataContent", BeforeAddDataContent)
 Vue.component("ProfilePictureContent", ProfilePictureContent)
 Vue.component("DeleteDataContent", DeleteDataContent)
+Vue.component("ListPegawaiSiapCetakContent", ListPegawaiSiapCetakContent)

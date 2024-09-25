@@ -14,7 +14,20 @@
           placeholder="Cari NIP/Nama/Unit Organisasi"
         />
       </div>
-      <div class="btn btn-sm my-btn-primary" v-if="listPegawai.checkedCount > 0" @click="idCard()">Cetak ID Card</div>
+      <div v-if="listPegawai.checkedCount > 0">
+        <div class="btn btn-sm my-btn-primary" @click="idCard()">Cetak ID Card</div>
+        <div style="width: 10px; display: inline-block;"></div>
+        <div
+          class="btn btn-sm my-btn-outline-secondary"
+          data-toggle="modal"
+          data-target="#modal"
+          data-backdrop="static"
+          data-keyboard="false"
+          @click="showListPegawaiSiapCetak()"
+        >
+          Lihat {{ listPegawai.checkedCount }} Pegawai Siap Cetak
+        </div>
+      </div>
       <div id="list-pegawai-wrapper">
         <table class="table">
           <thead class="thead-dark">
@@ -99,6 +112,12 @@ export default {
     },
   },
   methods: {
+    showListPegawaiSiapCetak() {
+      this.$store.commit("onModalFolder", "IdCard")
+      this.$store.commit("onModalContent", "ListPegawaiSiapCetak")
+      let checkedPegawai = this.listPegawai.all.filter(el => el.checked === true)
+      this.$store.commit("onModalData", checkedPegawai)
+    },
     updateTotalPage(lengthData) {
       this.page.total = Math.ceil(lengthData / this.page.perPage)
     },
