@@ -54,7 +54,7 @@
           type="text"
           v-model="searchValue"
           class="form-control search"
-          placeholder="Cari NIP/Nama/Jabatan"
+          placeholder="Cari NIP/Nama/Jabatan/Unit Organisasi"
         />
       </div>
     </div>
@@ -101,7 +101,6 @@ export default {
       pegawai: [],
       tempPegawai: [],
       fullPegawai: [],
-      totalPegawai: 0,
       namaUnitOrganisasi: "",
       searchValue: "",
       totalPegawaiLoaded: 0,
@@ -125,7 +124,7 @@ export default {
       return this.accordionSync.max - this.accordionSync.min + 1
     },
     filterPegawai () {
-      return this.searchValue === "" ? this.pegawai : this.pegawai.filter(el => (el.nama === null || el.nip === null || el.jabatan === null) ? false : (el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) || el.nama.toLowerCase().includes(this.searchValue.toLowerCase()) || el.jabatan.toLowerCase().includes(this.searchValue.toLowerCase()))
+      return this.searchValue === "" ? this.pegawai : this.pegawai.filter(el => (el.nama === null || el.nip === null || el.jabatan === null) ? false : (el.nip.toLowerCase().includes(this.searchValue.toLowerCase()) || el.nama.toLowerCase().includes(this.searchValue.toLowerCase()) || el.jabatan.toLowerCase().includes(this.searchValue.toLowerCase()) || el.unitOrganisasi.toLowerCase().includes(this.searchValue.toLowerCase()))
       )
     },
     totalPage() {
@@ -133,6 +132,9 @@ export default {
     },
     getIdAppRoleUser() {
       return this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").idAppRoleUser
+    },
+    totalPegawai() {
+      return this.filterPegawai.length
     }
   },
   methods: {
@@ -172,8 +174,7 @@ export default {
         }
       }).then(res => {
         let data = res.data
-        this.pegawai = data.message.pegawai
-        this.totalPegawai = data.message.pegawai.length
+        this.pegawai = res.data.message.pegawai.filter(el => el.hasOwnProperty("unitOrganisasi"))
         this.namaUnitOrganisasi = data.message.unitOrganisasi
       })
     },
