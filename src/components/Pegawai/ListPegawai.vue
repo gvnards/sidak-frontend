@@ -7,45 +7,9 @@
       <h6 class="text-black">
         Total Pegawai: {{ totalPegawai }} Pegawai
       </h6>
-      <!-- <div v-if="getIdAppRoleUser == 1">
-        <div class="btn my-btn-primary"
-              data-toggle="modal"
-              data-target="#modal"
-              data-backdrop="static"
-              data-keyboard="false"
-              @click="addDataPegawai()">
-              <i class="fa-solid fa-plus icon-plus" style="margin-right: 4px;"></i> Tambah Pegawai
-        </div>
-        <div class="btn" style="padding: 0px; margin: 0px; width: 10px; cursor: default;"></div>
-        <div style="display: inline; min-height: 100%; position: relative;">
-          <div class="btn my-btn-outline-primary"
-                @click="onSyncAllASN()">
-                <i class="fa-solid fa-arrows-rotate" style="margin-right: 4px;"></i> Sinkron Semua Pegawai Dengan MySAPK
-          </div>
-          <div v-if="accordionSync.visibility" style="z-index: 2; background-color: white; position: absolute; top: 26px; left: 0; border: 1px solid #477b79; width: 100%; max-width: 100%; padding: 12px; box-sizing: border-box; overflow: hidden;">
-            <div class="row row-form" style="margin: 0;">
-              <div class="col-6">
-                <div class="form-group">
-                  <label for="minPegawai">Mulai</label>
-                  <input type="number" v-model="accordionSync.min" id="minPegawai" min="1" class="form-control">
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="form-group">
-                  <label for="maxPegawai">Sampai</label>
-                  <input type="number" v-model="accordionSync.max" id="maxPegawai" min="1" class="form-control">
-                </div>
-              </div>
-            </div>
-            <small :class="totalPegawaiSync > 500 || totalPegawaiSync < 1 ? 'text-danger' : 'text-primary'" style="font-weight: 600;">total: {{ totalPegawaiSync }} pegawai</small>
-            <button :disabled="totalPegawaiSync > 500 || totalPegawaiSync < 1 || accordionSync.disabledButton" class="btn my-btn-primary btn-block"
-                  @click="syncAllASN()">
-                  <i class="fa-solid fa-arrows-rotate" style="margin-right: 4px;"></i> Sinkron Pegawai
-            </button>
-            <small class="text-danger" style="font-weight: 600;">*Maksimal jumlah sinkron 500 pegawai</small>
-          </div>
-        </div>
-      </div> -->
+      <div v-if="parseInt(getIdAppRoleUser) === 1">
+        <div @click="addDataPegawai()" data-toggle="modal" data-target="#modal" data-backdrop="static" data-keyboard="false" class="btn btn-sm my-btn-primary"><i class="fa-solid fa-plus icon-plus" style="margin-right: 4px;"></i>Tambah Pegawai</div>
+      </div>
       <div class="form-group search-wrapper" style="margin-top: 8px;">
         <i
           class="fa-solid fa-magnifying-glass search-icon text-primary"

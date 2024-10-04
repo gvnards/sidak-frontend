@@ -2,96 +2,39 @@
   <ModalHeaderFooter :header-title="'Pegawai'" :header-subtitle="'pegawai'" :illustration="'IllustrationDataPangkatGolongan'" :primaryText="'Tambah'" @onUsulkan="onUsulkan()">
     <div class="row row-form">
       <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldStatusKepegawaian">Status Kepegawaian</label>
-          <select id="fieldStatusKepegawaian" class="custom-select" :class="inputError.statusKepegawaian.status ? 'form-error' : ''" v-model="dataPegawai.statusKepegawaian">
-            <option value="0" selected disabled>Pilih Status Kepegawaian</option>
-            <option :selected="item.id === dataPegawai.statusKepegawaian" :value="item.id" v-for="item in daftarStatusKepegawaian" :key="item.id">
-              {{ item.nama }}
-            </option>
-          </select>
-          <small class="text-red" v-if="inputError.statusKepegawaian.status"><b>*{{ inputError.statusKepegawaian.description }}</b></small>
+        <div class="form-group">
+          <label>Jenis Penambahan Data</label>
+          <br>
+          <div class="form-check" v-for="(item, idx) in jenisPenambahanData.list" :key="idx" style="display: inline-block; margin-right: 8px;">
+            <input v-model="jenisPenambahanData.checked" class="form-check-input" type="radio" :id="item" :name="item" :value="idx" :checked="jenisPenambahanData.checked === idx">
+            <label class="form-check-label" :for="item">
+              {{ item }}
+            </label>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row row-form">
       <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldNip">NIP</label>
-          <input type="text" :class="inputError.nip.status ? 'form-error' : ''" class="form-control" id="fieldNip" placeholder="NIP pegawai" v-model="dataPegawai.nip">
-          <small class="text-red" v-if="inputError.nip.status"><b>*{{ inputError.nip.description }}</b></small>
+        <div class="form-group text-left" v-if="jenisPenambahanData.checked === 0">
+          <label>Dokumen Kolektif (.txt)</label>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" accept=".txt" id="fileKolektif" @change="onChangeFile">
+            <label class="custom-file-label" for="fileKolektif" :class="dokumen.error.isError ? 'form-error text-danger' : ''">{{ dokumen.nama === '' ? 'Cari dokumen' : dokumen.nama }}</label>
+          </div>
+          <small class="text-red"><b v-if="dokumen.error.isError">*{{ dokumen.error.message }}</b></small>
         </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldNama">Nama</label>
-          <input :class="inputError.nama.status ? 'form-error' : ''" v-model="dataPegawai.nama" type="text" class="form-control" id="fieldNama" placeholder="Nama lengkap pegawai (tanpa gelar)">
-          <small class="text-red" v-if="inputError.nama.status"><b>*{{ inputError.nama.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-6">
-        <div class="form-group text-left">
-          <label for="fieldTempatLahir">Tempat Lahir</label>
-          <input :class="inputError.tempatLahir.status ? 'form-error' : ''" v-model="dataPegawai.tempatLahir" type="text" class="form-control" id="fieldTempatLahir" placeholder="Tempat lahir pegawai">
-          <small class="text-red" v-if="inputError.tempatLahir.status"><b>*{{ inputError.tempatLahir.description }}</b></small>
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="form-group text-left">
-          <label for="fieldTanggalLahir">Tanggal Lahir</label>
-          <input :class="inputError.tanggalLahir.status ? 'form-error' : ''" v-model="dataPegawai.tanggalLahir" type="date" class="form-control" id="fieldTanggalLahir" placeholder="Tanggal lahir pegawai">
-          <small class="text-red" v-if="inputError.tanggalLahir.status"><b>*{{ inputError.tanggalLahir.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldNik">NIK</label>
-          <input :class="inputError.nik.status ? 'form-error' : ''" v-model="dataPegawai.nik" type="text" class="form-control" id="fieldNik" placeholder="NIK pegawai">
-          <small class="text-red" v-if="inputError.nik.status"><b>*{{ inputError.nik.description }}</b></small>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldAlamat">Alamat</label>
-          <textarea v-model="dataPegawai.alamat" id="fieldAlamat" cols="30" rows="4" class="form-control" placeholder="Alamat pegawai"></textarea>
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldNomorHp">Nomor HP</label>
-          <input v-model="dataPegawai.nomorHp" type="text" class="form-control" id="fieldNomorHp" placeholder="Nomor HP pegawai">
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12">
-        <div class="form-group text-left">
-          <label for="fieldEmail">Email</label>
-          <input v-model="dataPegawai.email" type="email" class="form-control" id="fieldEmail" placeholder="Email pegawai">
-        </div>
-      </div>
-    </div>
-    <div class="row row-form">
-      <div class="col-12 col-sm-6">
-        <div class="form-group text-left">
-          <label for="fieldNpwp">Nomor NPWP</label>
-          <input v-model="dataPegawai.npwp" type="text" id="fieldNpwp" placeholder="Nomor NPWP pegawai" class="form-control">
-        </div>
-      </div>
-      <div class="col-12 col-sm-6">
-        <div class="form-group text-left">
-          <label for="fieldBpjs">Nomor BPJS</label>
-          <input v-model="dataPegawai.bpjs" type="text" id="fieldBpjs" placeholder="Nomor BPJS pegawai" class="form-control">
+        <div class="form-group text-left" v-if="jenisPenambahanData.checked === 1">
+          <div class="form-group">
+            <label for="fieldNip">NIP</label>
+            <input
+              :class="nip.error.isError ? 'form-error' : ''"
+              type="text"
+              placeholder="Masukkan NIP Pegawai"
+              v-model="nip.value"
+              id="fieldNip"
+              class="form-control"
+            />
+            <small class="text-red"><b v-if="nip.error.isError">* {{ nip.error.message }}</b></small>
+          </div>
         </div>
       </div>
     </div>
@@ -104,45 +47,27 @@ const env = import.meta.env
 export default {
   data() {
     return {
-      dataPegawai: {
-        statusKepegawaian: 0,
-        nip: "",
-        nama: "",
-        tempatLahir: "",
-        tanggalLahir: "",
-        alamat: "",
-        nik: "",
-        nomorHp: "",
-        email: "",
-        npwp: "",
-        bpjs: ""
+      jenisPenambahanData: {
+        list: [
+          "Kolektif",
+          "Satuan"
+        ],
+        checked: 0
       },
-      daftarStatusKepegawaian: [],
-      inputError: {
-        statusKepegawaian: {
-          description: "",
-          status: false
+      dokumen: {
+        error: {
+          message: "",
+          isError: false
         },
-        nip: {
-          description: "",
-          status: false
+        nama: "",
+        value: null
+      },
+      nip: {
+        error: {
+          message: "",
+          isError: false
         },
-        nama: {
-          description: "",
-          status: false
-        },
-        tempatLahir: {
-          description: "",
-          status: false
-        },
-        tanggalLahir: {
-          description: "",
-          status: false
-        },
-        nik: {
-          description: "",
-          status: false
-        },
+        value: ""
       }
     }
   },
@@ -152,53 +77,61 @@ export default {
     },
   },
   methods: {
-    getDaftarStatusKepegawaian() {
-      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/daftar-status-kepegawaian`,
-        method: "GET",
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        this.daftarStatusKepegawaian = data.message
-      })
+    resetDokumen() {
+      this.dokumen = {
+        error: {
+          message: "",
+          isError: false
+        },
+        nama: "",
+        value: null
+      }
     },
-    whereError() {
-      this.inputError.statusKepegawaian.status = this.dataPegawai.statusKepegawaian === 0
-      this.inputError.statusKepegawaian.description = this.dataPegawai.statusKepegawaian === 0 ? "Status kepegawaian harus dipilih" : ""
-      this.inputError.nip.status = this.dataPegawai.nip === ""
-      this.inputError.nip.description = this.dataPegawai.nip === "" ? "NIP pegawai harus diisi" : ""
-      this.inputError.nama.status = this.dataPegawai.nama === ""
-      this.inputError.nama.description = this.dataPegawai.nama === "" ? "Nama pegawai harus diisi" : ""
-      this.inputError.tempatLahir.status = this.dataPegawai.tempatLahir === ""
-      this.inputError.tempatLahir.description = this.dataPegawai.tempatLahir === "" ? "Tempat lahir pegawai harus diisi" : ""
-      this.inputError.tanggalLahir.status = this.dataPegawai.tanggalLahir === ""
-      this.inputError.tanggalLahir.description = this.dataPegawai.tanggalLahir === "" ? "Tanggal lahir pegawai harus diisi" : ""
-      this.inputError.nik.status = this.dataPegawai.nik === ""
-      this.inputError.nik.description = this.dataPegawai.nik === "" ? "NIK pegawai harus diisi" : ""
+    onChangeFile(item) {
+      this.dokumen.nama = ""
+      this.dokumen.error.isError = false
+      let file = item.target.files && item.target.files[0]
+      if(!file || item.target.files[0].type !== "text/plain") {
+        this.resetDokumen()
+        this.dokumen.error.message = "Dokumen tidak valid!"
+        this.dokumen.error.isError = true
+        item.target.value = null
+        return
+      }
+      this.dokumen.nama = file.name
+      this.dokumen.value = file
     },
-    onUsulkan() {
-      if (!this.isFulfilled) return this.whereError()
+    addPegawai(data) {
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      axios({
-        url: `${env.VITE_BACKEND_URL}/user-pegawai`,
+      return axios({
+        url: `${env.VITE_BACKEND_URL}/add-pegawai`,
         method: "POST",
         headers: {
           "Authorization": localStorage.getItem("token")
         },
         data: {
-          message: this.$store.getters.getEncrypt(JSON.stringify(this.dataPegawai), u)
+          message: this.$store.getters.getEncrypt(JSON.stringify(data), u)
         }
       }).then(res => {
-        let data = this.$store.getters.getDecrypt(JSON.stringify(res.data), u)
-        console.log(data)
+        console.log(res)
       })
+    },
+    async onUsulkan() {
+      if (this.jenisPenambahanData.checked === 0) {
+        let reader = new FileReader()
+        reader.readAsText(this.dokumen.value)
+        reader.addEventListener(
+          "load",
+          async () => {
+            let nips = reader.result
+            let arrayNip = nips.split("\r\n")
+            await this.addPegawai(arrayNip)
+          }
+        )
+      } else if (this.jenisPenambahanData.checked === 1) {
+        await this.addPegawai([this.nip.value])
+      }
     }
-  },
-  created() {
-    this.getDaftarStatusKepegawaian()
   }
 }
 </script>
