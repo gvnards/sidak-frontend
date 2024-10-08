@@ -1,5 +1,5 @@
 <template>
-  <ModalHeaderFooter :header-title="'Pegawai'" :header-subtitle="'pegawai'" :illustration="'IllustrationDataPangkatGolongan'" :primaryText="'Tambah'" @onUsulkan="onUsulkan()">
+  <ModalHeaderFooter :header-title="'Pegawai'" :header-subtitle="'pegawai'" :illustration="'IllustrationDataPangkatGolongan'" :primaryText="'Cek'" @onUsulkan="onUsulkan()">
     <div class="row row-form">
       <div class="col-12">
         <div class="form-group">
@@ -38,22 +38,29 @@
         </div>
       </div>
       <!-- LIST PEGAWAI -->
-      <div class="col-12" v-if="dataProcessed.isDone" style="border-top: 1px dashed #477b79;">
+      <div class="col-12" v-if="dataChecked.isDone" style="border-top: 1px dashed #477b79;">
         <div style="height: 12px;"></div>
-        <small><b>Sukses: {{ dataProcessed.count.success }} | Gagal: {{ dataProcessed.count.failed }}</b></small>
+        <small><b>{{ `Total: ${dataChecked.count.total} | Sukses: ${dataChecked.count.success} | Gagal: ${dataChecked.count.failed}` }}</b></small>
         <div id="list-pegawai-wrapper">
           <div id="list-pegawai">
             <table class="table">
               <thead class="thead-dark">
                 <tr style="font-size: 0.85rem;">
-                  <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white; padding: 4px;">NIP</th>
-                  <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white; padding: 4px;">Status</th>
+                  <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white; padding: 4px;">NIP<br>(Status)</th>
+                  <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white; padding: 4px;">Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                <tr class="text-center" v-for="(item, idx) in dataProcessed.data" :key="idx" style="font-size: 12px; font-weight: 500;" :style="parseInt(item.status) === 2 ? '' : 'background-color: #EC392F55;'">
-                  <td style="padding: 4px;">{{ item.nip }}</td>
-                  <td style="padding: 4px;">{{ parseInt(item.status) === 2 ? "Sukses" : "Gagal" }}</td>
+                <tr class="text-center" v-for="(item, idx) in dataChecked.data" :key="idx" style="font-size: 12px; font-weight: 500; border-bottom: 0.5px solid rgb(239, 245, 245);">
+                  <td style="padding: 4px; font-weight: 600;">
+                    {{ item.nip }}
+                    <br>
+                    {{ `(${item.exist ? 'Sudah' : 'Belum'} ada di database)` }}
+                  </td>
+                  <td style="padding: 4px; font-weight: 600;">
+                    <div v-if="!item.exist && !item.processed.isProcessed" class="btn my-btn-primary btn-sm" @click="addPegawai(idx)">Tambahkan</div>
+                    <span v-if="!item.exist && item.processed.isProcessed" :class="item.processed.status === 2 ? 'text-primary' : 'text-danger'">{{ item.processed.message }}</span>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -98,11 +105,12 @@ export default {
         },
         value: ""
       },
-      dataProcessed: {
+      dataChecked: {
         data: [],
         count: {
           success: 0,
-          failed: 0
+          failed: 0,
+          total: 0,
         },
         isDone: false
       }
@@ -114,8 +122,8 @@ export default {
     },
   },
   methods: {
-    resetDataProcessed() {
-      this.dataProcessed = {
+    resetDataChecked() {
+      this.dataChecked = {
         data: [],
         count: {
           success: 0,
@@ -157,8 +165,8 @@ export default {
       this.dokumen.nama = file.name
       this.dokumen.value = file
     },
-    addPegawai(data) {
-      this.resetDataProcessed()
+    addPegawai(idx) {
+      this.dataChecked.data[idx].processed.isProcessed = true
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
       axios({
         url: `${env.VITE_BACKEND_URL}/add-pegawai`,
@@ -167,15 +175,30 @@ export default {
           "Authorization": localStorage.getItem("token")
         },
         data: {
+          message: this.$store.getters.getEncrypt(JSON.stringify(this.dataChecked.data[idx].nip), u)
+        }
+      }).then(res => {
+        this.dataChecked.data[idx].processed.status = parseInt(res.data.status)
+        this.dataChecked.data[idx].processed.message = res.data.message
+        parseInt(res.data.status) === 2 ? this.dataChecked.count.success++ : this.dataChecked.count.failed++
+      })
+    },
+    checkPegawai(data) {
+      this.resetDataChecked()
+      let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
+      axios({
+        url: `${env.VITE_BACKEND_URL}/check-pegawai`,
+        method: "POST",
+        headers: {
+          "Authorization": localStorage.getItem("token")
+        },
+        data: {
           message: this.$store.getters.getEncrypt(JSON.stringify(data), u)
         }
       }).then(res => {
-        this.dataProcessed.data = res.data.message
-        this.dataProcessed.data.forEach(el => {
-          if (parseInt(el.status) === 2) this.dataProcessed.count.success++
-          else if (parseInt(el.status) === 3) this.dataProcessed.count.failed++
-        })
-        this.dataProcessed.isDone = true
+        this.dataChecked.data = res.data.message
+        this.dataChecked.isDone = true
+        this.dataChecked.count.total = this.dataChecked.data.length
       })
     },
     onUsulkan() {
@@ -192,7 +215,7 @@ export default {
           () => {
             let nips = reader.result
             let arrayNip = nips.split("\r\n")
-            this.addPegawai(arrayNip)
+            this.checkPegawai(arrayNip)
           }
         )
       } else if (parseInt(this.jenisPenambahanData.checked) === 1) {
@@ -201,7 +224,7 @@ export default {
           this.nip.error.message = "NIP harus diisi"
           return
         }
-        this.addPegawai([this.nip.value])
+        this.checkPegawai([this.nip.value])
       }
     }
   }
