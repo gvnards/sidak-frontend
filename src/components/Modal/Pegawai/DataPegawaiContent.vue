@@ -37,6 +37,29 @@
           </div>
         </div>
       </div>
+      <!-- LIST PEGAWAI -->
+      <div class="col-12" v-if="dataProcessed.isDone" style="border-top: 1px dashed #477b79;">
+        <div style="height: 12px;"></div>
+        <small><b>Sukses: {{ dataProcessed.count.success }} | Gagal: {{ dataProcessed.count.failed }}</b></small>
+        <div id="list-pegawai-wrapper">
+          <div id="list-pegawai">
+            <table class="table">
+              <thead class="thead-dark">
+                <tr style="font-size: 0.85rem;">
+                  <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white; padding: 4px;">NIP</th>
+                  <th scope="col" class="text-primary text-center" style="background-color: #eff5f5; border-color: #eff5f5; border-right: 2px solid white; padding: 4px;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="text-center" v-for="(item, idx) in dataProcessed.data" :key="idx" style="font-size: 12px; font-weight: 500;" :style="parseInt(item.status) === 2 ? '' : 'background-color: #EC392F55;'">
+                  <td style="padding: 4px;">{{ item.nip }}</td>
+                  <td style="padding: 4px;">{{ parseInt(item.status) === 2 ? "Sukses" : "Gagal" }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </ModalHeaderFooter>
 </template>
@@ -45,6 +68,12 @@
 import axios from "axios"
 const env = import.meta.env
 export default {
+  watch: {
+    "jenisPenambahanData.checked" () {
+      this.resetDokumen()
+      this.resetNip()
+    }
+  },
   data() {
     return {
       jenisPenambahanData: {
@@ -68,6 +97,14 @@ export default {
           isError: false
         },
         value: ""
+      },
+      dataProcessed: {
+        data: [],
+        count: {
+          success: 0,
+          failed: 0
+        },
+        isDone: false
       }
     }
   },
@@ -77,6 +114,16 @@ export default {
     },
   },
   methods: {
+    resetDataProcessed() {
+      this.dataProcessed = {
+        data: [],
+        count: {
+          success: 0,
+          failed: 0
+        },
+        isDone: false
+      }
+    },
     resetDokumen() {
       this.dokumen = {
         error: {
@@ -85,6 +132,15 @@ export default {
         },
         nama: "",
         value: null
+      }
+    },
+    resetNip() {
+      this.nip = {
+        error: {
+          message: "",
+          isError: false
+        },
+        value: ""
       }
     },
     onChangeFile(item) {
@@ -102,8 +158,9 @@ export default {
       this.dokumen.value = file
     },
     addPegawai(data) {
+      this.resetDataProcessed()
       let u = this.$store.getters.getDecrypt(localStorage.getItem("token"), "sidak.bkpsdmsitubondokab").username
-      return axios({
+      axios({
         url: `${env.VITE_BACKEND_URL}/add-pegawai`,
         method: "POST",
         headers: {
@@ -113,23 +170,38 @@ export default {
           message: this.$store.getters.getEncrypt(JSON.stringify(data), u)
         }
       }).then(res => {
-        console.log(res)
+        this.dataProcessed.data = res.data.message
+        this.dataProcessed.data.forEach(el => {
+          if (parseInt(el.status) === 2) this.dataProcessed.count.success++
+          else if (parseInt(el.status) === 3) this.dataProcessed.count.failed++
+        })
+        this.dataProcessed.isDone = true
       })
     },
-    async onUsulkan() {
-      if (this.jenisPenambahanData.checked === 0) {
+    onUsulkan() {
+      if (parseInt(this.jenisPenambahanData.checked) === 0) {
+        if (this.dokumen.nama === "") {
+          this.dokumen.error.isError = this.dokumen.nama === ""
+          this.dokumen.error.message = "Dokumen harus diisi"
+          return
+        }
         let reader = new FileReader()
         reader.readAsText(this.dokumen.value)
         reader.addEventListener(
           "load",
-          async () => {
+          () => {
             let nips = reader.result
             let arrayNip = nips.split("\r\n")
-            await this.addPegawai(arrayNip)
+            this.addPegawai(arrayNip)
           }
         )
-      } else if (this.jenisPenambahanData.checked === 1) {
-        await this.addPegawai([this.nip.value])
+      } else if (parseInt(this.jenisPenambahanData.checked) === 1) {
+        if (this.nip.value === "") {
+          this.nip.error.isError = this.nip.value === ""
+          this.nip.error.message = "NIP harus diisi"
+          return
+        }
+        this.addPegawai([this.nip.value])
       }
     }
   }
