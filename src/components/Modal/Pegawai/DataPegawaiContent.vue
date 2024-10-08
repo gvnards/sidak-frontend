@@ -196,7 +196,12 @@ export default {
           message: this.$store.getters.getEncrypt(JSON.stringify(data), u)
         }
       }).then(res => {
-        this.dataChecked.data = res.data.message
+        let dataIsExist = []
+        let dataIsNotExist = []
+        res.data.message.forEach(el => {
+          el.exist ? dataIsExist.push(el) : dataIsNotExist.push(el)
+        })
+        this.dataChecked.data = dataIsNotExist.concat(dataIsExist)
         this.dataChecked.isDone = true
         this.dataChecked.count.total = this.dataChecked.data.length
       })
