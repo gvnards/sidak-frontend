@@ -341,7 +341,7 @@ export default {
         })
         listCheckedPegawai.forEach((dt, idx) => {
           let dtFoto = listFoto.find(el => el.nip === dt.nip)
-          this.templateIdCard(idCardPdf, this.idCardData.template, dtFoto["blob"], dtFoto["ekstensi"], dt, profilSekda, (idx%5))
+          this.templateIdCard(idCardPdf, this.idCardData.template, dtFoto["blob"], dtFoto["ekstensi"], dt, profilSekda, 4-(idx%5))
           if ((idx+1)%5===0) idCardPdf.addPage("a4", "landscape")
         })
         idCardPdf.save("idCard.pdf")
