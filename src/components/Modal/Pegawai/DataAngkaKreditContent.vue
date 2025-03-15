@@ -4,7 +4,7 @@
     <div v-else>
       <div class="row row-form">
         <div class="col-12">
-          <div class="form-group text-left">
+          <div class="form-group text-left" v-if="getModalMethod === 'Tambah'">
             <label for="fieldJenisAngkaKredit">Jenis Angka Kredit</label>
             <select class="custom-select" id="fieldJenisAngkaKredit" :class="inputError.jenisAngkaKredit.status ? 'form-error' : ''" v-model="dataAngkaKredit.idDaftarJenisAngkaKredit">
               <option value="0" :selected="dataAngkaKredit.idDaftarJenisAngkaKredit === 0" disabled>{{ '-- Pilih Daftar Jenis Angka Kredit --' }}</option>
@@ -13,6 +13,10 @@
               </option>
             </select>
             <small class="text-red" v-if="inputError.jenisAngkaKredit.status"><b>*{{ inputError.jenisAngkaKredit.description }}</b></small>
+          </div>
+          <div class="form-group text-left" v-else>
+            <label for="fieldJenisAngkaKredit">Jenis Angka Kredit</label>
+            <div class="form-control text-primary" style="font-weight: 600; background-color: rgba(188, 188, 188, 0.5); cursor: not-allowed;">{{ jenisAngkaKreditText }}</div>
           </div>
         </div>
       </div>
@@ -186,6 +190,7 @@ export default {
       },
       hasIntegrasi: false,
       jenisAngkaKredit: [],
+      jenisAngkaKreditText: "",
       jabatan: [],
       inputError: {
         jenisAngkaKredit: {
@@ -398,17 +403,19 @@ export default {
         this.loading = false
         let data = res.data
         this.jabatan = data.message.jabatan
-        this.jenisAngkaKredit = data.message.jenisAngkaKredit
+        // this.jenisAngkaKredit = data.message.jenisAngkaKredit
         this.fileCategory = data.message.dokumenKategori
         this.dataAngkaKredit = data.message.dataAngkaKredit[0]
         this.oldData = {...this.dataAngkaKredit}
+        let jenisAngkaKreditTextTemp = data.message.jenisAngkaKredit.find(el => parseInt(el.id) === parseInt(this.dataAngkaKredit.idDaftarJenisAngkaKredit))
+        this.jenisAngkaKreditText = jenisAngkaKreditTextTemp === undefined ? "Jenis Angka Kredit tidak ditemukan." : jenisAngkaKreditTextTemp.jenisAngkaKredit
       })
     } else {
       this.getDataCreated().then(res => {
         this.loading = false
         let data = res.data
         this.jabatan = data.message.jabatan
-        this.jenisAngkaKredit = data.message.jenisAngkaKredit
+        this.jenisAngkaKredit = data.message.jenisAngkaKredit.filter(el => parseInt(el.id) !== 3)
         this.fileCategory = data.message.dokumenKategori
         this.hasIntegrasi = data.message.hasIntegrasi
       })
